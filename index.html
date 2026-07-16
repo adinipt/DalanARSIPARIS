@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DalanARSIPARIS — Panduan Pengelolaan Arsip Dinamis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #fcf5ee;
+    --paper: #ffffff;
+    --tab: #ffc4c4;
+    --accent: #ee6983;
+    --ink: #850e35;
+    --ink-dim: #ab3f60;
+    --line: rgba(133,14,53,0.14);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.65;
+    display:flex;
+    min-height:100vh;
+  }
+
+  a{ color:inherit; }
+
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:600; letter-spacing:-0.01em; }
+
+  .label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.7rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar{
+    width:280px;
+    flex-shrink:0;
+    background: var(--ink);
+    color: var(--bg);
+    display:flex;
+    flex-direction:column;
+    position:sticky;
+    top:0;
+    height:100vh;
+    z-index:1000;
+  }
+
+  .sidebar-header{
+    padding:2rem 1.75rem 1.5rem;
+    border-bottom:1px solid rgba(255,255,255,0.12);
+  }
+
+  .brand{
+    font-size:1.4rem;
+    font-weight:700;
+    text-decoration:none;
+    color:var(--bg);
+    display:block;
+  }
+  .brand span{ color:var(--tab); }
+  .brand-tag{
+    display:block;
+    margin-top:0.4rem;
+    color:rgba(255,196,196,0.75);
+    font-size:0.72rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  .nav-group{
+    padding:1.25rem 0.9rem;
+  }
+
+  .nav-group-title{
+    padding:0 0.85rem;
+    margin-bottom:0.6rem;
+    color:rgba(255,196,196,0.55);
+  }
+
+  .nav-list{ list-style:none; display:flex; flex-direction:column; gap:0.25rem; }
+
+  .nav-item{
+    display:flex;
+    align-items:center;
+    gap:0.75rem;
+    width:100%;
+    background:none;
+    border:none;
+    text-align:left;
+    padding:0.7rem 0.85rem;
+    border-radius:6px;
+    color:rgba(252,245,238,0.85);
+    font-family:'Inter', sans-serif;
+    font-size:0.93rem;
+    font-weight:500;
+    cursor:pointer;
+    text-decoration:none;
+    transition: background 0.2s ease, color 0.2s ease, padding-left 0.2s ease;
+  }
+
+  .nav-item .code{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.68rem;
+    color: var(--tab);
+    opacity:0.8;
+    min-width:2.4rem;
+  }
+
+  .nav-item:hover{
+    background: rgba(255,196,196,0.08);
+    color: var(--bg);
+    padding-left:1.05rem;
+  }
+
+  .nav-item.active{
+    background: var(--tab);
+    color: var(--ink);
+  }
+  .nav-item.active .code{ color: var(--ink); opacity:0.65; }
+
+  .sidebar-footer{
+    margin-top:auto;
+    padding:1.5rem 1.75rem;
+    border-top:1px solid rgba(255,255,255,0.12);
+    font-size:0.75rem;
+    color:rgba(252,245,238,0.55);
+  }
+
+  /* ===== MAIN ===== */
+  main{
+    flex:1;
+    min-width:0;
+  }
+
+  .page{ display:none; }
+  .page.active{ display:block; animation: fadein 0.35s ease; }
+
+  @keyframes fadein{
+    from{ opacity:0; transform:translateY(6px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .page-hero{
+    padding:4.5rem 5% 3rem;
+    border-bottom:1px solid var(--line);
+  }
+
+  .eyebrow{
+    color: var(--accent);
+    margin-bottom:0.9rem;
+    display:flex;
+    align-items:center;
+    gap:0.6rem;
+  }
+  .eyebrow::before{
+    content:'';
+    width:28px;
+    height:2px;
+    background: var(--accent);
+    display:inline-block;
+  }
+
+  .page-hero h1{ font-size:2.4rem; margin-bottom:1rem; max-width:760px; }
+  .page-hero p{ max-width:640px; color: var(--ink-dim); font-size:1.05rem; }
+
+  .page-body{ padding:3.5rem 5% 5rem; }
+
+  .content-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+    gap:1.75rem;
+    max-width:1100px;
+  }
+
+  .card{
+    background: var(--paper);
+    padding:2rem;
+    border-radius:10px;
+    box-shadow:0 4px 18px rgba(133,14,53,0.07);
+    border-top:4px solid var(--accent);
+  }
+
+  .card .code{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.7rem;
+    color: var(--accent);
+    letter-spacing:0.1em;
+    display:block;
+    margin-bottom:0.7rem;
+  }
+
+  .card h3{ font-size:1.2rem; margin-bottom:0.75rem; }
+  .card p{ color: var(--ink-dim); font-size:0.96rem; margin-bottom:1.25rem; }
+
+  .card-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0.6rem;
+  }
+
+  .btn-yt, .btn-pretest, .btn-posttest{
+    display:inline-flex;
+    align-items:center;
+    gap:0.5rem;
+    color:#fff;
+    text-decoration:none;
+    padding:0.6rem 1.1rem;
+    border-radius:6px;
+    font-weight:600;
+    font-size:0.85rem;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .btn-yt{ background: var(--accent); }
+  .btn-yt:hover{ background: var(--ink); transform:translateY(-2px); }
+
+  .btn-pretest{ background: var(--ink); }
+  .btn-pretest:hover{ background: var(--accent); transform:translateY(-2px); }
+
+  .btn-posttest{ background: var(--ink-dim); }
+  .btn-posttest:hover{ background: var(--accent); transform:translateY(-2px); }
+
+  /* Beranda cycle diagram */
+  .cycle{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0;
+    max-width:1000px;
+    margin-top:1rem;
+  }
+  .cycle-step{
+    flex:1;
+    min-width:200px;
+    background: var(--paper);
+    padding:1.5rem;
+    border:1px solid var(--line);
+    position:relative;
+  }
+  .cycle-step:not(:last-child)::after{
+    content:'→';
+    position:absolute;
+    right:-14px;
+    top:50%;
+    transform:translateY(-50%);
+    color: var(--accent);
+    font-size:1.3rem;
+    z-index:2;
+  }
+  .cycle-step .code{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.7rem;
+    color: var(--accent);
+  }
+  .cycle-step h4{ font-family:'Fraunces', serif; font-size:1.05rem; margin:0.4rem 0 0.3rem; }
+  .cycle-step p{ font-size:0.85rem; color: var(--ink-dim); }
+
+  /* Contact pages */
+  .contact-card{
+    background: var(--paper);
+    max-width:520px;
+    padding:2.5rem;
+    border-radius:12px;
+    box-shadow:0 4px 18px rgba(133,14,53,0.08);
+    border-top:4px solid var(--accent);
+  }
+  .contact-card h3{ font-size:1.3rem; margin-bottom:0.6rem; }
+  .contact-card p{ color: var(--ink-dim); margin-bottom:1.5rem; }
+  .contact-value{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.95rem;
+    background: var(--bg);
+    padding:0.85rem 1rem;
+    border-radius:6px;
+    margin-bottom:1.5rem;
+    word-break:break-all;
+  }
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:0.5rem;
+    background: var(--ink);
+    color: var(--bg);
+    text-decoration:none;
+    padding:0.85rem 1.5rem;
+    border-radius:6px;
+    font-weight:600;
+    font-size:0.95rem;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .btn:hover{ background: var(--accent); transform:translateY(-2px); }
+
+  footer.page-footer{
+    padding:2rem 5%;
+    color: var(--ink-dim);
+    font-size:0.85rem;
+    border-top:1px solid var(--line);
+  }
+
+  /* Mobile */
+  .menu-toggle{
+    display:none;
+    position:fixed;
+    top:1rem;
+    left:1rem;
+    z-index:1100;
+    background: var(--ink);
+    color: var(--bg);
+    border:none;
+    width:44px;
+    height:44px;
+    border-radius:8px;
+    font-size:1.2rem;
+    cursor:pointer;
+  }
+
+  @media (max-width: 860px){
+    body{ display:block; }
+    .menu-toggle{ display:block; }
+    .sidebar{
+      position:fixed;
+      left:0; top:0;
+      transform:translateX(-100%);
+      transition:transform 0.3s ease;
+      width:82%;
+      max-width:300px;
+    }
+    .sidebar.open{ transform:translateX(0); }
+    main{ padding-top:4.5rem; }
+    .page-hero h1{ font-size:1.9rem; }
+    .cycle-step::after{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" id="menuToggle" aria-label="Buka menu">☰</button>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="#" class="brand" data-page="beranda">Dalan<span>ARSIPARIS</span></a>
+    <span class="brand-tag">Media Pembelajaran Terpadu Arsip Dinamis</span>
+  </div>
+
+  <nav class="nav-group">
+    <div class="nav-group-title label">Jalan Hidup Arsip Dinamis</div>
+    <ul class="nav-list">
+      <li><button class="nav-item active" data-page="beranda"><span class="code">ARS-00</span> Beranda</button></li>
+      <li><button class="nav-item" data-page="penciptaan"><span class="code">ARS-01</span> Penciptaan</button></li>
+      <li><button class="nav-item" data-page="penggunaan"><span class="code">ARS-02</span> Penggunaan</button></li>
+      <li><button class="nav-item" data-page="pemeliharaan"><span class="code">ARS-03</span> Pemeliharaan</button></li>
+      <li><button class="nav-item" data-page="penyusutan"><span class="code">ARS-04</span> Penyusutan</button></li>
+    </ul>
+  </nav>
+
+  <nav class="nav-group">
+    <div class="nav-group-title label">Hubungi Kami</div>
+    <ul class="nav-list">
+      <li><button class="nav-item" data-page="email"><span class="code">✉</span> EmailARSIPARIS</button></li>
+      <li><button class="nav-item" data-page="chat"><span class="code">💬</span> ChatARSIPARIS</button></li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    &copy; 2026 DalanARSIPARIS.<br>Dibuat oleh Aryana Dini Putri Tianto, S.Fil.
+  </div>
+</div>
+
+<main>
+
+  <!-- BERANDA -->
+  <section class="page active" id="page-beranda">
+    <div class="page-hero">
+      <div class="eyebrow label">Panduan Resmi</div>
+      <h1>Panduan Pengelolaan Arsip Dinamis</h1>
+      <p>Sistem tata kelola kearsipan yang profesional, terstruktur, dan akuntabel. Ikuti alur siklus hidup arsip dinamis mulai dari penciptaan hingga penyusutan, disusun sesuai kaidah kearsipan yang berlaku.</p>
+    </div>
+    <div class="page-body">
+      <div class="cycle">
+        <div class="cycle-step">
+          <span class="code">ARS-01</span>
+          <h4>Penciptaan</h4>
+          <p>Pembuatan &amp; penerimaan arsip</p>
+        </div>
+        <div class="cycle-step">
+          <span class="code">ARS-02</span>
+          <h4>Penggunaan</h4>
+          <p>Akses &amp; peminjaman arsip</p>
+        </div>
+        <div class="cycle-step">
+          <span class="code">ARS-03</span>
+          <h4>Pemeliharaan</h4>
+          <p>Pemberkasan &amp; penyimpanan</p>
+        </div>
+        <div class="cycle-step">
+          <span class="code">ARS-04</span>
+          <h4>Penyusutan</h4>
+          <p>Pemindahan, pemusnahan, penyerahan</p>
+        </div>
+      </div>
+    </div>
+    <footer class="page-footer">Pilih salah satu tahapan di sidebar untuk melihat penjelasan lengkap.</footer>
+  </section>
+
+  <!-- PENCIPTAAN -->
+  <section class="page" id="page-penciptaan">
+    <div class="page-hero">
+      <div class="eyebrow label">ARS-01</div>
+      <h1>Penciptaan Arsip</h1>
+      <p>Tahap awal siklus hidup arsip, mencakup pembuatan dan penerimaan naskah dinas sesuai kaidah tata kelola kearsipan.</p>
+    </div>
+    <div class="page-body">
+      <div class="content-grid">
+        <div class="card">
+          <span class="code">01.1</span>
+          <h3>Pembuatan Arsip</h3>
+          <p>Proses pendokumentasian kegiatan atau peristiwa yang direkam dalam berbagai bentuk dan media sesuai dengan perkembangan teknologi informasi dan komunikasi.</p>
+          <div class="card-actions">
+            <a class="btn-yt" href="https://www.youtube.com/results?search_query=pembuatan+arsip" target="_blank" rel="noopener">▶ YouTube</a>
+            <a class="btn-pretest" href="https://forms.gle/PRETEST-01-1" target="_blank" rel="noopener">📝 Pre Test</a>
+            <a class="btn-posttest" href="https://forms.gle/POSTTEST-01-1" target="_blank" rel="noopener">✅ Post Test</a>
+          </div>
+        </div>
+        <div class="card">
+          <span class="code">01.2</span>
+          <h3>Penerimaan Arsip</h3>
+          <p>Penerimaan arsip dari pihak eksternal maupun internal yang wajib diregistrasi, didistribusikan, dan dikendalikan menggunakan sarana tata naskah dinas.</p>
+          <div class="card-actions">
+            <a class="btn-yt" href="https://www.youtube.com/results?search_query=penerimaan+arsip" target="_blank" rel="noopener">▶ YouTube</a>
+            <a class="btn-pretest" href="https://forms.gle/PRETEST-01-2" target="_blank" rel="noopener">📝 Pre Test</a>
+            <a class="btn-posttest" href="https://forms.gle/POSTTEST-01-2" target="_blank" rel="noopener">✅ Post Test</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PENGGUNAAN -->
+  <section class="page" id="page-penggunaan">
+    <div class="page-hero">
+      <div class="eyebrow label">ARS-02</div>
+      <h1>Penggunaan Arsip</h1>
+      <p>Pengaturan akses dan pemanfaatan arsip untuk mendukung kegiatan operasional instansi secara sah dan terkendali.</p>
+    </div>
+    <div class="page-body">
+      <div class="content-grid">
+        <div class="card">
+          <span class="code">02.1</span>
+          <h3>Akses Arsip</h3>
+          <p>Pengaturan ketersediaan arsip sebagai hasil dari kewenangan hukum dan otorisasi legal serta keberadaan fisik arsip untuk mendukung kegiatan instansi.</p>
+          <div class="card-actions">
+            <a class="btn-yt" href="https://www.youtube.com/results?search_query=akses+arsip" target="_blank" rel="noopener">▶ YouTube</a>
+            <a class="btn-pretest" href="https://forms.gle/PRETEST-02-1" target="_blank" rel="noopener">📝 Pre Test</a>
+            <a class="btn-posttest" href="https://forms.gle/POSTTEST-02-1" target="_blank" rel="noopener">✅ Post Test</a>
+          </div>
+        </div>
+        <div class="card">
+          <span class="code">02.2</span>
+          <h3>Layanan Peminjaman</h3>
+          <p>Fasilitas peminjaman arsip bagi pengguna yang berhak, disertai dengan pencatatan (buku pinjam/outguide) untuk menjamin pelacakan keberadaan arsip.</p>
+          <div class="card-actions">
+            <a class="btn-yt" href="https://www.youtube.com/results?search_query=layanan+peminjaman+arsip" target="_blank" rel="noopener">▶ YouTube</a>
+            <a class="btn-pretest" href="https://forms.gle/PRETEST-02-2" target="_blank" rel="noopener">📝 Pre Test</a>
+            <a class="btn-posttest" href="https://forms.gle/POSTTEST-02-2" target="_blank" rel="noopener">✅ Post Test</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PEMELIHARAAN -->
+  <section class="page" id="page-pemeliharaan">
+    <div class="page-hero">
+      <div class="eyebrow label">ARS-03</div>
+      <h1>Pemeliharaan Arsip</h1>
+      <p>Menjaga arsip tetap tertata, aman, dan mudah ditemukan kembali sepanjang masa retensinya.</p>
+    </div>
+    <div class="page-body">
+      <div class="content-grid">
+        <div class="card">
+          <span class="code">03.1</span>
+          <h3>Pemberkasan (Filing)</h3>
+          <p>Penempatan naskah ke dalam suatu himpunan yang tersusun secara sistematis dan logis sesuai dengan konteks kegiatannya sehingga menjadi satu berkas yang utuh.</p>
+          <div class="card-actions">
+            <a class="btn-yt" href="https://www.youtube.com/results?search_query=pemberkasan+arsip" target="_blank" rel="noopener">▶ YouTube</a>
+            <a class="btn-pretest" href="https://forms.gle/PRETEST-03-1" target="_blank" rel="noopener">📝 Pre Test</a>
+            <a class="btn-posttest" href="https://forms.gle/POSTTEST-03-1" target="_blank" rel="noopener">✅ Post Test</a>
+          </div>
+        </div>
+        <div class="card">
+          <span class="code">03.2</span>
+          <h3>Penyimpanan &amp; Keamanan</h3>
+          <p>Upaya menjaga keutuhan, keamanan, dan keselamatan arsip fisik maupun digital dari kerusakan, kehilangan, maupun akses oleh pihak yang tidak berwenang.</p>
+          <div class="card-actions">
+            <a class="btn-yt" href="https://www.youtube.com/results?search_query=penyimpanan+dan+keamanan+arsip" target="_blank" rel="noopener">▶ YouTube</a>
+            <a class="btn-pretest" href="https://forms.gle/PRETEST-03-2" target="_blank" rel="noopener">📝 Pre Test</a>
+            <a class="btn-posttest" href="https://forms.gle/POSTTEST-03-2" target="_blank" rel="noopener">✅ Post Test</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PENYUSUTAN -->
+  <section class="page" id="page-penyusutan">
+    <div class="page-hero">
+      <div class="eyebrow label">ARS-04</div>
+      <h1>Penyusutan Arsip</h1>
+      <p>Tahap akhir siklus hidup arsip: mengurangi volume arsip melalui pemindahan, pemusnahan, atau penyerahan sesuai Jadwal Retensi Arsip.</p>
+    </div>
+    <div class="page-body">
+      <div class="content-grid">
+        <div class="card">
+          <span class="code">04.1</span>
+          <h3>Pemindahan</h3>
+          <p>Pemindahan arsip inaktif dari unit pengolah ke unit kearsipan berdasarkan Jadwal Retensi Arsip (JRA) untuk menghemat ruang kerja.</p>
+          <div class="card-actions">
+            <a class="btn-yt" href="https://www.youtube.com/results?search_query=pemindahan+arsip" target="_blank" rel="noopener">▶ YouTube</a>
+            <a class="btn-pretest" href="https://forms.gle/PRETEST-04-1" target="_blank" rel="noopener">📝 Pre Test</a>
+            <a class="btn-posttest" href="https://forms.gle/POSTTEST-04-1" target="_blank" rel="noopener">✅ Post Test</a>
+          </div>
+        </div>
+        <div class="card">
+          <span class="code">04.2</span>
+          <h3>Pemusnahan</h3>
+          <p>Kegiatan menghancurkan fisik dan informasi arsip yang telah habis retensinya dan tidak memiliki nilai guna, dilakukan sesuai prosedur hukum.</p>
+          <div class="card-actions">
+            <a class="btn-yt" href="https://www.youtube.com/results?search_query=pemusnahan+arsip" target="_blank" rel="noopener">▶ YouTube</a>
+            <a class="btn-pretest" href="https://forms.gle/PRETEST-04-2" target="_blank" rel="noopener">📝 Pre Test</a>
+            <a class="btn-posttest" href="https://forms.gle/POSTTEST-04-2" target="_blank" rel="noopener">✅ Post Test</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EMAIL ADMIN -->
+  <section class="page" id="page-email">
+    <div class="page-hero">
+      <div class="eyebrow label">Kontak</div>
+      <h1>EmailARSIPARIS</h1>
+      <p>Punya kritik atau saran untuk DalanARSIPARIS? Atau mau request video tutorial? Yuk EmailARSIPARIS!</p>
+    </div>
+    <div class="page-body">
+      <div class="contact-card">
+        <h3>Kirim Email</h3>
+        <p>Admin akan merespons pertanyaan, permintaan layanan, atau konsultasi kearsipan melalui email berikut.</p>
+        <a class="btn" href="mailto:dalanarsiparis@gmail.com">✉ Buka Email</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAT ADMIN -->
+  <section class="page" id="page-chat">
+    <div class="page-hero">
+      <div class="eyebrow label">Kontak</div>
+      <h1>ChatARSIPARIS</h1>
+      <p>Ada kendala? Butuh respon cepat? Yuk ChatARSIPARIS!</p>
+    </div>
+    <div class="page-body">
+      <div class="contact-card">
+        <h3>Chat via WhatsApp</h3>
+        <p>Klik tombol di bawah untuk memulai percakapan langsung dengan admin.</p>
+        <a class="btn" href="https://wa.me/6282146013722" target="_blank" rel="noopener">💬 Buka WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  const navItems = document.querySelectorAll('.nav-item, .brand');
+  const pages = document.querySelectorAll('.page');
+  const sidebar = document.getElementById('sidebar');
+  const menuToggle = document.getElementById('menuToggle');
+
+  function showPage(pageId){
+    pages.forEach(p => p.classList.toggle('active', p.id === 'page-' + pageId));
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.classList.toggle('active', item.dataset.page === pageId);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    sidebar.classList.remove('open');
+  }
+
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = item.dataset.page;
+      if(target){ showPage(target); history.replaceState(null, '', '#' + target); }
+    });
+  });
+
+  menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+
+  const initial = window.location.hash.replace('#','');
+  if(initial && document.getElementById('page-' + initial)){
+    showPage(initial);
+  }
+</script>
+
+</body>
+</html>
