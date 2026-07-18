@@ -231,6 +231,17 @@
   .btn-posttest{ background: var(--ink-dim); }
   .btn-posttest:hover{ background: var(--accent); transform:translateY(-2px); }
 
+  .btn-yt.locked, .btn-posttest.locked{
+    opacity:0.4;
+    cursor:not-allowed;
+  }
+  .btn-yt.locked:hover, .btn-posttest.locked:hover{
+    transform:none;
+  }
+  .btn-yt.locked::after, .btn-posttest.locked::after{
+    content:' 🔒';
+  }
+
   /* Beranda cycle diagram */
   .cycle{
     display:flex;
@@ -619,6 +630,47 @@
   if(initial && document.getElementById('page-' + initial)){
     showPage(initial);
   }
+</script>
+
+<script>
+  // Kunci berurutan: Pre Test -> YouTube -> Post Test (per modul, disimpan di localStorage)
+  document.querySelectorAll('.card-actions').forEach(actions => {
+    const preBtn = actions.querySelector('.btn-pretest');
+    const ytBtn = actions.querySelector('.btn-yt');
+    const postBtn = actions.querySelector('.btn-posttest');
+    const module = preBtn.getAttribute('href'); // dipakai sebagai kunci unik per modul
+
+    function refresh(){
+      const preDone = localStorage.getItem('preTestDone_' + module) === 'true';
+      const ytDone  = localStorage.getItem('youtubeDone_' + module) === 'true';
+      ytBtn.classList.toggle('locked', !preDone);
+      postBtn.classList.toggle('locked', !ytDone);
+    }
+
+    preBtn.addEventListener('click', () => {
+      localStorage.setItem('preTestDone_' + module, 'true');
+      refresh();
+    });
+
+    ytBtn.addEventListener('click', (e) => {
+      if (ytBtn.classList.contains('locked')){
+        e.preventDefault();
+        alert('Selesaikan Pre Test terlebih dahulu.');
+        return;
+      }
+      localStorage.setItem('youtubeDone_' + module, 'true');
+      refresh();
+    });
+
+    postBtn.addEventListener('click', (e) => {
+      if (postBtn.classList.contains('locked')){
+        e.preventDefault();
+        alert('Tonton video YouTube terlebih dahulu sebelum mengerjakan Post Test.');
+      }
+    });
+
+    refresh();
+  });
 </script>
 
 </body>
