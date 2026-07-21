@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://dalanarsiparis.my.id/sitemap.xml
+Sitemap: https://adinipt.github.io/DalanARSIPARIS/sitemap.xml
