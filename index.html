@@ -995,7 +995,7 @@
         </div>
       </div>
 
-      <p class="maze-help">Gunakan W A S D, tombol panah, atau tombol kontrol. Monster mulai mengejar setelah permainan dimulai!</p>
+      <p class="maze-help">Gunakan W A S D, tombol panah, atau tombol kontrol. Monster mulai mengejar setelah jeda 3 detik, lalu bergerak bertahap sesuai level!</p>
 
       <div id="maze-message" class="maze-message">Tekan Mulai untuk menjalankan misi.</div>
 
@@ -1769,8 +1769,8 @@ window.addEventListener("beforeunload",()=>{
       name:"Mudah",
       cols:9, rows:9,
       targetTime:45,
-      monsterDelay:1100,
-      monsterSpeed:"lambat",
+      monsterDelay:1800,
+      monsterSpeed:"lambat • 1,8 detik/langkah",
       map:[
         "#########",
         "#S..#...#",
@@ -1788,8 +1788,8 @@ window.addEventListener("beforeunload",()=>{
       name:"Sedang",
       cols:11, rows:11,
       targetTime:60,
-      monsterDelay:800,
-      monsterSpeed:"sedang",
+      monsterDelay:2400,
+      monsterSpeed:"sedang • 2,4 detik/langkah",
       map:[
         "###########",
         "#S..#.....#",
@@ -1809,8 +1809,8 @@ window.addEventListener("beforeunload",()=>{
       name:"Sulit",
       cols:13, rows:13,
       targetTime:90,
-      monsterDelay:550,
-      monsterSpeed:"cepat",
+      monsterDelay:2100,
+      monsterSpeed:"cepat • 2,1 detik/langkah",
       map:[
         "#############",
         "#S..#.......#",
@@ -1905,12 +1905,19 @@ window.addEventListener("beforeunload",()=>{
       render();
     },100);
 
-    monsterTimer=setInterval(moveMonster,level.monsterDelay);
+    monsterTimer=setTimeout(()=>{
+      if(running && !finished){
+        monsterTimer=setInterval(moveMonster,level.monsterDelay);
+      }
+    },3000);
   }
 
   function stopTimers(){
     if(timer) clearInterval(timer);
-    if(monsterTimer) clearInterval(monsterTimer);
+    if(monsterTimer) {
+      clearInterval(monsterTimer);
+      clearTimeout(monsterTimer);
+    }
     timer=null;monsterTimer=null;
   }
 
