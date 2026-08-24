@@ -530,6 +530,49 @@
 .btn-yt.video-done{background:#2e7d32}
 
 </style>
+
+
+<style id="da-maze-style">
+.maze-card{max-width:760px;margin:0 auto;padding:24px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 12px 40px rgba(64,16,34,.10)}
+.maze-info{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:12px 14px;background:var(--bg);border-radius:12px;font-size:13px}
+.maze-wrap{display:flex;justify-content:center}
+.maze-board{display:grid;grid-template-columns:repeat(9,min(10vw,42px));grid-template-rows:repeat(9,min(10vw,42px));gap:3px;padding:8px;background:var(--ink);border-radius:14px;touch-action:none;user-select:none;-webkit-user-select:none}
+.maze-guide{margin-bottom:16px;padding:15px 16px;border:1px solid var(--line);border-radius:13px;background:var(--bg)}
+.maze-guide-title{font-weight:800;margin-bottom:9px;color:var(--ink)}
+.maze-guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 18px;font-size:12px;line-height:1.45;color:var(--ink-dim)}
+.maze-mobile-note{margin-top:11px;padding:10px 11px;border-radius:9px;background:#fff;font-size:12px;line-height:1.45;color:var(--ink)}
+.maze-controls button{min-width:48px;min-height:48px;-webkit-tap-highlight-color:transparent}
+
+.maze-cell{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:21px;user-select:none}
+.maze-wall{background:#5b4a50}
+.maze-floor{background:#f5efe8}
+.maze-start{background:#e8d4bd}
+.maze-goal{background:#d9ead9}
+.maze-player{font-size:25px}
+.maze-controls{text-align:center;margin-top:16px}
+.maze-controls button{width:48px;height:44px;margin:3px;border:1px solid var(--line);border-radius:10px;background:var(--ink);color:#fff;font-size:19px;cursor:pointer;touch-action:manipulation}
+.maze-controls button:hover{background:var(--accent)}
+.maze-help{text-align:center;color:var(--ink-dim);font-size:12px;margin:10px 0}
+.maze-message{text-align:center;padding:12px;border-radius:10px;background:var(--bg);font-weight:600;margin-top:12px}
+.maze-message.success{background:#e5f4e7;color:#24652b}
+.maze-restart{display:block;margin:14px auto 0;border:0;border-radius:10px;padding:11px 16px;background:var(--tab);color:var(--ink);font-weight:800;cursor:pointer}
+@media(max-width:600px){
+  .maze-card{padding:13px;border-radius:16px}
+  .maze-info{font-size:12px}
+  .maze-guide-grid{grid-template-columns:1fr}
+  .maze-board{grid-template-columns:repeat(9,min(9.5vw,36px));grid-template-rows:repeat(9,min(9.5vw,36px));gap:2px;padding:5px}
+  .maze-cell{width:min(9.5vw,36px);height:min(9.5vw,36px);font-size:15px}
+  .maze-player{font-size:18px}
+  .maze-controls{margin-top:13px}
+  .maze-controls button{width:52px;height:52px;margin:3px;font-size:20px}
+  .maze-help{font-size:11px}
+}
+  .maze-cell{width:31px;height:31px;font-size:16px}
+  .maze-player{font-size:19px}
+  .maze-card{padding:14px}
+}
+</style>
+
 </head>
 <body>
 
@@ -549,7 +592,9 @@
       <li><button class="nav-item" data-page="pemeliharaan"><span class="code">ARS-03</span> Pemeliharaan Arsip</button></li>
       <li><button class="nav-item" data-page="penyusutan"><span class="code">ARS-04</span> Penyusutan Arsip</button></li>
     </ul>
-  </nav>
+  
+<a href="#page-game">🎮 Fun Game</a>
+</nav>
 
   <nav class="nav-group">
     <div class="nav-group-title label">Hubungi DalanARSIPARIS</div>
@@ -879,6 +924,62 @@
         <button class="da-test-submit" id="da-test-submit" type="button">Submit Jawaban</button>
         <button class="da-test-reset" id="da-test-reset" type="button">Tutup</button>
       </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- FUN GAME ARSIP — SIMPLE MAZE -->
+<section class="page" id="page-game">
+  <div class="page-hero">
+    <div class="eyebrow label">FUN GAME</div>
+    <h1>🎮 Misi Arsiparis</h1>
+    <p>Bantu Arsiparis menemukan jalan menuju <strong>Unit Kearsipan</strong> tanpa menabrak rak arsip.</p>
+  </div>
+
+  <div class="page-body">
+    <div class="maze-card">
+      <div class="maze-info">
+        <div><strong>🎯 Tujuan:</strong> Unit Kearsipan</div>
+        <div><strong>📦 Misi:</strong> Antar arsip dengan aman</div>
+        <div><strong>⭐ Skor:</strong> <span id="maze-score">0</span></div>
+      </div>
+
+
+      <div class="maze-guide">
+        <div class="maze-guide-title">📖 Cara Bermain</div>
+        <div class="maze-guide-grid">
+          <div><strong>1.</strong> Mulai dari posisi 🧑‍💼 Arsiparis.</div>
+          <div><strong>2.</strong> Arahkan Arsiparis menuju 🏢 Unit Kearsipan.</div>
+          <div><strong>3.</strong> Hindari 🗄️ rak/dinding arsip.</div>
+          <div><strong>4.</strong> 💻 Komputer: gunakan tombol <b>W A S D</b> atau tombol panah.</div>
+          <div><strong>5.</strong> 📱 HP/Tablet: gunakan tombol kontrol di bawah labirin.</div>
+          <div><strong>6.</strong> 🏆 Sampai tujuan untuk mendapatkan bonus poin.</div>
+        </div>
+        <div class="maze-mobile-note">📱 <strong>Untuk Android & iPhone:</strong> game sudah disesuaikan agar tombol kontrol mudah disentuh. Tidak perlu keyboard.</div>
+      </div>
+
+      <div class="maze-wrap">
+        <div id="maze-board" class="maze-board" aria-label="Labirin Misi Arsiparis"></div>
+      </div>
+
+      <div class="maze-controls" aria-label="Kontrol Arsiparis">
+        <button type="button" data-move="up">▲</button>
+        <div>
+          <button type="button" data-move="left">◀</button>
+          <button type="button" data-move="down">▼</button>
+          <button type="button" data-move="right">▶</button>
+        </div>
+      </div>
+
+      <p class="maze-help">Gunakan tombol panah, tombol WASD, atau kontrol di atas untuk menggerakkan Arsiparis.</p>
+
+      <div id="maze-message" class="maze-message" aria-live="polite">
+        Mulai dari pintu masuk dan cari jalan menuju Unit Kearsipan. 📱 Di HP/tablet, gunakan tombol arah di bawah labirin.
+      </div>
+
+      <button id="maze-restart" class="maze-restart" type="button">🔄 Mulai Ulang</button>
     </div>
   </div>
 </section>
@@ -1624,6 +1725,114 @@ window.addEventListener("beforeunload",()=>{
   }
 });
 
+</script>
+
+
+
+<script id="da-maze-script">
+(function(){
+  const board = document.getElementById("maze-board");
+  if(!board) return;
+
+  /*
+    # = dinding
+    . = jalan
+    S = start
+    G = tujuan
+  */
+  const MAP = [
+    "#########",
+    "#S..#...#",
+    "###.#.#.#",
+    "#...#.#.#",
+    "#.###.#.#",
+    "#.....#.#",
+    "#.#####.#",
+    "#.......#",
+    "#######G#"
+  ];
+
+  let player = {r:1,c:1};
+  let score = 0;
+  let finished = false;
+
+  function render(){
+    board.innerHTML="";
+    MAP.forEach((row,r)=>{
+      [...row].forEach((cell,c)=>{
+        const el=document.createElement("div");
+        el.className="maze-cell "+(cell==="#"?"maze-wall":"maze-floor");
+        if(cell==="S") el.classList.add("maze-start");
+        if(cell==="G") { el.classList.add("maze-goal"); el.textContent="🏢"; }
+        if(r===player.r && c===player.c) {
+          el.classList.add("maze-player");
+          el.textContent="🧑‍💼";
+        }
+        board.appendChild(el);
+      });
+    });
+    document.getElementById("maze-score").textContent=score;
+  }
+
+  function move(dr,dc){
+    if(finished) return;
+    const nr=player.r+dr, nc=player.c+dc;
+    if(nr<0 || nc<0 || nr>=MAP.length || nc>=MAP[0].length) return;
+
+    if(MAP[nr][nc]==="#"){
+      score=Math.max(0,score-1);
+      document.getElementById("maze-message").textContent="🗄️ Menabrak rak arsip! Cari jalan lain.";
+      render();
+      return;
+    }
+
+    player={r:nr,c:nc};
+    score+=1;
+    const msg=document.getElementById("maze-message");
+
+    if(MAP[nr][nc]==="G"){
+      finished=true;
+      score+=20;
+      msg.className="maze-message success";
+      msg.textContent="🏆 Berhasil! Arsiparis sampai di Unit Kearsipan dengan selamat. +20 bonus!";
+    } else {
+      msg.className="maze-message";
+      msg.textContent="🚶 Teruskan perjalanan menuju Unit Kearsipan...";
+    }
+    render();
+  }
+
+  document.querySelectorAll("[data-move]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const d=btn.dataset.move;
+      if(d==="up") move(-1,0);
+      if(d==="down") move(1,0);
+      if(d==="left") move(0,-1);
+      if(d==="right") move(0,1);
+    });
+  });
+
+  document.addEventListener("keydown",e=>{
+    const tag=(e.target && e.target.tagName)||"";
+    if(["INPUT","TEXTAREA","SELECT","BUTTON"].includes(tag)) return;
+    const k=e.key.toLowerCase();
+    if(["arrowup","w","arrowdown","s","arrowleft","a","arrowright","d"].includes(k)) e.preventDefault();
+    if(k==="arrowup"||k==="w") move(-1,0);
+    if(k==="arrowdown"||k==="s") move(1,0);
+    if(k==="arrowleft"||k==="a") move(0,-1);
+    if(k==="arrowright"||k==="d") move(0,1);
+  });
+
+  document.getElementById("maze-restart").addEventListener("click",()=>{
+    player={r:1,c:1}; score=0; finished=false;
+    const msg=document.getElementById("maze-message");
+    msg.className="maze-message";
+    msg.textContent="Mulai dari pintu masuk dan cari jalan menuju Unit Kearsipan. 📱 Di HP/tablet, gunakan tombol arah di bawah labirin.";
+    render();
+  });
+
+  render();
+})();
 </script>
 
 </body>
