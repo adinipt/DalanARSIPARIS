@@ -581,7 +581,59 @@
 }
 </style>
 
-<style id="da-chat-click-fix">#da-chat-panel{z-index:10000}.da-chat-quick,.da-chat-compose{pointer-events:auto}</style>\n</head>
+<style id="da-chat-click-fix">#da-chat-panel{z-index:10000}.da-chat-quick,.da-chat-compose{pointer-events:auto}</style>\n
+<style id="da-chat-history-heart-style">
+.da-chat-email{padding:7px 10px 6px;background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.da-chat-email input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:8px 10px;outline:none;font:12px Inter,sans-serif;color:var(--ink);background:#fff}
+.da-chat-email input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(236,92,120,.10)}
+.da-chat-email.invalid input{border-color:#e85d75}
+#da-chat-email-note{font-size:9.5px;color:var(--ink-dim);margin-top:4px;line-height:1.3}
+#da-chat-toast{display:none;position:fixed;right:24px;bottom:88px;z-index:10001;min-width:220px;max-width:310px;padding:10px 12px;border:1px solid rgba(236,92,120,.25);border-radius:14px;background:#fff;box-shadow:0 12px 35px rgba(64,16,34,.18);color:var(--ink);align-items:center;gap:9px;animation:daHeartPop .24s ease-out}
+.da-heart-notify{width:28px;height:28px;flex:0 0 28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(236,92,120,.12);color:var(--accent);font-size:18px;line-height:1}
+.da-toast-text{font-size:11px;color:var(--ink-dim);margin-top:2px}
+@keyframes daHeartPop{from{opacity:0;transform:translateY(8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.da-chat-toast-new{display:flex!important}
+@media(max-width:600px){
+  #da-chat-toast{right:12px;bottom:78px;max-width:calc(100vw - 24px);min-width:0}
+  .da-chat-email input{font-size:13px;min-height:40px}
+}
+</style>
+
+
+<style id="da-admin-heart-style">
+#da-admin-toast{display:none;position:fixed;right:24px;bottom:24px;z-index:10002;min-width:220px;max-width:310px;padding:10px 12px;border:1px solid rgba(236,92,120,.25);border-radius:14px;background:#fff;box-shadow:0 12px 35px rgba(64,16,34,.18);align-items:center;gap:9px;color:var(--ink)}
+@media(max-width:600px){#da-admin-toast{right:12px;bottom:12px;max-width:calc(100vw - 24px)}}
+</style>
+
+
+<style id="da-chat-identity-style">
+.da-chat-identity{padding:11px 10px;background:#fff;border-bottom:1px solid var(--line)}
+.da-chat-identity-title{font-size:12px;font-weight:800;color:var(--ink);margin-bottom:4px}
+.da-chat-identity-text{font-size:10px;line-height:1.4;color:var(--ink-dim);margin-bottom:9px}
+.da-chat-identity-options{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.da-identity-btn{border:1px solid var(--line);border-radius:10px;padding:9px 7px;background:#fff;color:var(--ink);font-size:11px;font-weight:800;cursor:pointer;touch-action:manipulation}
+.da-identity-btn.anonymous{background:#f8f2ed}
+.da-identity-btn.named{background:var(--tab)}
+.da-identity-btn:hover{border-color:var(--accent);background:#fff0f3}
+.da-chat-identity-note{margin-top:8px;font-size:9px;line-height:1.45;color:var(--ink-dim)}
+.da-chat-named-form{display:grid;gap:7px;margin-top:9px}
+.da-chat-named-form input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:9px;padding:8px 9px;outline:none;font:11px Inter,sans-serif}
+.da-chat-named-form input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(236,92,120,.10)}
+.da-chat-named-form input.invalid{border-color:#e85d75}
+#da-chat-identity-confirm{border:0;border-radius:9px;padding:9px;background:var(--accent);color:#fff;font-size:11px;font-weight:800;cursor:pointer;touch-action:manipulation}
+.da-chat-selected{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;background:#fff7f8;border-bottom:1px solid var(--line);font-size:9px;color:var(--ink-dim)}
+.da-chat-selected button{border:0;background:transparent;color:var(--accent);font-weight:800;font-size:9px;cursor:pointer}
+@media(max-width:520px){
+  .da-chat-identity-options{grid-template-columns:1fr}
+  .da-chat-identity{padding:10px}
+}
+</style>
+
+<style id="da-admin-identity-style">
+.da-admin-chat-identity{padding:7px 10px;background:#fff7f8;border-bottom:1px solid var(--line);font-size:10px;color:var(--ink-dim)}
+</style>
+
+</head>
 <body>
 
 <button class="menu-toggle" id="menuToggle" aria-label="Buka menu">☰</button>
@@ -632,8 +684,11 @@
 </button>
 
 <div id="da-chat-toast" role="status" aria-live="polite">
-  <strong>💬 Balasan baru dari DalanARSIPARIS</strong>
-  <div class="da-toast-text" id="da-toast-text">Admin membalas pesan Anda.</div>
+  <span class="da-heart-notify" aria-hidden="true">♥</span>
+  <div>
+    <strong id="da-toast-title">Balasan baru dari DalanARSIPARIS</strong>
+    <div class="da-toast-text" id="da-toast-text">Ada balasan baru untuk Anda.</div>
+  </div>
 </div>
 
 <section id="da-chat-panel" aria-label="Live Chat ChatARSIPARIS">
@@ -646,19 +701,54 @@
     <button class="da-chat-admin-open" id="da-chat-admin-open" aria-label="Login admin" title="Login admin">🔐</button>
     <button class="da-chat-close" id="da-chat-close" aria-label="Tutup chat">×</button>
   </header>
+  <div class="da-chat-email">
+    <input id="da-chat-email" type="email" inputmode="email" autocomplete="email"
+      placeholder="Email untuk menyimpan riwayat chat (7 hari)" maxlength="120">
+    <div id="da-chat-email-note">Riwayat chat tersimpan maksimal 7 hari berdasarkan email ini.</div>
+  </div>
   <div class="da-chat-messages" id="da-chat-messages"></div>
-  <div class="da-chat-quick" id="da-chat-quick">
+
+  <div class="da-chat-identity" id="da-chat-identity">
+    <div class="da-chat-identity-title">🔐 Sebelum mulai chat</div>
+    <div class="da-chat-identity-text">Pilih bagaimana Anda ingin menggunakan Live ChatARSIPARIS. Pilihan ini menentukan informasi yang dapat dilihat admin.</div>
+    <div class="da-chat-identity-options">
+      <button type="button" class="da-identity-btn anonymous" id="da-chat-anonymous">👤 Tetap Anonim</button>
+      <button type="button" class="da-identity-btn named" id="da-chat-named">📩 Beri Nama &amp; Email</button>
+    </div>
+    <div class="da-chat-identity-note">👤 <strong>Anonim:</strong> admin tidak melihat nama/email Anda. Riwayat tetap tersedia selama 7 hari pada sesi chat ini.<br>📩 <strong>Nama &amp; Email:</strong> admin dapat mengetahui identitas Anda untuk memberikan informasi lebih lanjut.</div>
+    <div class="da-chat-named-form" id="da-chat-named-form" hidden>
+      <input id="da-chat-name" type="text" maxlength="80" placeholder="Nama Anda">
+      <input id="da-chat-email" type="email" maxlength="120" placeholder="Email Anda">
+      <button type="button" id="da-chat-identity-confirm">✓ Lanjutkan dengan Nama &amp; Email</button>
+    </div>
+  </div>
+
+  <div class="da-chat-selected" id="da-chat-selected" hidden>
+    <span id="da-chat-selected-text"></span>
+    <button type="button" id="da-chat-change-identity">Ubah</button>
+  </div>
+
+  <div class="da-chat-quick" id="da-chat-quick" style="display:none">
     <button class="da-quick" data-q="Apa itu arsip dinamis?">Arsip Dinamis</button>
     <button class="da-quick" data-q="Bagaimana cara peminjaman arsip?">Peminjaman</button>
     <button class="da-quick" data-q="Bagaimana cara menemukan kembali arsip?">Penemuan Kembali</button>
     <button class="da-quick" data-q="Bagaimana cara pemberkasan arsip?">Pemberkasan</button>
   </div>
-  <div class="da-chat-compose">
+  <div class="da-chat-compose" style="display:none">
     <textarea id="da-chat-input" placeholder="Tulis pertanyaan Anda..." maxlength="1000"></textarea>
-    <button id="da-chat-send" aria-label="Kirim">➤</button>
+    <button id="da-chat-send" type="button" aria-label="Kirim">➤</button>
   </div>
-  <div class="da-chat-foot">Quick Reply AI • Chat akan diteruskan ke admin jika diperlukan.</div>
+  <div class="da-chat-foot">Quick Reply AI • Anda dapat memilih anonim atau memberikan nama & email untuk tindak lanjut admin.</div>
 </section>
+
+
+<div id="da-admin-toast" role="status" aria-live="polite">
+  <span class="da-heart-notify" aria-hidden="true">♥</span>
+  <div>
+    <strong>Pesan baru dari pengunjung</strong>
+    <div class="da-toast-text" id="da-admin-toast-text">Ada pesan baru.</div>
+  </div>
+</div>
 
 <section id="da-admin-login" aria-label="Login Admin">
   <strong style="display:block;margin-bottom:8px">🔐 Admin Chat</strong>
@@ -676,6 +766,7 @@
   <div class="da-admin-body">
     <div class="da-admin-list" id="da-conversation-list"></div>
     <div class="da-admin-chat">
+      <div class="da-admin-chat-identity" id="da-admin-chat-identity">Pilih percakapan pengunjung.</div>
       <div class="da-admin-msgs" id="da-admin-messages">
         <div style="padding:20px;color:var(--ink-dim);font-size:12px">Pilih percakapan pengunjung.</div>
       </div>
@@ -1368,27 +1459,7 @@ const badgePrintBtn = document.getElementById("da-badge-print");
 const certName = document.getElementById("da-cert-name");
 const certDate = document.getElementById("da-cert-date");
 const certScore = document.getElementById("da-cert-score");
-const BADGE_NAME_KEY = "dalanarsiparis_badge_name";
-
-badgeNameInput.value = localStorage.getItem(BADGE_NAME_KEY) || "";
-badgeNameInput.addEventListener("input",()=>{
-  localStorage.setItem(BADGE_NAME_KEY,badgeNameInput.value);
-  updateBadgeProgress();
-});
-
-badgePrintBtn.addEventListener("click",()=>{
-  const name=badgeNameInput.value.trim();
-  const stats=overallStats();
-  if(!name || stats.post < MIN_FINAL) return;
-  certName.textContent=name;
-  certDate.textContent=new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
-  certScore.textContent=`Rata-rata Post Test: ${stats.post}`;
-  window.print();
-});
-
-updateTestUI();
 </script>
-
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -1396,7 +1467,7 @@ import {
   getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, signInAnonymously
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import {
-  getDatabase, ref, set, push, onValue, onChildAdded, update, serverTimestamp
+  getDatabase, ref, set, push, get, remove, onValue, onChildAdded, onChildChanged, update, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
 
 /* =========================================================
@@ -1442,6 +1513,23 @@ const toastText = document.getElementById("da-toast-text");
 const messagesEl = document.getElementById("da-chat-messages");
 const input = document.getElementById("da-chat-input");
 const sendBtn = document.getElementById("da-chat-send");
+const identityBox = document.getElementById("da-chat-identity");
+const anonymousBtn = document.getElementById("da-chat-anonymous");
+const namedBtn = document.getElementById("da-chat-named");
+const namedForm = document.getElementById("da-chat-named-form");
+const nameInput = document.getElementById("da-chat-name");
+const emailInput = document.getElementById("da-chat-email");
+const identityConfirm = document.getElementById("da-chat-identity-confirm");
+const selectedIdentity = document.getElementById("da-chat-selected");
+const selectedIdentityText = document.getElementById("da-chat-selected-text");
+const changeIdentityBtn = document.getElementById("da-chat-change-identity");
+const emailBox = emailInput ? emailInput.closest(".da-chat-email") : null;
+const toastTitle = document.getElementById("da-toast-title");
+const HISTORY_DAYS = 7;
+const HISTORY_MS = HISTORY_DAYS * 24 * 60 * 60 * 1000;
+const EMAIL_KEY = "dalanarsiparis_chat_email_v1";
+const IDENTITY_KEY = "dalanarsiparis_chat_identity_v1";
+const VISITOR_NAME_KEY = "dalanarsiparis_chat_visitor_name_v1";
 const statusEl = document.getElementById("da-chat-status");
 const loginBox = document.getElementById("da-admin-login");
 const loginBtn = document.getElementById("da-google-login");
@@ -1449,12 +1537,20 @@ const adminDock = document.getElementById("da-admin-dock");
 const logoutBtn = document.getElementById("da-admin-logout");
 const convList = document.getElementById("da-conversation-list");
 const adminMessages = document.getElementById("da-admin-messages");
+const adminChatIdentity = document.getElementById("da-admin-chat-identity");
 const adminInput = document.getElementById("da-admin-input");
 const adminSend = document.getElementById("da-admin-send");
+const adminToast = document.getElementById("da-admin-toast");
+const adminToastText = document.getElementById("da-admin-toast-text");
 
 const CHAT_KEY = "dalanarsiparis_chat_id_v2";
 const NAME_KEY = "dalanarsiparis_chat_name_v1";
 let chatId = null;
+let visitorEmail = "";
+let visitorName = "";
+let identityMode = "";
+let chatSessionListener = null;
+let chatMessageListener = null;
 
 let selectedConversation = null;
 let unsubscribeMessages = null;
@@ -1550,7 +1646,8 @@ function setUnread(n){
 function openChat(){
   panel.classList.add("open");
   setUnread(0);
-  toast.style.display="none";
+  toast.classList.remove("da-chat-toast-new");
+  if(visitorEmail && validEmail(visitorEmail)) renderLocalChatMessages();
   input.focus();
 }
 launcher.onclick = openChat;
@@ -1577,82 +1674,411 @@ document.querySelectorAll(".da-quick").forEach(btn=>{
 /* =========================================================
    5. VISITOR CHAT
    ========================================================= */
-function saveVisitorMessage(text){
-  if(!db) return;
-  const msgRef = push(ref(db, `chats/${chatId}/messages`));
-  return set(msgRef,{
-    sender:"visitor", text, createdAt:Date.now()
+const LOCAL_CHAT_KEY = "dalanarsiparis_chat_messages_v1";
+
+function normalizeEmail(value){
+  return String(value || "").trim().toLowerCase();
+}
+function validEmail(value){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(value));
+}
+function encodeEmailKey(email){
+  return btoa(unescape(encodeURIComponent(normalizeEmail(email))))
+    .replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function emailKey(){
+  return visitorEmail ? encodeEmailKey(visitorEmail) : "";
+}
+function cutoffTime(){
+  return Date.now() - HISTORY_MS;
+}
+function isRecentMessage(m){
+  return Number(m?.createdAt || 0) >= cutoffTime();
+}
+function identityStorageKey(){
+  if(identityMode==="named" && visitorEmail) return `${LOCAL_CHAT_KEY}_${encodeEmailKey(visitorEmail)}`;
+  if(identityMode==="anonymous"){
+    const uid = auth?.currentUser?.uid || localStorage.getItem("dalanarsiparis_anon_uid_v1") || "browser";
+    return `${LOCAL_CHAT_KEY}_anon_${uid}`;
+  }
+  return `${LOCAL_CHAT_KEY}_pending`;
+}
+function setIdentityUI(mode){
+  identityMode=mode || "";
+  if(identityBox) identityBox.hidden=!!mode;
+  if(selectedIdentity) selectedIdentity.hidden=!mode;
+  if(mode==="anonymous"){
+    if(selectedIdentityText) selectedIdentityText.textContent="👤 Mode Anonim • Nama & email tidak dibagikan ke admin";
+  }else if(mode==="named"){
+    if(selectedIdentityText) selectedIdentityText.textContent=`📩 ${visitorName || "Pengguna"} • ${visitorEmail}`;
+  }
+  const quick=document.getElementById("da-chat-quick");
+  const compose=document.querySelector(".da-chat-compose");
+  if(quick) quick.style.display=mode ? "" : "none";
+  if(compose) compose.style.display=mode ? "" : "none";
+}
+function chooseAnonymous(){
+  identityMode="anonymous";
+  visitorEmail="";
+  visitorName="";
+  localStorage.setItem(IDENTITY_KEY,"anonymous");
+  localStorage.removeItem(EMAIL_KEY);
+  localStorage.removeItem(VISITOR_NAME_KEY);
+  setIdentityUI("anonymous");
+  statusEl.textContent="AI Quick Reply aktif • Mode anonim • Riwayat 7 hari";
+  messagesEl.innerHTML="";
+  addMessage(messagesEl,{
+    sender:"bot",
+    text:"Mode anonim aktif. 👤 Nama dan email Anda tidak dibagikan kepada admin. Silakan ajukan pertanyaan.",
+    createdAt:Date.now()
+  });
+  if(firebaseConfigured && auth?.currentUser) ensureVisitorSession();
+}
+function showNamedForm(){
+  namedForm.hidden=false;
+  nameInput?.focus();
+}
+function chooseNamed(){
+  const name=(nameInput?.value || "").trim();
+  const email=normalizeEmail(emailInput?.value || "");
+  if(!name){
+    nameInput?.classList.add("invalid");
+    nameInput?.focus();
+    return;
+  }
+  if(!validEmail(email)){
+    emailInput?.classList.add("invalid");
+    emailInput?.focus();
+    return;
+  }
+  visitorName=name;
+  visitorEmail=email;
+  identityMode="named";
+  localStorage.setItem(IDENTITY_KEY,"named");
+  localStorage.setItem(EMAIL_KEY,email);
+  localStorage.setItem(VISITOR_NAME_KEY,name);
+  namedForm.hidden=true;
+  setIdentityUI("named");
+  statusEl.textContent="AI Quick Reply aktif • Riwayat 7 hari";
+  messagesEl.innerHTML="";
+  renderLocalChatMessages();
+  if(!getLocalChatMessages().length){
+    addMessage(messagesEl,{
+      sender:"bot",
+      text:`Halo ${esc(visitorName)}! 👋 Nama dan email Anda dapat dilihat admin untuk pemberian informasi lebih lanjut. Silakan ajukan pertanyaan.`,
+      createdAt:Date.now()
+    });
+  }
+  if(firebaseConfigured && auth?.currentUser) ensureVisitorSession();
+}
+function resetIdentityChoice(){
+  identityMode="";
+  visitorEmail="";
+  visitorName="";
+  localStorage.removeItem(IDENTITY_KEY);
+  localStorage.removeItem(EMAIL_KEY);
+  localStorage.removeItem(VISITOR_NAME_KEY);
+  namedForm.hidden=true;
+  setIdentityUI("");
+  messagesEl.innerHTML="";
+  addMessage(messagesEl,{
+    sender:"bot",
+    text:"Silakan pilih Mode Anonim atau beri Nama & Email sebelum mengajukan pertanyaan.",
+    createdAt:Date.now()
   });
 }
-function saveBotMessage(text){
-  if(!db) return;
-  const msgRef = push(ref(db, `chats/${chatId}/messages`));
-  return set(msgRef,{
-    sender:"bot", text, createdAt:Date.now()
-  });
+function requireIdentity(){
+  if(identityMode==="anonymous") return true;
+  if(identityMode==="named" && visitorName && validEmail(visitorEmail)) return true;
+  resetIdentityChoice();
+  return false;
 }
+
+function getLocalChatMessages(){
+  try{
+    const key = identityStorageKey();
+    const data = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(data) ? data : [];
+  }catch(_){
+    return [];
+  }
+}
+function saveLocalChatMessage(message){
+  try{
+    const data = getLocalChatMessages();
+    data.push(message);
+    const key = identityStorageKey();
+    localStorage.setItem(key, JSON.stringify(data.slice(-100)));
+  }catch(_){}
+}
+function renderLocalChatMessages(){
+  purgeLocalHistory();
+  const data = getLocalChatMessages().filter(isRecentMessage);
+  if(!data.length) return;
+  messagesEl.innerHTML="";
+  data.forEach(m=>addMessage(messagesEl,m));
+}
+
+async function ensureVisitorSession(){
+  if(!requireIdentity()) return false;
+  if(!firebaseConfigured || !auth || !db) return false;
+
+  try{
+    let user = auth.currentUser;
+    if(!user){
+      const result = await signInAnonymously(auth);
+      user = result.user;
+    }
+    if(!user) return false;
+
+    if(identityMode==="named"){
+      chatId = `email_${emailKey()}`;
+      await update(ref(db,`chats/${chatId}`),{
+        identityMode:"named",
+        name:visitorName,
+        email:visitorEmail,
+        updatedAt:Date.now()
+      });
+    }else{
+      localStorage.setItem("dalanarsiparis_anon_uid_v1",user.uid);
+      chatId = `anon_${user.uid}`;
+      await update(ref(db,`chats/${chatId}`),{
+        identityMode:"anonymous",
+        name:"Pengunjung Anonim",
+        email:null,
+        updatedAt:Date.now()
+      });
+    }
+    localStorage.setItem(CHAT_KEY,chatId);
+    return true;
+  }catch(err){
+    console.warn("Sesi chat belum dapat dibuat:",err);
+  }
+  return false;
+}
+
+async function saveVisitorMessage(text){
+  if(!db || !chatId) return false;
+  try{
+    const msgRef = push(ref(db, `chats/${chatId}/messages`));
+    await set(msgRef,{
+      sender:"visitor",
+      identityMode,
+      name:identityMode==="named" ? visitorName : "Pengunjung Anonim",
+      email:identityMode==="named" ? visitorEmail : null,
+      text,
+      createdAt:Date.now()
+    });
+    return true;
+  }catch(err){
+    console.warn("Pesan pengunjung belum tersimpan ke Firebase:", err);
+    return false;
+  }
+}
+
+async function saveBotMessage(text){
+  if(!db || !chatId) return false;
+  try{
+    const msgRef = push(ref(db, `chats/${chatId}/messages`));
+    await set(msgRef,{
+      sender:"bot",
+      identityMode,
+      name:identityMode==="named" ? visitorName : "Pengunjung Anonim",
+      email:identityMode==="named" ? visitorEmail : null,
+      text,
+      createdAt:Date.now()
+    });
+    return true;
+  }catch(err){
+    console.warn("Balasan AI belum tersimpan ke Firebase:", err);
+    return false;
+  }
+}
+
 async function sendVisitorMessage(){
   const text = input.value.trim();
   if(!text) return;
+
+  // A visitor must choose an identity mode before asking anything.
+  if(!requireIdentity()) return;
+
+  const now = Date.now();
+  const visitorMessage = {
+    sender:"visitor",
+    identityMode,
+    name:identityMode==="named" ? visitorName : "Pengunjung Anonim",
+    email:identityMode==="named" ? visitorEmail : null,
+    text,
+    createdAt:now
+  };
+
   input.value="";
-  if(!firebaseConfigured){
-    addMessage(messagesEl,{sender:"visitor",text,createdAt:Date.now()});
-    setTimeout(()=>addMessage(messagesEl,{sender:"bot",text:aiReply(text),createdAt:Date.now()}),350);
-    return;
+  saveLocalChatMessage(visitorMessage);
+  addMessage(messagesEl,visitorMessage);
+
+  let savedToFirebase = false;
+
+  if(firebaseConfigured){
+    savedToFirebase = await ensureVisitorSession();
+
+    if(savedToFirebase){
+      const visitorName = localStorage.getItem(NAME_KEY) || "Pengunjung";
+      localStorage.setItem(NAME_KEY,visitorName);
+
+      try{
+        await update(ref(db,`chats/${chatId}`),{
+          identityMode,
+          name:identityMode==="named" ? visitorName : "Pengunjung Anonim",
+          email:identityMode==="named" ? visitorEmail : null,
+          lastMessage:text,
+          lastSender:"visitor",
+          updatedAt:Date.now(),
+          status:"open"
+        });
+      }catch(err){
+        console.warn("Metadata chat belum tersimpan:",err);
+      }
+
+      savedToFirebase = await saveVisitorMessage(text);
+      if(savedToFirebase) await purgeFirebaseOldHistory();
+    }
   }
-  const visitorName = localStorage.getItem(NAME_KEY) || "Pengunjung";
-  localStorage.setItem(NAME_KEY,visitorName);
-  await update(ref(db,`chats/${chatId}`),{
-    name:visitorName,lastMessage:text,lastSender:"visitor",updatedAt:Date.now(),status:"open"
-  });
-  await saveVisitorMessage(text);
+
   const reply = aiReply(text);
+  const botMessage = {
+    sender:"bot",
+    identityMode,
+    name:identityMode==="named" ? visitorName : "Pengunjung Anonim",
+    email:identityMode==="named" ? visitorEmail : null,
+    text:reply,
+    createdAt:Date.now()
+  };
+
   setTimeout(async()=>{
-    await saveBotMessage(reply);
-    await update(ref(db,`chats/${chatId}`),{
-      lastMessage:reply,lastSender:"bot",updatedAt:Date.now()
-    });
+    saveLocalChatMessage(botMessage);
+    addMessage(messagesEl,botMessage);
+
+    // Every AI reply gets the small red-heart floating notification.
+    showReplyNotification("♥ Balasan baru dari Quick Reply AI",reply);
+    if(!panel.classList.contains("open")) setUnread(unread+1);
+
+    if(savedToFirebase){
+      const botSaved = await saveBotMessage(reply);
+      if(botSaved){
+        try{
+          await update(ref(db,`chats/${chatId}`),{
+            email:visitorEmail,
+            lastMessage:reply,
+            lastSender:"bot",
+            updatedAt:Date.now()
+          });
+        }catch(err){
+          console.warn("Metadata balasan belum tersimpan:",err);
+        }
+      }
+    }
   },350);
 }
+
 sendBtn.onclick=sendVisitorMessage;
 input.addEventListener("keydown",e=>{
   if(e.key==="Enter" && !e.shiftKey){e.preventDefault();sendVisitorMessage();}
 });
 
+async function purgeFirebaseOldHistory(){
+  if(!db || !chatId) return;
+  try{
+    const snap=await get(ref(db,`chats/${chatId}/messages`));
+    const data=snap.val()||{};
+    const cutoff=cutoffTime();
+    const deletions=[];
+    Object.entries(data).forEach(([id,m])=>{
+      if(Number(m?.createdAt || 0) < cutoff){
+        deletions.push(remove(ref(db,`chats/${chatId}/messages/${id}`)));
+      }
+    });
+    if(deletions.length) await Promise.all(deletions);
+  }catch(err){
+    console.warn("Pembersihan riwayat 7 hari gagal:",err);
+  }
+}
+
 async function initVisitorRealtime(){
-  if(!db || !auth) {
-    statusEl.textContent="AI Quick Reply aktif • Mode demo";
-    addMessage(messagesEl,{sender:"bot",text:"Halo! 👋 Saya Quick Reply AI DalanARSIPARIS. Silakan tanyakan apa saja tentang materi arsip dinamis.",createdAt:Date.now()});
+  // Restore the visitor's previously selected identity for this browser.
+  const savedMode=localStorage.getItem(IDENTITY_KEY) || "";
+  visitorEmail=normalizeEmail(localStorage.getItem(EMAIL_KEY) || "");
+  visitorName=(localStorage.getItem(VISITOR_NAME_KEY) || "").trim();
+
+  if(savedMode==="named" && visitorName && validEmail(visitorEmail)){
+    identityMode="named";
+    setIdentityUI("named");
+  }else if(savedMode==="anonymous"){
+    identityMode="anonymous";
+    setIdentityUI("anonymous");
+  }else{
+    identityMode="";
+    setIdentityUI("");
+    messagesEl.innerHTML="";
+    addMessage(messagesEl,{
+      sender:"bot",
+      text:"Halo! 👋 Sebelum mengajukan pertanyaan, silakan pilih apakah ingin tetap anonim atau memberikan nama dan email kepada admin.",
+      createdAt:Date.now()
+    });
     return;
   }
-  const user = auth.currentUser;
-  if(!user || !user.isAnonymous) return;
-  chatId = user.uid;
-  localStorage.setItem(CHAT_KEY, chatId);
-  statusEl.textContent="AI Quick Reply aktif • Menunggu admin";
+
+  renderLocalChatMessages();
+
+  if(!db || !auth) {
+    statusEl.textContent="AI Quick Reply aktif • Mode lokal";
+    if(getLocalChatMessages().length===0){
+      addMessage(messagesEl,{
+        sender:"bot",
+        text:"Halo! 👋 Saya Quick Reply AI DalanARSIPARIS. Silakan tanyakan apa saja tentang materi arsip dinamis.",
+        createdAt:Date.now()
+      });
+    }
+    return;
+  }
+
+  const ready = await ensureVisitorSession();
+  if(!ready){
+    statusEl.textContent="AI Quick Reply aktif • Mode lokal";
+    return;
+  }
+
+  await purgeFirebaseOldHistory();
+  statusEl.textContent="AI Quick Reply aktif • Riwayat 7 hari";
+
   const chatRef=ref(db,`chats/${chatId}`);
-  onValue(chatRef,snap=>{
+  if(chatSessionListener) chatSessionListener();
+  chatSessionListener=onValue(chatRef,snap=>{
     const d=snap.val()||{};
     if(d.status==="closed") statusEl.textContent="Percakapan ditutup";
-    else if(d.adminOnline) statusEl.textContent="Admin online • Anda dapat melanjutkan chat";
-    else statusEl.textContent="AI Quick Reply aktif • Menunggu admin";
+    else if(d.adminOnline) statusEl.textContent="Admin online • Riwayat 7 hari";
+    else statusEl.textContent="AI Quick Reply aktif • Riwayat 7 hari";
   });
-  onValue(ref(db,`chats/${chatId}/messages`),snap=>{
-    messagesEl.innerHTML="";
+
+  if(chatMessageListener) chatMessageListener();
+  chatMessageListener=onValue(ref(db,`chats/${chatId}/messages`),snap=>{
     const data=snap.val()||{};
-    Object.values(data).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)).forEach(m=>{
-      addMessage(messagesEl,m);
-    });
+    const firebaseMessages=Object.values(data)
+      .filter(isRecentMessage)
+      .sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+
+    messagesEl.innerHTML="";
+    firebaseMessages.forEach(m=>addMessage(messagesEl,m));
   });
+
   let first=true;
   onChildAdded(ref(db,`chats/${chatId}/messages`),snap=>{
     if(first){return;}
     const m=snap.val();
+    if(!isRecentMessage(m)) return;
+
     if(m.sender==="admin" && !panel.classList.contains("open")){
       setUnread(unread+1);
-      toastText.textContent=m.text;
-      toast.style.display="block";
-      setTimeout(()=>toast.style.display="none",7000);
+      showReplyNotification("♥ Balasan baru dari Admin",m.text);
     }
   });
   setTimeout(()=>first=false,1000);
@@ -1682,28 +2108,84 @@ logoutBtn.onclick=async()=>{
   }catch(err){ alert("Gagal keluar: "+err.message); }
 };
 
-function renderAdminMessages(convId){
+function showAdminNotification(text){
+  if(!adminToast) return;
+  if(adminToastText) adminToastText.textContent=text || "Ada pesan baru dari pengunjung.";
+  adminToast.style.display="flex";
+  setTimeout(()=>adminToast.style.display="none",8000);
+}
+
+async function purgeAllOldChats(){
+  if(!db) return;
+  try{
+    const snap=await get(ref(db,"chats"));
+    const chats=snap.val()||{};
+    const cutoff=cutoffTime();
+    const ops=[];
+
+    Object.entries(chats).forEach(([id,c])=>{
+      const messages=c?.messages || {};
+      Object.entries(messages).forEach(([mid,m])=>{
+        if(Number(m?.createdAt || 0) < cutoff){
+          ops.push(remove(ref(db,`chats/${id}/messages/${mid}`)));
+        }
+      });
+
+      // Remove an entire chat only when it has no message newer than 7 days.
+      const hasRecent=Object.values(messages).some(isRecentMessage);
+      if(!hasRecent && Number(c?.updatedAt || 0) < cutoff){
+        ops.push(remove(ref(db,`chats/${id}`)));
+      }
+    });
+
+    if(ops.length) await Promise.all(ops);
+  }catch(err){
+    console.warn("Pembersihan chat admin 7 hari gagal:",err);
+  }
+}
+
+async function renderAdminMessages(convId){
   if(unsubscribeMessages) unsubscribeMessages();
   if(!db || !convId){return;}
+  if(adminChatIdentity) adminChatIdentity.textContent="Memuat identitas pengunjung...";
+  try{
+    const chatSnap=await get(ref(db,`chats/${convId}`));
+    const chat=chatSnap.val()||{};
+    if(adminChatIdentity){
+      adminChatIdentity.textContent = chat.identityMode==="anonymous"
+        ? "👤 Pengunjung Anonim • Nama & email tidak dibagikan"
+        : `📩 ${chat.name||"Pengguna"} • ${chat.email||"Email tidak tersedia"} • Dapat dihubungi untuk informasi lanjutan`;
+    }
+  }catch(err){
+    if(adminChatIdentity) adminChatIdentity.textContent="Informasi identitas tidak dapat dimuat.";
+  }
   adminMessages.innerHTML="";
   unsubscribeMessages=onValue(ref(db,`chats/${convId}/messages`),snap=>{
     adminMessages.innerHTML="";
     const data=snap.val()||{};
-    Object.values(data).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)).forEach(m=>addMessage(adminMessages,m));
+    Object.values(data).filter(isRecentMessage).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)).forEach(m=>addMessage(adminMessages,m));
   });
 }
-function loadConversations(){
+async function loadConversations(){
   if(!db) return;
+  await purgeAllOldChats();
+
   onValue(ref(db,"chats"),snap=>{
     convList.innerHTML="";
     const chats=snap.val()||{};
+
     Object.entries(chats)
+      .filter(([id,c])=>{
+        const messages=Object.values(c?.messages || {});
+        return Number(c?.updatedAt || 0)>=cutoffTime() ||
+          messages.some(isRecentMessage);
+      })
       .sort((a,b)=>(b[1].updatedAt||0)-(a[1].updatedAt||0))
       .forEach(([id,c])=>{
         const div=document.createElement("div");
         div.className="da-conv"+(selectedConversation===id?" active":"");
-        div.innerHTML=`<div class="da-conv-name">${esc(c.name||"Pengunjung")}</div>
-          <div class="da-conv-preview">${esc(c.lastMessage||"Belum ada pesan")}</div>`;
+        div.innerHTML=`<div class="da-conv-name">${c.identityMode==="anonymous"?"👤 ":"📩 "}${esc(c.name||"Pengunjung Anonim")}</div>
+          <div class="da-conv-preview">${c.identityMode==="named"&&c.email?esc(c.email)+" • ":""}${esc(c.lastMessage||"Belum ada pesan")}</div>`;
         div.onclick=()=>{
           selectedConversation=id;
           document.querySelectorAll(".da-conv").forEach(x=>x.classList.remove("active"));
@@ -1713,17 +2195,32 @@ function loadConversations(){
         convList.appendChild(div);
       });
   });
+
+  // Keep the admin inbox clean even when it stays open for days.
+  setInterval(purgeAllOldChats,60*60*1000);
 }
+
 adminSend.onclick=async()=>{
   const text=adminInput.value.trim();
   if(!text || !selectedConversation || !db || !isAdmin)return;
   adminInput.value="";
+
   const msg=push(ref(db,`chats/${selectedConversation}/messages`));
-  await set(msg,{sender:"admin",text,createdAt:Date.now()});
+  await set(msg,{
+    sender:"admin",
+    text,
+    createdAt:Date.now()
+  });
+
   await update(ref(db,`chats/${selectedConversation}`),{
-    lastMessage:text,lastSender:"admin",updatedAt:Date.now(),adminOnline:true,status:"open"
+    lastMessage:text,
+    lastSender:"admin",
+    updatedAt:Date.now(),
+    adminOnline:true,
+    status:"open"
   });
 };
+
 adminInput.addEventListener("keydown",e=>{
   if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();adminSend.click();}
 });
@@ -1736,6 +2233,22 @@ if(firebaseConfigured){
       adminDock.style.display="block";
       loadConversations();
       statusEl.textContent="Admin online • Percakapan dapat ditangani admin";
+      let adminChatsInitialLoad=true;
+      onChildAdded(ref(db,"chats"),snap=>{
+        const c=snap.val()||{};
+        if(!adminChatsInitialLoad &&
+           c.lastSender==="visitor" &&
+           Number(c.updatedAt||0)>=cutoffTime()){
+          showAdminNotification(c.lastMessage||"Ada pesan baru dari pengunjung.");
+        }
+      });
+      setTimeout(()=>adminChatsInitialLoad=false,1200);
+      onChildChanged(ref(db,"chats"),snap=>{
+        const c=snap.val()||{};
+        if(c.lastSender==="visitor" && Number(c.updatedAt||0)>=cutoffTime()){
+          showAdminNotification(c.lastMessage||"Ada pesan baru dari pengunjung.");
+        }
+      });
       await update(ref(db,`presence/${user.uid}`),{online:true,email:user.email,updatedAt:Date.now()});
     }else if(user && user.isAnonymous){
       isAdmin=false;
@@ -1743,6 +2256,30 @@ if(firebaseConfigured){
       adminDock.style.display="none";
       await initVisitorRealtime();
     }else{
+      isAdmin=false;
+      adminDock.style.display="none";
+      showAdminLogin();
+      if(!user){
+        try{ await signInAnonymously(auth); }
+        catch(err){
+          console.error("Anonymous sign-in gagal:",err);
+          statusEl.textContent="AI Quick Reply aktif • koneksi Firebase gagal";
+        }
+      }
+    }
+  });
+}else{
+  /* Firebase belum dikonfigurasi: pengunjung tetap mendapat AI lokal. */
+  statusEl.textContent="AI Quick Reply aktif • Firebase belum dikonfigurasi";
+  initVisitorRealtime();
+}
+
+window.addEventListener("beforeunload",()=>{
+  if(auth?.currentUser && db){
+    set(ref(db,`presence/${auth.currentUser.uid}`),{online:false,updatedAt:serverTimestamp()});
+  }
+});
+
       isAdmin=false;
       adminDock.style.display="none";
       showAdminLogin();
