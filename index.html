@@ -409,12 +409,12 @@
 .da-msg.user .da-bubble{background:var(--ink);color:#fff;border-bottom-right-radius:4px}
 .da-msg.bot .da-bubble,.da-msg.admin .da-bubble{background:#fff;color:var(--ink);border:1px solid var(--line);border-bottom-left-radius:4px}
 .da-meta{font-size:9px;opacity:.55;margin-top:4px}
-.da-chat-quick{padding:8px 10px;display:flex;gap:6px;overflow-x:auto;border-top:1px solid var(--line);background:#fff}
-.da-quick{border:1px solid var(--line);background:#fcf5ee;color:var(--ink);border-radius:99px;padding:7px 10px;white-space:nowrap;font-size:11px;cursor:pointer}
+.da-chat-quick{position:relative;z-index:20;padding:8px 10px;display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;border-top:1px solid var(--line);background:#fff;pointer-events:auto;-webkit-overflow-scrolling:touch}
+.da-quick{position:relative;z-index:21;border:1px solid var(--line);background:#fcf5ee;color:var(--ink);border-radius:99px;padding:7px 10px;white-space:nowrap;font-size:11px;cursor:pointer;pointer-events:auto;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .da-quick:hover{background:var(--tab)}
-.da-chat-compose{display:flex;gap:7px;padding:10px;background:#fff;border-top:1px solid var(--line)}
-#da-chat-input{flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:none;font:13px Inter,sans-serif;resize:none;height:42px}
-#da-chat-send{border:0;border-radius:12px;background:var(--accent);color:#fff;width:46px;cursor:pointer;font-size:18px}
+.da-chat-compose{position:relative;z-index:20;display:flex;gap:7px;padding:10px;background:#fff;border-top:1px solid var(--line);pointer-events:auto}
+#da-chat-input{position:relative;z-index:21;flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:none;font:13px Inter,sans-serif;resize:none;height:42px;pointer-events:auto;touch-action:auto}
+#da-chat-send{position:relative;z-index:21;border:0;border-radius:12px;background:var(--accent);color:#fff;width:46px;cursor:pointer;font-size:18px;pointer-events:auto;touch-action:manipulation}
 .da-chat-foot{font-size:9px;color:var(--ink-dim);text-align:center;padding:4px;background:#fff}
 #da-chat-toast{
   position:fixed;right:24px;bottom:100px;z-index:10001;display:none;
@@ -581,7 +581,7 @@
 }
 </style>
 
-</head>
+<style id="da-chat-click-fix">#da-chat-panel{z-index:10000}.da-chat-quick,.da-chat-compose{pointer-events:auto}</style>\n</head>
 <body>
 
 <button class="menu-toggle" id="menuToggle" aria-label="Buka menu">☰</button>
@@ -1559,7 +1559,19 @@ adminOpenBtn.onclick = () => { loginBox.style.display="block"; };
 toast.onclick = openChat;
 
 document.querySelectorAll(".da-quick").forEach(btn=>{
-  btn.onclick=()=>{input.value=btn.dataset.q;sendVisitorMessage();}
+  const useQuickReply = (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    input.value = btn.dataset.q || "";
+    input.focus();
+    // Put the cursor at the end so the visitor can edit the question.
+    try{
+      const end = input.value.length;
+      input.setSelectionRange(end,end);
+    }catch(_){}
+  };
+  btn.addEventListener("click", useQuickReply);
+  btn.addEventListener("touchend", useQuickReply, {passive:false});
 });
 
 /* =========================================================
