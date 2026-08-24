@@ -464,6 +464,9 @@
 .btn-badge:hover{background:var(--accent);transform:translateY(-2px)}
 .btn-badge:disabled{opacity:0.4;cursor:not-allowed;transform:none}
 .btn-badge:disabled:hover{background:var(--ink)}
+.score-note{font-size:0.78rem;color:var(--ink-dim);margin-top:0.9rem;padding-top:0.7rem;border-top:1px dashed var(--line)}
+.score-note .low{color:#c62828;font-weight:700}
+.score-note .ok{color:#2e7d32;font-weight:700}
 
 #da-certificate{display:none}
 .cert-sheet{
@@ -487,6 +490,45 @@
   #da-certificate, #da-certificate *{visibility:visible}
   #da-certificate{display:block;position:absolute;top:0;left:0;width:100%}
 }
+
+/* ===== TEST PRE TEST / POST TEST ===== */
+.da-test-overlay{position:fixed;inset:0;z-index:20000;background:rgba(64,16,34,.58);display:none;align-items:center;justify-content:center;padding:18px}
+.da-test-overlay.open{display:flex}
+.da-test-modal{width:min(820px,100%);max-height:min(92vh,900px);overflow:auto;background:#fff;border-radius:18px;box-shadow:0 25px 80px rgba(64,16,34,.35)}
+.da-test-head{position:sticky;top:0;z-index:2;background:var(--ink);color:#fff;padding:18px 20px;display:flex;align-items:flex-start;gap:12px}
+.da-test-head-main{flex:1}.da-test-type{font:700 11px/1.3 JetBrains Mono,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--tab)}
+.da-test-title{font:700 21px/1.25 Fraunces,serif;margin-top:4px}
+.da-test-subtitle{font-size:12px;opacity:.8;margin-top:4px}
+.da-test-close{border:0;background:transparent;color:#fff;font-size:28px;cursor:pointer;line-height:1}
+.da-test-body{padding:20px}
+.da-test-note{background:var(--bg);border:1px solid var(--line);padding:12px 14px;border-radius:10px;margin-bottom:16px;font-size:13px;color:var(--ink-dim)}
+.da-question{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin:12px 0}
+.da-question.correct{border-left:5px solid #2e7d32}
+.da-question.wrong{border-left:5px solid #c62828}
+.da-question-title{font-weight:700;font-size:14px;margin-bottom:10px}
+.da-option{display:flex;gap:9px;align-items:flex-start;margin:8px 0;font-size:13px;color:var(--ink)}
+.da-option input{margin-top:4px;accent-color:var(--accent)}
+.da-answer{display:none;margin-top:10px;padding:10px 12px;border-radius:8px;background:#f7faf7;border:1px solid #cfe5d2;font-size:12px;color:#245a2b}
+.da-answer.show{display:block}
+.da-test-result{display:none;background:var(--bg);border:2px solid var(--tab);border-radius:12px;padding:15px;margin:16px 0}
+.da-test-result.show{display:block}
+.da-test-score{font:700 24px Fraunces,serif;color:var(--ink)}
+.da-test-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+.da-test-submit,.da-test-reset{border:0;border-radius:9px;padding:11px 15px;font-weight:700;cursor:pointer}
+.da-test-submit{background:var(--ink);color:#fff}.da-test-submit:hover{background:var(--accent)}
+.da-test-reset{background:var(--tab);color:var(--ink)}
+.da-test-submit:disabled{opacity:.45;cursor:not-allowed}
+.test-complete-note{font-size:12px;color:var(--ink-dim);margin-top:8px}
+.badge-stage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin:12px 0 15px}
+.badge-stage{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:11px}
+.badge-stage strong{display:block;font-size:12px;margin-bottom:3px}
+.badge-stage .done{color:#2e7d32;font-weight:700}.badge-stage .pending{color:#c62828;font-weight:700}
+@media(max-width:600px){.da-test-overlay{padding:8px}.da-test-body{padding:12px}.da-test-title{font-size:18px}}
+
+
+.btn-pretest.test-finished,.btn-posttest.test-finished{outline:2px solid rgba(46,125,50,.25)}
+.btn-yt.video-done{background:#2e7d32}
+
 </style>
 </head>
 <body>
@@ -620,14 +662,16 @@
       </div>
 
       <div class="badge-card" id="da-badge-card">
-        <h3>🏅 Badge Kelulusan DalanARSIPARIS</h3>
-        <p class="badge-card-desc">Selesaikan Pre Test, video YouTube, dan Post Test pada seluruh modul secara berurutan untuk membuka badge yang dapat dicetak.</p>
+        <h3>🏆 Sertifikat Kelulusan DalanARSIPARIS</h3>
+        <p class="badge-card-desc">Selesaikan Pre Test, tonton video YouTube, dan Post Test pada seluruh 8 tahapan. Pre Test dan Post Test menggunakan soal yang sama. Sertifikat terbuka jika seluruh rangkaian selesai dan <strong>rata-rata nilai Post Test minimal 80</strong>.</p>
         <div class="badge-progress"><div class="badge-progress-fill" id="da-badge-fill"></div></div>
         <div class="badge-status" id="da-badge-status">0/8 modul selesai</div>
+        <div class="badge-stage-grid" id="da-badge-stages"></div>
+        <div class="score-note" id="da-final-score-note">Syarat sertifikat: seluruh 8 tahapan selesai dan rata-rata Post Test minimal <strong>80</strong>.</div>
         <div class="badge-name-field">
-          <input type="text" id="da-badge-name" placeholder="Nama lengkap untuk dicetak pada badge" maxlength="80">
+          <input type="text" id="da-badge-name" placeholder="Nama lengkap untuk dicetak pada sertifikat" maxlength="80">
         </div>
-        <button class="btn-badge" id="da-badge-print" disabled>🖨️ Cetak Badge</button>
+        <button class="btn-badge" id="da-badge-print" disabled>🖨️ Cetak Sertifikat</button>
       </div>
     </div>
     <footer class="page-footer">Alur jalan kehidupan arsip dinamis.</footer>
@@ -647,9 +691,9 @@
           <h3>Naskah Dinas Masuk</h3>
           <p>Pengurusan naskah dinas masuk meliputi kegiatan yang dilaksanakan oleh unit kearsipan dan tata usaha pengolah.</p>
           <div class="card-actions">
-<a class="btn-pretest" href="https://forms.gle/UL9y4kw8WaQaYBDB6" target="_blank" rel="noopener">📝 Pre Test</a>
-<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener">▶ YouTube</a>
-<a class="btn-posttest" href="https://forms.gle/Lp7F2b6ALsRv4xZ87" target="_blank" rel="noopener">✅ Post Test</a>
+<a class="btn-pretest" href="#" data-test="pre" data-stage="naskah-masuk">📝 Pre Test</a>
+<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener" data-stage="naskah-masuk">▶ YouTube</a>
+<a class="btn-posttest" href="#" data-test="post" data-stage="naskah-masuk">✅ Post Test</a>
           </div>
         </div>
         <div class="card">
@@ -657,9 +701,9 @@
           <h3>Naskah Dinas Keluar</h3>
           <p>Pengurusan naskah dinas keluar meliputi kegiatan yang dilaksanakan oleh unit kearsipan dan tata usaha pengolah.</p>
           <div class="card-actions">
-<a class="btn-pretest" href="https://forms.gle/KdkTWPA8wyv2sJg98" target="_blank" rel="noopener">📝 Pre Test</a>
-<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener">▶ YouTube</a>
-<a class="btn-posttest" href="https://forms.gle/uomuZiqnTsrGUz4x9" target="_blank" rel="noopener">✅ Post Test</a>
+<a class="btn-pretest" href="#" data-test="pre" data-stage="naskah-keluar">📝 Pre Test</a>
+<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener" data-stage="naskah-keluar">▶ YouTube</a>
+<a class="btn-posttest" href="#" data-test="post" data-stage="naskah-keluar">✅ Post Test</a>
           </div>
         </div>
       </div>
@@ -680,9 +724,9 @@
           <h3>Penemuan Kembali Arsip</h3>
           <p>Cara penemuan kembali Arsip dapat dilakukan menggunakan indeks, kode klasifikasi, no urut, asal surat, tanggal surat, dan nomer surat.</p>
           <div class="card-actions">
-<a class="btn-pretest" href="https://forms.gle/5CUuUpQmazXLLGvj7" target="_blank" rel="noopener">📝 Pre Test</a>
-<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener">▶ YouTube</a>
-<a class="btn-posttest" href="https://forms.gle/gADgzYXQavjoEL327" target="_blank" rel="noopener">✅ Post Test</a>
+<a class="btn-pretest" href="#" data-test="pre" data-stage="penemuan-kembali">📝 Pre Test</a>
+<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener" data-stage="penemuan-kembali">▶ YouTube</a>
+<a class="btn-posttest" href="#" data-test="post" data-stage="penemuan-kembali">✅ Post Test</a>
           </div>
         </div>
         <div class="card">
@@ -690,9 +734,9 @@
           <h3>Peminjaman Arsip</h3>
           <p>Peminjaman arsip kepada pengguna yang berwenang melalui prosedur yang telah ditetapkan, disertai pencatatan administrasi untuk menjamin keamanan serta memudahkan pengendalian keberadaan arsip.</p>
           <div class="card-actions">
-<a class="btn-pretest" href="https://forms.gle/7FLsBYjnLQbWDYkx8" target="_blank" rel="noopener">📝 Pre Test</a>
-<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener">▶ YouTube</a>
-<a class="btn-posttest" href="https://forms.gle/zGmCP8VMtYibdXVp8" target="_blank" rel="noopener">✅ Post Test</a>
+<a class="btn-pretest" href="#" data-test="pre" data-stage="peminjaman">📝 Pre Test</a>
+<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener" data-stage="peminjaman">▶ YouTube</a>
+<a class="btn-posttest" href="#" data-test="post" data-stage="peminjaman">✅ Post Test</a>
           </div>
         </div>
       </div>
@@ -713,9 +757,9 @@
           <h3>Pemberkasan Arsip</h3>
           <p>Pemberkasan arsip merupakan proses menata arsip ke dalam satu berkas berdasarkan kesamaan masalah, fungsi, atau kegiatan sesuai klasifikasi arsip.</p>
           <div class="card-actions">
-<a class="btn-pretest" href="https://forms.gle/iHgbFx6skMVNyD6H8" target="_blank" rel="noopener">📝 Pre Test</a>
-<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener">▶ YouTube</a>
-<a class="btn-posttest" href="https://forms.gle/DhoXp7PL4RUCYnss8" target="_blank" rel="noopener">✅ Post Test</a>
+<a class="btn-pretest" href="#" data-test="pre" data-stage="pemberkasan">📝 Pre Test</a>
+<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener" data-stage="pemberkasan">▶ YouTube</a>
+<a class="btn-posttest" href="#" data-test="post" data-stage="pemberkasan">✅ Post Test</a>
           </div>
         </div>
         <div class="card">
@@ -723,9 +767,9 @@
           <h3>Penyimpanan Arsip</h3>
           <p>Penyimpanan arsip dilakukan oleh unit pengolah Satuan Kerja Perangkat Daerah (SKPD). </p>
           <div class="card-actions">
-<a class="btn-pretest" href="https://forms.gle/MPdRHFGs37pxnj2b7" target="_blank" rel="noopener">📝 Pre Test</a>
-<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener">▶ YouTube</a>
-<a class="btn-posttest" href="https://forms.gle/xnbWZtjqDK9wBAsp8" target="_blank" rel="noopener">✅ Post Test</a>
+<a class="btn-pretest" href="#" data-test="pre" data-stage="penyimpanan">📝 Pre Test</a>
+<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener" data-stage="penyimpanan">▶ YouTube</a>
+<a class="btn-posttest" href="#" data-test="post" data-stage="penyimpanan">✅ Post Test</a>
           </div>
         </div>
       </div>
@@ -746,9 +790,9 @@
           <h3>Pemindahan Arsip</h3>
           <p>Pemindahan arsip dilakukan terhadap arsip inaktif dari unit pengolah ke unit kearsipan.</p>
           <div class="card-actions">
-<a class="btn-pretest" href="https://forms.gle/52o4f7LLmUvbC7SMA" target="_blank" rel="noopener">📝 Pre Test</a>
-<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener">▶ YouTube</a>
-<a class="btn-posttest" href="https://forms.gle/QTVxLnBRHntFxAbJ7" target="_blank" rel="noopener">✅ Post Test</a>
+<a class="btn-pretest" href="#" data-test="pre" data-stage="pemindahan">📝 Pre Test</a>
+<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener" data-stage="pemindahan">▶ YouTube</a>
+<a class="btn-posttest" href="#" data-test="post" data-stage="pemindahan">✅ Post Test</a>
           </div>
         </div>
         <div class="card">
@@ -756,9 +800,9 @@
           <h3>Pemusnahan Arsip</h3>
           <p>Pemusnahan arsip dilakukan terhadap arsip yang dilakukan terhadap arsip yang tidak memiliki nilai guna.</p>
           <div class="card-actions">
-<a class="btn-pretest" href="https://forms.gle/THRBpzzjS2JYQuVm8" target="_blank" rel="noopener">📝 Pre Test</a>
-<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener">▶ YouTube</a>
-<a class="btn-posttest" href="https://forms.gle/kE7rcumJt7ivD9zN7" target="_blank" rel="noopener">✅ Post Test</a>
+<a class="btn-pretest" href="#" data-test="pre" data-stage="pemusnahan">📝 Pre Test</a>
+<a class="btn-yt" href="https://youtube.com/@dalanarsiparis?si=zh2HAkf5mkA2YyOt" target="_blank" rel="noopener" data-stage="pemusnahan">▶ YouTube</a>
+<a class="btn-posttest" href="#" data-test="post" data-stage="pemusnahan">✅ Post Test</a>
           </div>
         </div>
       </div>
@@ -812,14 +856,42 @@
 
 </main>
 
+
+<!-- TESTARSIPARIS — PRE TEST / POST TEST INTERNAL -->
+<section id="da-test-overlay" class="da-test-overlay" aria-hidden="true">
+  <div class="da-test-modal" role="dialog" aria-modal="true" aria-labelledby="da-test-title">
+    <header class="da-test-head">
+      <div class="da-test-head-main">
+        <div class="da-test-type" id="da-test-type">PRE TEST</div>
+        <div class="da-test-title" id="da-test-title">Tes</div>
+        <div class="da-test-subtitle">5 soal • 20 poin per jawaban benar • 0 poin jika salah</div>
+      </div>
+      <button class="da-test-close" id="da-test-close" aria-label="Tutup">×</button>
+    </header>
+    <div class="da-test-body">
+      <div class="da-test-note" id="da-test-note"></div>
+      <form id="da-test-form"></form>
+      <div class="da-test-result" id="da-test-result">
+        <div class="da-test-score" id="da-test-score">Nilai: 0</div>
+        <div id="da-test-result-text"></div>
+      </div>
+      <div class="da-test-actions">
+        <button class="da-test-submit" id="da-test-submit" type="button">Submit Jawaban</button>
+        <button class="da-test-reset" id="da-test-reset" type="button">Tutup</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <div id="da-certificate">
   <div class="cert-sheet">
     <div class="cert-eyebrow">Media Pembelajaran Terpadu Arsip Dinamis</div>
-    <div class="cert-title">Badge Kelulusan</div>
+    <div class="cert-title">Sertifikat Kelulusan</div>
     <div class="cert-sub">DalanARSIPARIS</div>
     <div class="cert-name" id="da-cert-name">Nama Peserta</div>
-    <p class="cert-desc">Telah menyelesaikan seluruh rangkaian pembelajaran Jalan Hidup Arsip Dinamis — meliputi Penciptaan, Penggunaan, Pemeliharaan, dan Penyusutan Arsip — beserta Pre Test, video pembelajaran, dan Post Test pada setiap modul secara berurutan.</p>
-    <div class="cert-footer">
+    <p class="cert-desc">Telah menyelesaikan seluruh rangkaian pembelajaran Jalan Hidup Arsip Dinamis — meliputi Penciptaan, Penggunaan, Pemeliharaan, dan Penyusutan Arsip — beserta Pre Test, video pembelajaran, dan Post Test pada 8 tahapan pembelajaran.</p>
+    <div id="da-cert-score" style="font-weight:700;color:var(--ink);margin-bottom:1.2rem">Rata-rata Post Test: 0</div>
+      <div class="cert-footer">
       <div class="cert-date" id="da-cert-date"></div>
       <div class="cert-sign">
         <div class="cert-sign-line">DalanARSIPARIS</div>
@@ -860,91 +932,330 @@
 </script>
 
 <script>
-  // ===== Badge kelulusan: progres & cetak =====
-  const badgeFill = document.getElementById('da-badge-fill');
-  const badgeStatus = document.getElementById('da-badge-status');
-  const badgeNameInput = document.getElementById('da-badge-name');
-  const badgePrintBtn = document.getElementById('da-badge-print');
-  const certName = document.getElementById('da-cert-name');
-  const certDate = document.getElementById('da-cert-date');
-  const BADGE_NAME_KEY = 'dalanarsiparis_badge_name';
+/* =========================================================
+   TESTARSIPARIS — 8 TAHAP x 5 SOAL
+   Pre Test dan Post Test per tahap memakai soal yang sama.
+   Nilai: benar = 20, salah = 0.
+   Data disimpan di localStorage agar tetap tersedia saat reload.
+   ========================================================= */
+const TESTS = {
+  "naskah-masuk": {
+    title:"Naskah Dinas Masuk",
+    questions:[
+      {q:"Pengurusan naskah dinas masuk pada DalanARSIPARIS merupakan bagian dari tahapan apa?",o:["Penciptaan Arsip","Penggunaan Arsip","Pemeliharaan Arsip","Penyusutan Arsip"],a:0,e:"Naskah Dinas Masuk ditempatkan sebagai bagian dari Penciptaan Arsip."},
+      {q:"Pengurusan naskah dinas masuk dilaksanakan oleh siapa menurut materi di website?",o:["Unit kearsipan dan tata usaha pengolah","Hanya pengguna arsip","Hanya unit kearsipan","Hanya pimpinan"],a:0,e:"Materi website menyebut unit kearsipan dan tata usaha pengolah."},
+      {q:"Naskah dinas masuk merupakan materi pada kode tahapan apa?",o:["ARS-01","ARS-02","ARS-03","ARS-04"],a:0,e:"Naskah Dinas Masuk berada pada ARS-01 Penciptaan Arsip."},
+      {q:"Pada alur DalanARSIPARIS, Naskah Dinas Masuk dipelajari bersama materi apa dalam tahapan Penciptaan Arsip?",o:["Naskah Dinas Keluar","Peminjaman Arsip","Penyimpanan Arsip","Pemusnahan Arsip"],a:0,e:"Pasangan materi pada Penciptaan Arsip adalah Naskah Dinas Masuk dan Naskah Dinas Keluar."},
+      {q:"Tujuan utama mempelajari pengurusan naskah dinas masuk dalam media ini adalah memahami kegiatan pengelolaan pada bagian apa?",o:["Penciptaan arsip","Penyusutan arsip","Pemusnahan arsip","Peminjaman arsip"],a:0,e:"Website menempatkan pengurusan naskah dinas masuk sebagai bagian dari penciptaan arsip."}
+    ]
+  },
+  "naskah-keluar": {
+    title:"Naskah Dinas Keluar",
+    questions:[
+      {q:"Pengurusan naskah dinas keluar pada DalanARSIPARIS merupakan bagian dari tahapan apa?",o:["Penciptaan Arsip","Penggunaan Arsip","Pemeliharaan Arsip","Penyusutan Arsip"],a:0,e:"Naskah Dinas Keluar ditempatkan sebagai bagian dari Penciptaan Arsip."},
+      {q:"Pengurusan naskah dinas keluar dilaksanakan oleh siapa menurut materi website?",o:["Unit kearsipan dan tata usaha pengolah","Hanya pengguna arsip","Hanya unit kearsipan","Hanya pihak luar"],a:0,e:"Materi website menyebut unit kearsipan dan tata usaha pengolah."},
+      {q:"Naskah Dinas Keluar berada pada kode tahapan apa?",o:["ARS-01","ARS-02","ARS-03","ARS-04"],a:0,e:"Naskah Dinas Keluar berada pada ARS-01 Penciptaan Arsip."},
+      {q:"Naskah Dinas Keluar dipelajari bersama materi apa dalam tahapan Penciptaan Arsip?",o:["Naskah Dinas Masuk","Penemuan Kembali Arsip","Pemberkasan Arsip","Pemindahan Arsip"],a:0,e:"Pasangan materi pada Penciptaan Arsip adalah Naskah Dinas Masuk dan Naskah Dinas Keluar."},
+      {q:"Dalam alur DalanARSIPARIS, pengurusan naskah dinas keluar termasuk kegiatan pada tahap awal jalan hidup arsip, yaitu?",o:["Penciptaan Arsip","Penggunaan Arsip","Pemeliharaan Arsip","Penyusutan Arsip"],a:0,e:"Penciptaan Arsip merupakan titik awal jalan hidup arsip pada website."}
+    ]
+  },
+  "penemuan-kembali": {
+    title:"Penemuan Kembali Arsip",
+    questions:[
+      {q:"Penemuan kembali arsip termasuk dalam tahapan apa?",o:["Penggunaan Arsip","Penciptaan Arsip","Pemeliharaan Arsip","Penyusutan Arsip"],a:0,e:"Penemuan Kembali Arsip berada pada ARS-02 Penggunaan Arsip."},
+      {q:"Salah satu sarana yang dapat digunakan untuk penemuan kembali arsip adalah?",o:["Indeks","Warna dinding","Ukuran ruangan","Nama gedung"],a:0,e:"Website menyebut indeks sebagai salah satu sarana penemuan kembali."},
+      {q:"Selain indeks, penemuan kembali arsip dapat menggunakan apa?",o:["Kode klasifikasi","Nomor telepon pribadi","Nomor rekening","Kode pos"],a:0,e:"Kode klasifikasi disebut secara langsung dalam materi website."},
+      {q:"Manakah yang juga disebut sebagai dasar penemuan kembali arsip pada website?",o:["Nomor urut, asal surat, tanggal surat, dan nomor surat","Warna map dan ukuran meja","Nama petugas dan alamat rumah","Jumlah ruangan dan luas gedung"],a:0,e:"Materi menyebut nomor urut, asal surat, tanggal surat, dan nomor surat."},
+      {q:"Penemuan Kembali Arsip dipelajari bersama tahapan apa pada alur website?",o:["Peminjaman Arsip","Naskah Dinas Keluar","Penyimpanan Arsip","Pemusnahan Arsip"],a:0,e:"Penemuan Kembali Arsip dan Peminjaman Arsip merupakan dua materi pada Penggunaan Arsip."}
+    ]
+  },
+  "peminjaman": {
+    title:"Peminjaman Arsip",
+    questions:[
+      {q:"Peminjaman arsip termasuk dalam tahapan apa?",o:["Penggunaan Arsip","Penciptaan Arsip","Pemeliharaan Arsip","Penyusutan Arsip"],a:0,e:"Peminjaman Arsip berada pada ARS-02 Penggunaan Arsip."},
+      {q:"Peminjaman arsip diberikan kepada siapa?",o:["Pengguna yang berwenang","Semua orang tanpa prosedur","Hanya pembuat arsip","Hanya petugas kebersihan"],a:0,e:"Website menyebut peminjaman dilakukan kepada pengguna yang berwenang."},
+      {q:"Peminjaman arsip dilakukan melalui apa?",o:["Prosedur yang telah ditetapkan","Permintaan lisan tanpa pencatatan","Media sosial pribadi","Pengambilan langsung tanpa aturan"],a:0,e:"Materi menyebut prosedur yang telah ditetapkan."},
+      {q:"Mengapa peminjaman arsip disertai pencatatan administrasi?",o:["Untuk menjamin keamanan dan memudahkan pengendalian keberadaan arsip","Untuk menghapus arsip","Untuk mengganti klasifikasi arsip","Untuk memperbanyak arsip"],a:0,e:"Pencatatan administrasi ditujukan untuk keamanan dan pengendalian keberadaan arsip."},
+      {q:"Peminjaman Arsip dipelajari bersama materi apa?",o:["Penemuan Kembali Arsip","Naskah Dinas Masuk","Pemberkasan Arsip","Pemindahan Arsip"],a:0,e:"Pada ARS-02, materi yang berpasangan adalah Penemuan Kembali Arsip dan Peminjaman Arsip."}
+    ]
+  },
+  "pemberkasan": {
+    title:"Pemberkasan Arsip",
+    questions:[
+      {q:"Pemberkasan arsip termasuk dalam tahapan apa?",o:["Pemeliharaan Arsip","Penggunaan Arsip","Penciptaan Arsip","Penyusutan Arsip"],a:0,e:"Pemberkasan Arsip berada pada ARS-03 Pemeliharaan Arsip."},
+      {q:"Pemberkasan arsip merupakan proses menata arsip ke dalam apa?",o:["Satu berkas","Beberapa ruangan acak","Kotak tanpa klasifikasi","Daftar hadir"],a:0,e:"Website mendefinisikan pemberkasan sebagai proses menata arsip ke dalam satu berkas."},
+      {q:"Pengelompokan dalam pemberkasan didasarkan pada apa?",o:["Kesamaan masalah, fungsi, atau kegiatan","Warna sampul saja","Ukuran ruangan","Nama petugas"],a:0,e:"Website menyebut kesamaan masalah, fungsi, atau kegiatan."},
+      {q:"Pemberkasan arsip dilakukan sesuai apa?",o:["Klasifikasi arsip","Warna gedung","Urutan nama petugas","Jam kerja"],a:0,e:"Materi secara eksplisit menyebut sesuai klasifikasi arsip."},
+      {q:"Pemberkasan Arsip dipelajari bersama materi apa pada Pemeliharaan Arsip?",o:["Penyimpanan Arsip","Peminjaman Arsip","Naskah Dinas Keluar","Pemusnahan Arsip"],a:0,e:"Pada ARS-03, materi pasangannya adalah Pemberkasan Arsip dan Penyimpanan Arsip."}
+    ]
+  },
+  "penyimpanan": {
+    title:"Penyimpanan Arsip",
+    questions:[
+      {q:"Penyimpanan arsip termasuk dalam tahapan apa?",o:["Pemeliharaan Arsip","Penggunaan Arsip","Penciptaan Arsip","Penyusutan Arsip"],a:0,e:"Penyimpanan Arsip berada pada ARS-03 Pemeliharaan Arsip."},
+      {q:"Menurut website, penyimpanan arsip dilakukan oleh siapa?",o:["Unit pengolah SKPD","Hanya pengguna arsip","Hanya pihak luar SKPD","Hanya pengunjung"],a:0,e:"Website menyebut penyimpanan arsip dilakukan oleh unit pengolah Satuan Kerja Perangkat Daerah (SKPD)."},
+      {q:"SKPD dalam materi website merupakan singkatan dari?",o:["Satuan Kerja Perangkat Daerah","Sistem Kearsipan Perangkat Data","Satuan Klasifikasi Pengelolaan Dokumen","Sistem Kerja Pengolah Data"],a:0,e:"Website menuliskan Satuan Kerja Perangkat Daerah (SKPD)."},
+      {q:"Penyimpanan Arsip merupakan bagian dari tahapan yang fokus menjaga kondisi arsip agar tetap bagaimana?",o:["Utuh, aman, mudah diakses, dan terlindungi","Selalu dimusnahkan","Tidak boleh diakses","Dipindahkan setiap hari"],a:0,e:"Deskripsi Pemeliharaan Arsip menekankan kondisi arsip tetap utuh, aman, mudah diakses, dan terlindungi."},
+      {q:"Penyimpanan Arsip dipelajari bersama materi apa?",o:["Pemberkasan Arsip","Peminjaman Arsip","Naskah Dinas Masuk","Pemindahan Arsip"],a:0,e:"Pada ARS-03, materi pasangannya adalah Pemberkasan Arsip."}
+    ]
+  },
+  "pemindahan": {
+    title:"Pemindahan Arsip",
+    questions:[
+      {q:"Pemindahan arsip termasuk dalam tahapan apa?",o:["Penyusutan Arsip","Pemeliharaan Arsip","Penggunaan Arsip","Penciptaan Arsip"],a:0,e:"Pemindahan Arsip berada pada ARS-04 Penyusutan Arsip."},
+      {q:"Pemindahan dilakukan terhadap arsip apa?",o:["Arsip inaktif","Semua arsip aktif tanpa pengecualian","Arsip yang baru dibuat","Arsip yang akan dipinjam"],a:0,e:"Website menyebut pemindahan dilakukan terhadap arsip inaktif."},
+      {q:"Arsip inaktif dipindahkan dari mana?",o:["Unit pengolah","Unit kearsipan ke pengguna","Ruang tamu","Pihak luar"],a:0,e:"Materi menyebut pemindahan arsip inaktif dari unit pengolah."},
+      {q:"Arsip inaktif dipindahkan ke mana?",o:["Unit kearsipan","Unit pengolah lain tanpa prosedur","Ruang pelayanan","Pihak luar"],a:0,e:"Website menyebut tujuan pemindahan adalah unit kearsipan."},
+      {q:"Salah satu tujuan penyusutan arsip pada website adalah?",o:["Menghemat tempat penyimpanan dan biaya","Menambah arsip tanpa batas","Menghilangkan seluruh arsip","Mengurangi akses terhadap arsip"],a:0,e:"Website menyebut penghematan tempat penyimpanan dan biaya sebagai tujuan penyusutan."}
+    ]
+  },
+  "pemusnahan": {
+    title:"Pemusnahan Arsip",
+    questions:[
+      {q:"Pemusnahan arsip termasuk dalam tahapan apa?",o:["Penyusutan Arsip","Pemeliharaan Arsip","Penggunaan Arsip","Penciptaan Arsip"],a:0,e:"Pemusnahan Arsip berada pada ARS-04 Penyusutan Arsip."},
+      {q:"Pemusnahan arsip dilakukan terhadap arsip yang bagaimana menurut deskripsi website?",o:["Tidak memiliki nilai guna","Baru dibuat","Sedang sering digunakan","Masih diperlukan untuk pelayanan"],a:0,e:"Website menyebut pemusnahan dilakukan terhadap arsip yang tidak memiliki nilai guna."},
+      {q:"Penyusutan arsip dilakukan oleh siapa menurut website?",o:["Tata Usaha Pengolah","Semua pengunjung","Pihak luar","Pengguna arsip tanpa kewenangan"],a:0,e:"Deskripsi ARS-04 menyebut penyusutan dilakukan oleh Tata Usaha Pengolah."},
+      {q:"Pemusnahan Arsip merupakan pasangan materi apa pada ARS-04?",o:["Pemindahan Arsip","Pemberkasan Arsip","Peminjaman Arsip","Naskah Dinas Masuk"],a:0,e:"Pada ARS-04, materi yang berpasangan adalah Pemindahan Arsip dan Pemusnahan Arsip."},
+      {q:"Salah satu tujuan penyusutan arsip yang dicantumkan website adalah menghemat waktu dalam usaha apa?",o:["Penemuan kembali arsip yang disimpan","Membuat naskah dinas","Membuat sertifikat","Mengirim email"],a:0,e:"Website menyebut penghematan waktu dalam usaha penemuan kembali arsip yang disimpan."}
+    ]
+  }
+};
 
-  const moduleGroups = document.querySelectorAll('.card-actions');
+const TEST_ORDER = Object.keys(TESTS);
+const TEST_KEYS = {
+  naskahMasuk:"naskah-masuk", naskahKeluar:"naskah-keluar", penemuanKembali:"penemuan-kembali",
+  peminjaman:"peminjaman", pemberkasan:"pemberkasan", penyimpanan:"penyimpanan",
+  pemindahan:"pemindahan", pemusnahan:"pemusnahan"
+};
+const MIN_FINAL = 80;
+const testOverlay = document.getElementById("da-test-overlay");
+const testForm = document.getElementById("da-test-form");
+const testType = document.getElementById("da-test-type");
+const testTitle = document.getElementById("da-test-title");
+const testNote = document.getElementById("da-test-note");
+const testResult = document.getElementById("da-test-result");
+const testScore = document.getElementById("da-test-score");
+const testResultText = document.getElementById("da-test-result-text");
+const testSubmit = document.getElementById("da-test-submit");
+const testReset = document.getElementById("da-test-reset");
+const testClose = document.getElementById("da-test-close");
 
-  function updateBadgeProgress(){
-    let done = 0;
-    moduleGroups.forEach(actions => {
-      const preBtn = actions.querySelector('.btn-pretest');
-      const module = preBtn.getAttribute('href');
-      const preDone  = localStorage.getItem('preTestDone_' + module) === 'true';
-      const ytDone   = localStorage.getItem('youtubeDone_' + module) === 'true';
-      const postDone = localStorage.getItem('postTestDone_' + module) === 'true';
-      if(preDone && ytDone && postDone) done++;
-    });
-    const total = moduleGroups.length;
-    badgeFill.style.width = (total ? Math.round((done / total) * 100) : 0) + '%';
-    badgeStatus.textContent = `${done}/${total} modul selesai`;
-    const complete = done === total;
-    badgePrintBtn.disabled = !complete || !badgeNameInput.value.trim();
+let activeTestStage = null;
+let activeTestType = null;
+let activeSubmitted = false;
+
+function storageKey(type, stage){ return `dalanarsiparis_${type}_${stage}`; }
+function getResult(type, stage){
+  try { return JSON.parse(localStorage.getItem(storageKey(type, stage)) || "null"); }
+  catch(e){ return null; }
+}
+function saveResult(type, stage, data){
+  localStorage.setItem(storageKey(type, stage), JSON.stringify(data));
+}
+function isVideoDone(stage){ return localStorage.getItem(`youtubeDone_stage_${stage}`) === "true"; }
+
+function renderTest(stage, type){
+  const data = TESTS[stage];
+  if(!data) return;
+  activeTestStage = stage;
+  activeTestType = type;
+  activeSubmitted = false;
+  testType.textContent = type === "pre" ? "PRE TEST" : "POST TEST";
+  testTitle.textContent = data.title;
+  testNote.innerHTML = type === "pre"
+    ? "Jawablah 5 soal untuk mengetahui pemahaman awal sebelum menonton video. Setiap jawaban benar bernilai 20 dan jawaban salah bernilai 0."
+    : "Jawablah 5 soal yang sama dengan Pre Test setelah menonton video. Setelah submit, kunci jawaban dan pembahasan singkat akan ditampilkan.";
+  testResult.classList.remove("show");
+  testForm.innerHTML = data.questions.map((item,i)=>`
+    <div class="da-question" id="da-q-${i}">
+      <div class="da-question-title">${i+1}. ${item.q}</div>
+      ${item.o.map((opt,j)=>({opt,j})).sort(()=>Math.random()-0.5).map((itemOpt,j)=>`
+        <label class="da-option">
+          <input type="radio" name="q${i}" value="${itemOpt.j}">
+          <span><strong>${String.fromCharCode(65+j)}.</strong> ${itemOpt.opt}</span>
+        </label>`).join("")}
+      <div class="da-answer" id="da-a-${i}"></div>
+    </div>`).join("");
+  testSubmit.disabled = false;
+  testOverlay.classList.add("open");
+  testOverlay.setAttribute("aria-hidden","false");
+}
+
+function closeTest(){
+  testOverlay.classList.remove("open");
+  testOverlay.setAttribute("aria-hidden","true");
+  activeTestStage = null;
+  activeTestType = null;
+}
+
+function submitTest(){
+  if(!activeTestStage || !activeTestType || activeSubmitted) return;
+  const questions = TESTS[activeTestStage].questions;
+  const answers = [];
+  let score = 0;
+  let unanswered = 0;
+
+  questions.forEach((item,i)=>{
+    const selected = testForm.querySelector(`input[name="q${i}"]:checked`);
+    const val = selected ? Number(selected.value) : null;
+    answers.push(val);
+    if(val === null) unanswered++;
+    if(val === item.a) score += 20;
+  });
+
+  if(unanswered){
+    alert(`Masih ada ${unanswered} soal yang belum dijawab. Silakan lengkapi semua jawaban.`);
+    return;
   }
 
-  badgeNameInput.value = localStorage.getItem(BADGE_NAME_KEY) || '';
-  badgeNameInput.addEventListener('input', () => {
-    localStorage.setItem(BADGE_NAME_KEY, badgeNameInput.value);
-    updateBadgeProgress();
+  const result = {score, answers, submittedAt:new Date().toISOString()};
+  saveResult(activeTestType, activeTestStage, result);
+  activeSubmitted = true;
+  testSubmit.disabled = true;
+
+  questions.forEach((item,i)=>{
+    const box = document.getElementById(`da-q-${i}`);
+    const ans = document.getElementById(`da-a-${i}`);
+    const correct = answers[i] === item.a;
+    box.classList.toggle("correct", correct);
+    box.classList.toggle("wrong", !correct);
+    ans.classList.add("show");
+    const correctInput = testForm.querySelector(`input[name="q${i}"][value="${item.a}"]`);
+    const correctLetter = correctInput ? correctInput.closest(".da-option").querySelector("strong").textContent.replace(".", "") : String.fromCharCode(65+item.a);
+    ans.innerHTML = `<strong>${correct ? "✓ Benar" : "✗ Salah"}</strong> — Kunci: <strong>${correctLetter}. ${item.o[item.a]}</strong><br>${item.e}`;
   });
-  badgePrintBtn.addEventListener('click', () => {
-    const name = badgeNameInput.value.trim();
-    if(!name) return;
-    certName.textContent = name;
-    certDate.textContent = new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
-    window.print();
+
+  testScore.textContent = `Nilai: ${score}`;
+  testResult.classList.add("show");
+  testResultText.innerHTML = score >= 80
+    ? "Hasil memenuhi nilai minimal 80 untuk tahapan ini."
+    : "Nilai belum mencapai 80. Nilai tetap tersimpan sebagai hasil tes. Silakan pelajari video dan materi sebelum melanjutkan.";
+  updateTestUI();
+}
+
+function markVideo(stage){
+  localStorage.setItem(`youtubeDone_stage_${stage}`,"true");
+  updateTestUI();
+}
+
+function updateTestUI(){
+  document.querySelectorAll("[data-test]").forEach(btn=>{
+    const stage = btn.dataset.stage;
+    const type = btn.dataset.test;
+    const result = getResult(type,stage);
+    btn.classList.toggle("test-finished", !!result);
+    if(result) btn.innerHTML = type === "pre" ? `📝 Pre Test (${result.score})` : `✅ Post Test (${result.score})`;
   });
 
-  // Kunci berurutan: Pre Test -> YouTube -> Post Test (per modul, disimpan di localStorage)
-  moduleGroups.forEach(actions => {
-    const preBtn = actions.querySelector('.btn-pretest');
-    const ytBtn = actions.querySelector('.btn-yt');
-    const postBtn = actions.querySelector('.btn-posttest');
-    const module = preBtn.getAttribute('href'); // dipakai sebagai kunci unik per modul
-
-    function refresh(){
-      const preDone = localStorage.getItem('preTestDone_' + module) === 'true';
-      const ytDone  = localStorage.getItem('youtubeDone_' + module) === 'true';
-      ytBtn.classList.toggle('locked', !preDone);
-      postBtn.classList.toggle('locked', !ytDone);
-      updateBadgeProgress();
-    }
-
-    preBtn.addEventListener('click', () => {
-      localStorage.setItem('preTestDone_' + module, 'true');
-      refresh();
-    });
-
-    ytBtn.addEventListener('click', (e) => {
-      if (ytBtn.classList.contains('locked')){
-        e.preventDefault();
-        alert('Selesaikan Pre Test terlebih dahulu.');
-        return;
-      }
-      localStorage.setItem('youtubeDone_' + module, 'true');
-      refresh();
-    });
-
-    postBtn.addEventListener('click', (e) => {
-      if (postBtn.classList.contains('locked')){
-        e.preventDefault();
-        alert('Tonton video YouTube terlebih dahulu sebelum mengerjakan Post Test.');
-        return;
-      }
-      localStorage.setItem('postTestDone_' + module, 'true');
-      refresh();
-    });
-
-    refresh();
+  document.querySelectorAll(".btn-yt[data-stage]").forEach(btn=>{
+    const stage = btn.dataset.stage;
+    const done = isVideoDone(stage);
+    btn.classList.toggle("video-done",done);
+    btn.innerHTML = done ? "▶ Video Selesai" : "▶ YouTube";
   });
 
   updateBadgeProgress();
+}
+
+function overallStats(){
+  const preScores=[], postScores=[];
+  TEST_ORDER.forEach(stage=>{
+    const pre=getResult("pre",stage), post=getResult("post",stage);
+    if(pre) preScores.push(pre.score);
+    if(post) postScores.push(post.score);
+  });
+  const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
+  return {pre:avg(preScores), post:avg(postScores), preCount:preScores.length, postCount:postScores.length};
+}
+
+function updateBadgeProgress(){
+  const badgeFill = document.getElementById("da-badge-fill");
+  const badgeStatus = document.getElementById("da-badge-status");
+  const badgeNameInput = document.getElementById("da-badge-name");
+  const badgePrintBtn = document.getElementById("da-badge-print");
+
+  let completed=0;
+  const rows = TEST_ORDER.map(stage=>{
+    const pre=getResult("pre",stage), post=getResult("post",stage), video=isVideoDone(stage);
+    const done=!!pre && !!post && video;
+    if(done) completed++;
+    return {stage,pre,post,video,done};
+  });
+
+  const stats=overallStats();
+  const allDone = completed === TEST_ORDER.length;
+  const eligible = allDone && stats.post >= MIN_FINAL;
+
+  badgeFill.style.width = `${Math.round((completed/TEST_ORDER.length)*100)}%`;
+  badgeStatus.innerHTML = `${completed}/${TEST_ORDER.length} tahapan lengkap • Rata-rata Pre Test: <strong>${stats.pre}</strong> • Rata-rata Post Test: <strong>${stats.post}</strong>`;
+
+  const grid = document.getElementById("da-badge-stages");
+  if(grid){
+    grid.innerHTML = rows.map(r=>`
+      <div class="badge-stage">
+        <strong>${TESTS[r.stage].title}</strong>
+        <span>${r.pre ? `Pre: ${r.pre.score}` : "Pre: —"} • ${r.post ? `Post: ${r.post.score}` : "Post: —"}</span><br>
+        <span class="${r.done ? "done":"pending"}">${r.done ? "✓ Lengkap" : "Belum lengkap"}</span>
+      </div>`).join("");
+  }
+
+  const finalNote = document.getElementById("da-final-score-note");
+  if(finalNote){
+    finalNote.innerHTML = `Syarat sertifikat: seluruh 8 tahapan selesai dan rata-rata Post Test minimal <strong>${MIN_FINAL}</strong>. ` +
+      `Rata-rata Post Test saat ini: <strong class="${stats.post>=MIN_FINAL?'ok':'low'}">${stats.post}</strong>.`;
+  }
+
+  badgePrintBtn.disabled = !eligible || !badgeNameInput.value.trim();
+}
+
+document.querySelectorAll("[data-test]").forEach(btn=>{
+  btn.addEventListener("click",e=>{
+    e.preventDefault();
+    renderTest(btn.dataset.stage,btn.dataset.test);
+  });
+});
+
+document.querySelectorAll(".btn-yt").forEach(btn=>{
+  const href=btn.getAttribute("href");
+  if(btn.dataset.stage){
+    btn.addEventListener("click",()=>{
+      markVideo(btn.dataset.stage);
+    });
+  } else if(href){
+    // Tombol YouTube lama tidak diubah; status modul ditentukan dari tombol internal.
+  }
+});
+
+testSubmit.addEventListener("click",submitTest);
+testClose.addEventListener("click",closeTest);
+testReset.addEventListener("click",closeTest);
+testOverlay.addEventListener("click",e=>{ if(e.target===testOverlay) closeTest(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && testOverlay.classList.contains("open")) closeTest(); });
+
+const badgeNameInput = document.getElementById("da-badge-name");
+const badgePrintBtn = document.getElementById("da-badge-print");
+const certName = document.getElementById("da-cert-name");
+const certDate = document.getElementById("da-cert-date");
+const certScore = document.getElementById("da-cert-score");
+const BADGE_NAME_KEY = "dalanarsiparis_badge_name";
+
+badgeNameInput.value = localStorage.getItem(BADGE_NAME_KEY) || "";
+badgeNameInput.addEventListener("input",()=>{
+  localStorage.setItem(BADGE_NAME_KEY,badgeNameInput.value);
+  updateBadgeProgress();
+});
+
+badgePrintBtn.addEventListener("click",()=>{
+  const name=badgeNameInput.value.trim();
+  const stats=overallStats();
+  if(!name || stats.post < MIN_FINAL) return;
+  certName.textContent=name;
+  certDate.textContent=new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+  certScore.textContent=`Rata-rata Post Test: ${stats.post}`;
+  window.print();
+});
+
+updateTestUI();
 </script>
 
 
