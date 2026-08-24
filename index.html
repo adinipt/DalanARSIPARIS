@@ -995,9 +995,9 @@
         </div>
       </div>
 
-      <p class="maze-help">Gunakan W A S D, tombol panah, atau tombol kontrol. Monster mulai mengejar setelah jeda 3 detik. Pada level lebih tinggi, monster bergerak lebih cepat dan selalu menghitung ulang arah menuju posisi Arsiparis terbaru!</p>
+      <p class="maze-help">Gunakan W A S D, tombol panah, atau tombol kontrol. Monster mulai mengejar setelah jeda 2 detik. Pada level lebih tinggi, monster bergerak lebih cepat dan selalu menghitung ulang arah menuju posisi Arsiparis terbaru!</p>
 
-      <div id="maze-message" class="maze-message">Tekan Mulai untuk menjalankan misi.</div>
+      <div id="maze-message" class="maze-message">Tekan Mulai untuk menjalankan misi. Monster mulai bergerak setelah jeda 2 detik.</div>
 
       <div class="maze-actions">
         <button id="maze-start" class="maze-start" type="button">▶ Mulai Misi</button>
@@ -1769,8 +1769,8 @@ window.addEventListener("beforeunload",()=>{
       name:"Mudah",
       cols:9, rows:9,
       targetTime:45,
-      monsterDelay:1800,
-      monsterSpeed:"lambat • 1,8 detik/langkah",
+      monsterDelay:1700,
+      monsterSpeed:"lambat • 1,7 detik/langkah",
       map:[
         "#########",
         "#S..#...#",
@@ -1788,8 +1788,8 @@ window.addEventListener("beforeunload",()=>{
       name:"Sedang",
       cols:11, rows:11,
       targetTime:60,
-      monsterDelay:1300,
-      monsterSpeed:"sedang • 1,3 detik/langkah",
+      monsterDelay:1100,
+      monsterSpeed:"sedang • 1,1 detik/langkah",
       map:[
         "###########",
         "#S..#.....#",
@@ -1809,8 +1809,8 @@ window.addEventListener("beforeunload",()=>{
       name:"Sulit",
       cols:13, rows:13,
       targetTime:90,
-      monsterDelay:950,
-      monsterSpeed:"cepat • 0,95 detik/langkah",
+      monsterDelay:800,
+      monsterSpeed:"cepat • 0,8 detik/langkah",
       map:[
         "#############",
         "#S..#.......#",
@@ -1909,7 +1909,7 @@ window.addEventListener("beforeunload",()=>{
       if(running && !finished){
         monsterTimer=setInterval(moveMonster,level.monsterDelay);
       }
-    },3000);
+    },2000);
   }
 
   function stopTimers(){
