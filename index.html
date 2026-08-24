@@ -949,7 +949,7 @@
   <div class="page-hero">
     <div class="eyebrow label">FUN GAME • MISSION MAZE</div>
     <h1>🎮 Misi Arsiparis</h1>
-    <p>Capai <strong>🏢 Unit Kearsipan</strong> dalam waktu target yang wajar sambil menghindari <strong>👾 Monster Arsip</strong> yang kecepatannya berbeda di setiap level.</p>
+    <p>Ayo bimbing Arsiparis mengantar arsip menuju <strong>🏢 Unit Kearsipan</strong> sambil menghindari <strong>👾 Monster Arsip</strong> yang kecepatannya berbeda di setiap level.</p>
   </div>
 
   <div class="page-body">
@@ -1665,38 +1665,12 @@ async function sendVisitorMessage(){
     createdAt:now
   };
 
-  // Tampilkan dan simpan lokal SEBELUM menyentuh Firebase.
-  // Dengan demikian klik Kirim tidak pernah membuat pertanyaan menghilang.
+  // Tampilkan pertanyaan segera. Jangan menunggu Firebase.
   input.value="";
   saveLocalChatMessage(visitorMessage);
   addMessage(messagesEl,visitorMessage);
 
-  let savedToFirebase = false;
-
-  if(firebaseConfigured){
-    savedToFirebase = await ensureVisitorSession();
-
-    if(savedToFirebase){
-      const visitorName = localStorage.getItem(NAME_KEY) || "Pengunjung";
-      localStorage.setItem(NAME_KEY,visitorName);
-
-      try{
-        await update(ref(db,`chats/${chatId}`),{
-          name:visitorName,
-          lastMessage:text,
-          lastSender:"visitor",
-          updatedAt:Date.now(),
-          status:"open"
-        });
-      }catch(err){
-        console.warn("Metadata chat belum tersimpan:",err);
-      }
-
-      savedToFirebase = await saveVisitorMessage(text);
-    }
-  }
-
-  // Quick Reply tetap diberikan walaupun koneksi Firebase sedang bermasalah.
+  // Quick Reply AI harus selalu merespons tanpa menunggu koneksi Firebase.
   const reply = aiReply(text);
   const botMessage = {
     sender:"bot",
@@ -1704,27 +1678,65 @@ async function sendVisitorMessage(){
     createdAt:Date.now()
   };
 
-  setTimeout(async()=>{
+  setTimeout(()=>{
     saveLocalChatMessage(botMessage);
     addMessage(messagesEl,botMessage);
 
-    if(savedToFirebase){
-      const botSaved = await saveBotMessage(reply);
-      if(botSaved){
+    // Simpan balasan AI ke Firebase di background.
+    // Kegagalan Firebase tidak boleh menghentikan respons AI.
+    if(firebaseConfigured && db){
+      (async()=>{
         try{
-          await update(ref(db,`chats/${chatId}`),{
-            lastMessage:reply,
-            lastSender:"bot",
-            updatedAt:Date.now()
-          });
+          const ready = await ensureVisitorSession();
+          if(!ready) return;
+
+          try{
+            await update(ref(db,`chats/${chatId}`),{
+              name:localStorage.getItem(NAME_KEY) || "Pengunjung",
+              lastMessage:reply,
+              lastSender:"bot",
+              updatedAt:Date.now(),
+              status:"open"
+            });
+          }catch(err){
+            console.warn("Metadata balasan AI belum tersimpan:",err);
+          }
+
+          await saveBotMessage(reply);
         }catch(err){
-          console.warn("Metadata balasan belum tersimpan:",err);
+          console.warn("Penyimpanan balasan AI gagal, tetapi Quick Reply tetap berjalan:",err);
         }
-      }
+      })();
     }
   },350);
-}
 
+  // Simpan pertanyaan pengunjung ke Firebase di background juga.
+  // Tidak dibuat await agar Quick Reply tidak pernah tertahan.
+  if(firebaseConfigured && db){
+    (async()=>{
+      try{
+        const ready = await ensureVisitorSession();
+        if(!ready) return;
+
+        try{
+          await update(ref(db,`chats/${chatId}`),{
+            name:localStorage.getItem(NAME_KEY) || "Pengunjung",
+            lastMessage:text,
+            lastSender:"visitor",
+            updatedAt:Date.now(),
+            status:"open"
+          });
+        }catch(err){
+          console.warn("Metadata chat belum tersimpan:",err);
+        }
+
+        await saveVisitorMessage(text);
+      }catch(err){
+        console.warn("Penyimpanan pertanyaan gagal, tetapi chat tetap berjalan:",err);
+      }
+    })();
+  }
+}
 sendBtn.onclick=sendVisitorMessage;
 input.addEventListener("keydown",e=>{
   if(e.key==="Enter" && !e.shiftKey){e.preventDefault();sendVisitorMessage();}
@@ -2058,7 +2070,7 @@ window.addEventListener("beforeunload",()=>{
       if(running && !finished){
         monsterTimer=setInterval(moveMonster,level.monsterDelay);
       }
-    },2000);
+    },3000);
   }
 
   function stopTimers(){
