@@ -995,7 +995,7 @@
         </div>
       </div>
 
-      <p class="maze-help">Gunakan W A S D, tombol panah, atau tombol kontrol. Monster mulai mengejar setelah jeda 2 detik. Pada level lebih tinggi, monster bergerak lebih cepat dan selalu menghitung ulang arah menuju posisi Arsiparis terbaru!</p>
+      <p class="maze-help">Gunakan W A S D, tombol panah, atau tombol kontrol. Monster mulai mengejar setelah jeda 2 detik. Pada level lebih tinggi, monster bergerak lebih cepat dan selalu menghitung ulang arah menuju posisi Arsiparis terbaru. Jalur Sulit dibuat bertahap dengan belokan awal yang dekat agar kejar-kejarannya tetap adil.</p>
 
       <div id="maze-message" class="maze-message">Tekan Mulai untuk menjalankan misi. Monster mulai bergerak setelah jeda 2 detik.</div>
 
@@ -1804,8 +1804,7 @@ window.addEventListener("beforeunload",()=>{
         "#########G#"
       ],
       monsterStart:{r:9,c:1}
-    },
-    hard:{
+    },hard:{
       name:"Sulit",
       cols:13, rows:13,
       targetTime:90,
@@ -1814,15 +1813,15 @@ window.addEventListener("beforeunload",()=>{
       map:[
         "#############",
         "#S..#.......#",
-        "###.#.#####.#",
-        "#...#.....#.#",
-        "#.#######.#.#",
-        "#.#.....#.#.#",
-        "#.#.###.#.#.#",
-        "#.#.#...#...#",
         "#.#.#.#####.#",
-        "#...#.......#",
-        "###.#######.#",
+        "#.#.#.....#.#",
+        "#...#####.#.#",
+        "###.#.....#.#",
+        "#...#.###.#.#",
+        "#.###.#...#.#",
+        "#.....#.###.#",
+        "#####.#.....#",
+        "#.....#####.#",
         "#...........#",
         "###########G#"
       ],
