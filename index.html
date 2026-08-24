@@ -368,6 +368,89 @@
     .cycle-step::after{ display:none; }
   }
 </style>
+
+<!-- =========================================================
+     DalanARSIPARIS Live Chat — Firebase
+     Isi FIREBASE_CONFIG dan ADMIN_EMAILS pada script paling bawah.
+     ========================================================= -->
+<script type="module" src="https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js"></script>
+
+<style>
+/* ===== DALANARSIPARIS LIVE CHAT ===== */
+#da-chat-launcher{
+  position:fixed;right:24px;bottom:24px;z-index:9999;
+  width:62px;height:62px;border:0;border-radius:50%;
+  background:var(--ink);color:#fff;box-shadow:0 10px 30px rgba(133,14,53,.28);
+  cursor:pointer;font-size:25px;transition:.2s;
+}
+#da-chat-launcher:hover{transform:translateY(-3px);background:var(--accent)}
+#da-chat-badge{
+  position:absolute;right:-2px;top:-3px;min-width:22px;height:22px;
+  padding:0 6px;border-radius:99px;background:#e53935;color:#fff;
+  font:700 12px/22px Inter,sans-serif;display:none;
+}
+#da-chat-panel{
+  position:fixed;right:24px;bottom:98px;z-index:10000;
+  width:min(390px,calc(100vw - 28px));height:min(650px,calc(100vh - 125px));
+  background:#fff;border:1px solid rgba(133,14,53,.14);border-radius:18px;
+  box-shadow:0 20px 60px rgba(64,16,34,.25);display:none;overflow:hidden;
+}
+#da-chat-panel.open{display:flex;flex-direction:column;animation:daChatIn .22s ease}
+@keyframes daChatIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.da-chat-head{background:var(--ink);color:#fff;padding:15px 16px;display:flex;align-items:center;gap:10px}
+.da-chat-avatar{width:40px;height:40px;border-radius:50%;background:var(--tab);color:var(--ink);display:grid;place-items:center;font-size:20px}
+.da-chat-head-main{flex:1}.da-chat-title{font-weight:700}.da-chat-status{font-size:11px;opacity:.75;margin-top:2px}
+.da-chat-admin-open,.da-chat-close{border:0;background:transparent;color:#fff;cursor:pointer}.da-chat-admin-open{font-size:14px;opacity:.8}.da-chat-close{font-size:24px}
+.da-chat-messages{flex:1;overflow:auto;padding:14px;background:#fcf5ee}
+.da-msg{display:flex;margin:8px 0}.da-msg.user{justify-content:flex-end}.da-msg.bot,.da-msg.admin{justify-content:flex-start}
+.da-bubble{max-width:82%;padding:10px 12px;border-radius:14px;font-size:13px;line-height:1.5;white-space:pre-wrap}
+.da-msg.user .da-bubble{background:var(--ink);color:#fff;border-bottom-right-radius:4px}
+.da-msg.bot .da-bubble,.da-msg.admin .da-bubble{background:#fff;color:var(--ink);border:1px solid var(--line);border-bottom-left-radius:4px}
+.da-meta{font-size:9px;opacity:.55;margin-top:4px}
+.da-chat-quick{padding:8px 10px;display:flex;gap:6px;overflow-x:auto;border-top:1px solid var(--line);background:#fff}
+.da-quick{border:1px solid var(--line);background:#fcf5ee;color:var(--ink);border-radius:99px;padding:7px 10px;white-space:nowrap;font-size:11px;cursor:pointer}
+.da-quick:hover{background:var(--tab)}
+.da-chat-compose{display:flex;gap:7px;padding:10px;background:#fff;border-top:1px solid var(--line)}
+#da-chat-input{flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:none;font:13px Inter,sans-serif;resize:none;height:42px}
+#da-chat-send{border:0;border-radius:12px;background:var(--accent);color:#fff;width:46px;cursor:pointer;font-size:18px}
+.da-chat-foot{font-size:9px;color:var(--ink-dim);text-align:center;padding:4px;background:#fff}
+#da-chat-toast{
+  position:fixed;right:24px;bottom:100px;z-index:10001;display:none;
+  width:min(340px,calc(100vw - 40px));background:#fff;border-left:4px solid var(--accent);
+  box-shadow:0 12px 35px rgba(64,16,34,.22);padding:13px 15px;border-radius:10px;cursor:pointer;
+}
+#da-chat-toast strong{display:block;color:var(--ink);font-size:13px}.da-toast-text{font-size:12px;color:var(--ink-dim);margin-top:3px}
+#da-admin-dock{
+  position:fixed;left:24px;bottom:24px;z-index:9998;display:none;
+  width:min(430px,calc(100vw - 28px));height:min(690px,calc(100vh - 48px));
+  background:#fff;border:1px solid var(--line);border-radius:18px;
+  box-shadow:0 20px 60px rgba(64,16,34,.25);overflow:hidden;
+}
+.da-admin-head{background:var(--ink);color:#fff;padding:14px;display:flex;align-items:center;gap:8px}
+.da-admin-head h3{font-size:16px;flex:1}.da-admin-logout{border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;border-radius:8px;padding:6px 9px;cursor:pointer}
+.da-admin-body{display:grid;grid-template-columns:145px 1fr;height:calc(100% - 53px)}
+.da-admin-list{border-right:1px solid var(--line);overflow:auto;background:#fcf5ee}
+.da-conv{padding:11px;border-bottom:1px solid var(--line);cursor:pointer;font-size:11px}
+.da-conv.active{background:var(--tab)}.da-conv-name{font-weight:700}.da-conv-preview{color:var(--ink-dim);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.da-admin-chat{display:flex;flex-direction:column;min-width:0}.da-admin-msgs{flex:1;overflow:auto;padding:12px;background:#fff}
+.da-admin-compose{display:flex;padding:9px;border-top:1px solid var(--line);gap:6px}.da-admin-compose textarea{flex:1;height:40px;resize:none;border:1px solid var(--line);border-radius:9px;padding:8px}
+.da-admin-compose button{border:0;background:var(--ink);color:#fff;border-radius:9px;width:42px}
+#da-admin-login{
+  position:fixed;left:24px;bottom:24px;z-index:9997;display:none;
+  background:#fff;border:1px solid var(--line);padding:18px;border-radius:14px;
+  box-shadow:0 12px 35px rgba(64,16,34,.2);width:280px
+}
+#da-admin-login button{width:100%;padding:10px;border:0;border-radius:8px;background:var(--ink);color:#fff;cursor:pointer}
+.da-ai-note{font-size:10px;text-align:center;color:var(--ink-dim);padding:3px}
+@media(max-width:600px){
+  #da-chat-launcher{right:15px;bottom:15px}
+  #da-chat-panel{right:14px;bottom:88px;height:min(650px,calc(100vh - 105px))}
+  #da-chat-toast{right:14px;bottom:88px}
+  #da-admin-dock{left:14px;bottom:14px}
+}
+</style>
 </head>
 <body>
 
@@ -401,6 +484,70 @@
     &copy; 2026 DalanARSIPARIS.<br>Dibuat dengan penuh cinta oleh Aryana Dini Putri Tianto, S.Fil.
   </div>
 </div>
+
+
+<!-- =========================================================
+     CHATARSIPARIS — LIVE CHAT
+     ========================================================= -->
+<button id="da-chat-launcher" aria-label="Buka ChatARSIPARIS" title="ChatARSIPARIS">
+  💬<span id="da-chat-badge">0</span>
+</button>
+
+<div id="da-chat-toast" role="status" aria-live="polite">
+  <strong>💬 Balasan baru dari DalanARSIPARIS</strong>
+  <div class="da-toast-text" id="da-toast-text">Admin membalas pesan Anda.</div>
+</div>
+
+<section id="da-chat-panel" aria-label="Live Chat ChatARSIPARIS">
+  <header class="da-chat-head">
+    <div class="da-chat-avatar">📚</div>
+    <div class="da-chat-head-main">
+      <div class="da-chat-title">ChatARSIPARIS</div>
+      <div class="da-chat-status" id="da-chat-status">AI Quick Reply aktif</div>
+    </div>
+    <button class="da-chat-admin-open" id="da-chat-admin-open" aria-label="Login admin" title="Login admin">🔐</button>
+    <button class="da-chat-close" id="da-chat-close" aria-label="Tutup chat">×</button>
+  </header>
+  <div class="da-chat-messages" id="da-chat-messages"></div>
+  <div class="da-chat-quick" id="da-chat-quick">
+    <button class="da-quick" data-q="Apa itu arsip dinamis?">Arsip Dinamis</button>
+    <button class="da-quick" data-q="Bagaimana cara peminjaman arsip?">Peminjaman</button>
+    <button class="da-quick" data-q="Bagaimana cara menemukan kembali arsip?">Penemuan Kembali</button>
+    <button class="da-quick" data-q="Bagaimana cara pemberkasan arsip?">Pemberkasan</button>
+  </div>
+  <div class="da-chat-compose">
+    <textarea id="da-chat-input" placeholder="Tulis pertanyaan Anda..." maxlength="1000"></textarea>
+    <button id="da-chat-send" aria-label="Kirim">➤</button>
+  </div>
+  <div class="da-chat-foot">Quick Reply AI • Chat akan diteruskan ke admin jika diperlukan.</div>
+</section>
+
+<section id="da-admin-login" aria-label="Login Admin">
+  <strong style="display:block;margin-bottom:8px">🔐 Admin Chat</strong>
+  <div style="font-size:11px;color:var(--ink-dim);margin-bottom:12px">
+    Login menggunakan akun Google yang sudah didaftarkan sebagai admin.
+  </div>
+  <button id="da-google-login">Masuk sebagai Admin</button>
+</section>
+
+<section id="da-admin-dock" aria-label="Panel Admin Chat">
+  <header class="da-admin-head">
+    <h3>💬 Panel ChatARSIPARIS</h3>
+    <button class="da-admin-logout" id="da-admin-logout">Keluar</button>
+  </header>
+  <div class="da-admin-body">
+    <div class="da-admin-list" id="da-conversation-list"></div>
+    <div class="da-admin-chat">
+      <div class="da-admin-msgs" id="da-admin-messages">
+        <div style="padding:20px;color:var(--ink-dim);font-size:12px">Pilih percakapan pengunjung.</div>
+      </div>
+      <div class="da-admin-compose">
+        <textarea id="da-admin-input" placeholder="Balas pengunjung..." maxlength="1000"></textarea>
+        <button id="da-admin-send">➤</button>
+      </div>
+    </div>
+  </div>
+</section>
 
 <main>
 
@@ -689,5 +836,380 @@
   });
 </script>
 
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, signInAnonymously
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import {
+  getDatabase, ref, set, push, onValue, onChildAdded, update, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+
+/* =========================================================
+   1. KONFIGURASI — ISI DENGAN DATA FIREBASE ANDA
+   ========================================================= */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAlqMIAr2K6RQUZFxXDhsSdVaXRjU4MYIM",
+  authDomain: "dalanarsiparis-ec2c8.firebaseapp.com",
+  databaseURL: "https://dalanarsiparis-ec2c8-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "dalanarsiparis-ec2c8",
+  storageBucket: "dalanarsiparis-ec2c8.firebasestorage.app",
+  messagingSenderId: "22832560163",
+  appId: "1:22832560163:web:746331938e6d4175b1996"
+};
+
+/* Akun Google yang boleh menjadi admin. */
+const ADMIN_EMAILS = [
+  "dalanarsiparis@gmail.com"
+];
+
+const firebaseConfigured =
+  !Object.values(FIREBASE_CONFIG).some(v => String(v).includes("GANTI_"));
+
+let app, auth, db, googleProvider;
+if(firebaseConfigured){
+  app = initializeApp(FIREBASE_CONFIG);
+  auth = getAuth(app);
+  db = getDatabase(app);
+  googleProvider = new GoogleAuthProvider();
+}
+
+/* =========================================================
+   2. ELEMENT
+   ========================================================= */
+const launcher = document.getElementById("da-chat-launcher");
+const panel = document.getElementById("da-chat-panel");
+const closeBtn = document.getElementById("da-chat-close");
+const adminOpenBtn = document.getElementById("da-chat-admin-open");
+const badge = document.getElementById("da-chat-badge");
+const toast = document.getElementById("da-chat-toast");
+const toastText = document.getElementById("da-toast-text");
+const messagesEl = document.getElementById("da-chat-messages");
+const input = document.getElementById("da-chat-input");
+const sendBtn = document.getElementById("da-chat-send");
+const statusEl = document.getElementById("da-chat-status");
+const loginBox = document.getElementById("da-admin-login");
+const loginBtn = document.getElementById("da-google-login");
+const adminDock = document.getElementById("da-admin-dock");
+const logoutBtn = document.getElementById("da-admin-logout");
+const convList = document.getElementById("da-conversation-list");
+const adminMessages = document.getElementById("da-admin-messages");
+const adminInput = document.getElementById("da-admin-input");
+const adminSend = document.getElementById("da-admin-send");
+
+const CHAT_KEY = "dalanarsiparis_chat_id_v2";
+const NAME_KEY = "dalanarsiparis_chat_name_v1";
+let chatId = null;
+
+let selectedConversation = null;
+let unsubscribeMessages = null;
+let unread = 0;
+let isAdmin = false;
+
+/* =========================================================
+   3. QUICK REPLY AI
+   Catatan: ini AI/knowledge-base lokal sehingga tidak
+   membutuhkan API key AI dan aman untuk GitHub Pages.
+   ========================================================= */
+const KB = [
+  {
+    keys:["arsip dinamis","apa itu arsip dinamis"],
+    answer:"Arsip dinamis adalah arsip yang digunakan secara langsung dalam kegiatan penciptaan, penggunaan, dan pengelolaan administrasi organisasi. Di DalanARSIPARIS, pembelajarannya dibagi menjadi penciptaan, penggunaan, pemeliharaan, dan penyusutan arsip."
+  },
+  {
+    keys:["naskah dinas masuk","surat masuk"],
+    answer:"Pengurusan naskah dinas masuk merupakan bagian dari penciptaan arsip. Di DalanARSIPARIS, materi ini membahas kegiatan yang dilaksanakan oleh unit kearsipan dan tata usaha pengolah."
+  },
+  {
+    keys:["naskah dinas keluar","surat keluar"],
+    answer:"Pengurusan naskah dinas keluar merupakan bagian dari penciptaan arsip dan mencakup kegiatan yang dilaksanakan oleh unit kearsipan dan tata usaha pengolah."
+  },
+  {
+    keys:["penemuan kembali","menemukan kembali arsip","cari arsip"],
+    answer:"Penemuan kembali arsip dapat dilakukan menggunakan indeks, kode klasifikasi, nomor urut, asal surat, tanggal surat, dan nomor surat."
+  },
+  {
+    keys:["peminjaman arsip","pinjam arsip"],
+    answer:"Peminjaman arsip dilakukan kepada pengguna yang berwenang melalui prosedur yang telah ditetapkan dan disertai pencatatan administrasi untuk menjamin keamanan serta memudahkan pengendalian keberadaan arsip."
+  },
+  {
+    keys:["pemberkasan","berkas arsip"],
+    answer:"Pemberkasan arsip merupakan proses menata arsip ke dalam satu berkas berdasarkan kesamaan masalah, fungsi, atau kegiatan sesuai klasifikasi arsip."
+  },
+  {
+    keys:["penyimpanan arsip","simpan arsip"],
+    answer:"Pada materi DalanARSIPARIS, penyimpanan arsip dilakukan oleh unit pengolah Satuan Kerja Perangkat Daerah (SKPD)."
+  },
+  {
+    keys:["pemindahan arsip","pindah arsip"],
+    answer:"Pemindahan arsip dilakukan terhadap arsip inaktif dari unit pengolah ke unit kearsipan."
+  },
+  {
+    keys:["pemusnahan arsip","musnah arsip"],
+    answer:"Pemusnahan arsip dilakukan terhadap arsip yang tidak memiliki nilai guna."
+  },
+  {
+    keys:["video","youtube","tutorial"],
+    answer:"Video tutorial DalanARSIPARIS tersedia melalui kanal YouTube DalanARSIPARIS. Anda juga dapat membuka modul pada menu Penciptaan, Penggunaan, Pemeliharaan, dan Penyusutan."
+  }
+];
+
+function aiReply(text){
+  const q = text.toLowerCase();
+  for(const item of KB){
+    if(item.keys.some(k => q.includes(k))) return item.answer;
+  }
+  if(q.includes("halo") || q.includes("hai") || q.includes("selamat")){
+    return "Halo! 👋 Selamat datang di DalanARSIPARIS. Saya Quick Reply AI. Silakan tanyakan tentang pengelolaan arsip dinamis, misalnya peminjaman, penemuan kembali, pemberkasan, penyimpanan, pemindahan, atau pemusnahan arsip.";
+  }
+  return "Saya belum menemukan jawaban yang cukup tepat untuk pertanyaan itu. Saya bisa membantu pertanyaan umum tentang materi arsip dinamis di DalanARSIPARIS. Jika Anda membutuhkan jawaban khusus, pesan Anda akan disimpan dan dapat diteruskan kepada admin.";
+}
+
+/* =========================================================
+   4. UI HELPERS
+   ========================================================= */
+function esc(s){
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+function formatTime(ts){
+  if(!ts) return "";
+  try{return new Date(ts).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});}
+  catch{return "";}
+}
+function addMessage(target, m){
+  const who = m.sender === "visitor" ? "user" : (m.sender === "admin" ? "admin" : "bot");
+  target.insertAdjacentHTML("beforeend",
+    `<div class="da-msg ${who}">
+      <div>
+        <div class="da-bubble">${esc(m.text)}</div>
+        <div class="da-meta">${m.sender==="admin"?"Admin":m.sender==="bot"?"Quick Reply AI":"Anda"} ${formatTime(m.createdAt)}</div>
+      </div>
+    </div>`);
+  target.scrollTop = target.scrollHeight;
+}
+function setUnread(n){
+  unread = Math.max(0,n);
+  badge.textContent = unread > 99 ? "99+" : unread;
+  badge.style.display = unread ? "block" : "none";
+}
+function openChat(){
+  panel.classList.add("open");
+  setUnread(0);
+  toast.style.display="none";
+  input.focus();
+}
+launcher.onclick = openChat;
+closeBtn.onclick = () => panel.classList.remove("open");
+adminOpenBtn.onclick = () => { loginBox.style.display="block"; };
+toast.onclick = openChat;
+
+document.querySelectorAll(".da-quick").forEach(btn=>{
+  btn.onclick=()=>{input.value=btn.dataset.q;sendVisitorMessage();}
+});
+
+/* =========================================================
+   5. VISITOR CHAT
+   ========================================================= */
+function saveVisitorMessage(text){
+  if(!db) return;
+  const msgRef = push(ref(db, `chats/${chatId}/messages`));
+  return set(msgRef,{
+    sender:"visitor", text, createdAt:Date.now()
+  });
+}
+function saveBotMessage(text){
+  if(!db) return;
+  const msgRef = push(ref(db, `chats/${chatId}/messages`));
+  return set(msgRef,{
+    sender:"bot", text, createdAt:Date.now()
+  });
+}
+async function sendVisitorMessage(){
+  const text = input.value.trim();
+  if(!text) return;
+  input.value="";
+  if(!firebaseConfigured){
+    addMessage(messagesEl,{sender:"visitor",text,createdAt:Date.now()});
+    setTimeout(()=>addMessage(messagesEl,{sender:"bot",text:aiReply(text),createdAt:Date.now()}),350);
+    return;
+  }
+  const visitorName = localStorage.getItem(NAME_KEY) || "Pengunjung";
+  localStorage.setItem(NAME_KEY,visitorName);
+  await update(ref(db,`chats/${chatId}`),{
+    name:visitorName,lastMessage:text,lastSender:"visitor",updatedAt:Date.now(),status:"open"
+  });
+  await saveVisitorMessage(text);
+  const reply = aiReply(text);
+  setTimeout(async()=>{
+    await saveBotMessage(reply);
+    await update(ref(db,`chats/${chatId}`),{
+      lastMessage:reply,lastSender:"bot",updatedAt:Date.now()
+    });
+  },350);
+}
+sendBtn.onclick=sendVisitorMessage;
+input.addEventListener("keydown",e=>{
+  if(e.key==="Enter" && !e.shiftKey){e.preventDefault();sendVisitorMessage();}
+});
+
+async function initVisitorRealtime(){
+  if(!db || !auth) {
+    statusEl.textContent="AI Quick Reply aktif • Mode demo";
+    addMessage(messagesEl,{sender:"bot",text:"Halo! 👋 Saya Quick Reply AI DalanARSIPARIS. Silakan tanyakan apa saja tentang materi arsip dinamis.",createdAt:Date.now()});
+    return;
+  }
+  const user = auth.currentUser;
+  if(!user || !user.isAnonymous) return;
+  chatId = user.uid;
+  localStorage.setItem(CHAT_KEY, chatId);
+  statusEl.textContent="AI Quick Reply aktif • Menunggu admin";
+  const chatRef=ref(db,`chats/${chatId}`);
+  onValue(chatRef,snap=>{
+    const d=snap.val()||{};
+    if(d.status==="closed") statusEl.textContent="Percakapan ditutup";
+    else if(d.adminOnline) statusEl.textContent="Admin online • Anda dapat melanjutkan chat";
+    else statusEl.textContent="AI Quick Reply aktif • Menunggu admin";
+  });
+  onValue(ref(db,`chats/${chatId}/messages`),snap=>{
+    messagesEl.innerHTML="";
+    const data=snap.val()||{};
+    Object.values(data).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)).forEach(m=>{
+      addMessage(messagesEl,m);
+    });
+  });
+  let first=true;
+  onChildAdded(ref(db,`chats/${chatId}/messages`),snap=>{
+    if(first){return;}
+    const m=snap.val();
+    if(m.sender==="admin" && !panel.classList.contains("open")){
+      setUnread(unread+1);
+      toastText.textContent=m.text;
+      toast.style.display="block";
+      setTimeout(()=>toast.style.display="none",7000);
+    }
+  });
+  setTimeout(()=>first=false,1000);
+}
+
+/* =========================================================
+   6. ADMIN AUTH + PANEL
+   ========================================================= */
+function isAllowed(user){
+  return !!user && ADMIN_EMAILS.map(x=>x.toLowerCase()).includes((user.email||"").toLowerCase());
+}
+function showAdminLogin(){
+  if(!firebaseConfigured){loginBox.style.display="none";return;}
+  loginBox.style.display="block";
+}
+loginBtn.onclick=async()=>{
+  try{
+    await signInWithPopup(auth,googleProvider);
+  }catch(err){
+    alert("Login admin gagal: "+err.message);
+  }
+};
+logoutBtn.onclick=async()=>{
+  try{
+    await signOut(auth);
+    if(firebaseConfigured && auth && !auth.currentUser) await signInAnonymously(auth);
+  }catch(err){ alert("Gagal keluar: "+err.message); }
+};
+
+function renderAdminMessages(convId){
+  if(unsubscribeMessages) unsubscribeMessages();
+  if(!db || !convId){return;}
+  adminMessages.innerHTML="";
+  unsubscribeMessages=onValue(ref(db,`chats/${convId}/messages`),snap=>{
+    adminMessages.innerHTML="";
+    const data=snap.val()||{};
+    Object.values(data).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)).forEach(m=>addMessage(adminMessages,m));
+  });
+}
+function loadConversations(){
+  if(!db) return;
+  onValue(ref(db,"chats"),snap=>{
+    convList.innerHTML="";
+    const chats=snap.val()||{};
+    Object.entries(chats)
+      .sort((a,b)=>(b[1].updatedAt||0)-(a[1].updatedAt||0))
+      .forEach(([id,c])=>{
+        const div=document.createElement("div");
+        div.className="da-conv"+(selectedConversation===id?" active":"");
+        div.innerHTML=`<div class="da-conv-name">${esc(c.name||"Pengunjung")}</div>
+          <div class="da-conv-preview">${esc(c.lastMessage||"Belum ada pesan")}</div>`;
+        div.onclick=()=>{
+          selectedConversation=id;
+          document.querySelectorAll(".da-conv").forEach(x=>x.classList.remove("active"));
+          div.classList.add("active");
+          renderAdminMessages(id);
+        };
+        convList.appendChild(div);
+      });
+  });
+}
+adminSend.onclick=async()=>{
+  const text=adminInput.value.trim();
+  if(!text || !selectedConversation || !db || !isAdmin)return;
+  adminInput.value="";
+  const msg=push(ref(db,`chats/${selectedConversation}/messages`));
+  await set(msg,{sender:"admin",text,createdAt:Date.now()});
+  await update(ref(db,`chats/${selectedConversation}`),{
+    lastMessage:text,lastSender:"admin",updatedAt:Date.now(),adminOnline:true,status:"open"
+  });
+};
+adminInput.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();adminSend.click();}
+});
+
+if(firebaseConfigured){
+  onAuthStateChanged(auth,async user=>{
+    if(user && isAllowed(user)){
+      isAdmin=true;
+      loginBox.style.display="none";
+      adminDock.style.display="block";
+      loadConversations();
+      statusEl.textContent="Admin online • Percakapan dapat ditangani admin";
+      await update(ref(db,`presence/${user.uid}`),{online:true,email:user.email,updatedAt:Date.now()});
+    }else if(user && user.isAnonymous){
+      isAdmin=false;
+      loginBox.style.display="none";
+      adminDock.style.display="none";
+      await initVisitorRealtime();
+    }else{
+      isAdmin=false;
+      adminDock.style.display="none";
+      showAdminLogin();
+      if(!user){
+        try{ await signInAnonymously(auth); }
+        catch(err){
+          console.error("Anonymous sign-in gagal:",err);
+          statusEl.textContent="AI Quick Reply aktif • koneksi Firebase gagal";
+        }
+      }
+    }
+  });
+}else{
+  /* Firebase belum dikonfigurasi: pengunjung tetap mendapat AI lokal. */
+  statusEl.textContent="AI Quick Reply aktif • Firebase belum dikonfigurasi";
+  initVisitorRealtime();
+}
+
+window.addEventListener("beforeunload",()=>{
+  if(auth?.currentUser && db){
+    set(ref(db,`presence/${auth.currentUser.uid}`),{online:false,updatedAt:serverTimestamp()});
+  }
+});
+
+</script>
+
 </body>
+
+<script>
+/* Menampilkan status konfigurasi tanpa mengganggu pengunjung. */
+window.addEventListener("load",()=>{
+  const cfg = document.querySelector('script[type="module"]');
+});
+</script>
+
 </html>
