@@ -995,7 +995,7 @@
         </div>
       </div>
 
-      <p class="maze-help">Gunakan W A S D, tombol panah, atau tombol kontrol. Monster mulai mengejar setelah jeda 3 detik, lalu bergerak bertahap sesuai level!</p>
+      <p class="maze-help">Gunakan W A S D, tombol panah, atau tombol kontrol. Monster mulai mengejar setelah jeda 3 detik dan setiap langkahnya menghitung ulang arah menuju posisi Arsiparis terbaru!</p>
 
       <div id="maze-message" class="maze-message">Tekan Mulai untuk menjalankan misi.</div>
 
@@ -1970,17 +1970,49 @@ window.addEventListener("beforeunload",()=>{
   }
 
   function monsterMoves(){
+    // Recalculate a shortest route to the Arsiparis' CURRENT position
+    // on every monster turn. This makes the monster actually chase the
+    // character when the player changes direction.
+    const queue=[{r:monster.r,c:monster.c}];
+    const key=(r,c)=>`${r},${c}`;
+    const visited=new Set([key(monster.r,monster.c)]);
+    const previous=new Map();
     const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
-    const options=dirs.map(d=>({r:monster.r+d[0],c:monster.c+d[1]})).filter(p=>canMove(p.r,p.c));
-    if(!options.length)return;
-    options.sort((a,b)=>{
-      const da=Math.abs(a.r-player.r)+Math.abs(a.c-player.c);
-      const db=Math.abs(b.r-player.r)+Math.abs(b.c-player.c);
-      return da-db;
-    });
-    // Monster usually follows the shortest-looking route, but occasionally wanders.
-    const pick=Math.random()<0.82?options[0]:options[Math.floor(Math.random()*options.length)];
-    monster=pick;
+    let found=false;
+
+    while(queue.length){
+      const cur=queue.shift();
+      if(cur.r===player.r && cur.c===player.c){
+        found=true;
+        break;
+      }
+
+      for(const [dr,dc] of dirs){
+        const nr=cur.r+dr, nc=cur.c+dc;
+        const k=key(nr,nc);
+        if(!canMove(nr,nc) || visited.has(k)) continue;
+        visited.add(k);
+        previous.set(k,cur);
+        queue.push({r:nr,c:nc});
+      }
+    }
+
+    if(!found){
+      render();
+      return;
+    }
+
+    // Walk backward from the player's CURRENT position until we reach
+    // the monster's adjacent cell. That first cell is the monster's
+    // next move.
+    let step={r:player.r,c:player.c};
+    while(previous.has(key(step.r,step.c))){
+      const parent=previous.get(key(step.r,step.c));
+      if(parent.r===monster.r && parent.c===monster.c) break;
+      step=parent;
+    }
+
+    monster={r:step.r,c:step.c};
     checkCollision();
     render();
   }
