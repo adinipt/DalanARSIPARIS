@@ -949,7 +949,7 @@
   <div class="page-hero">
     <div class="eyebrow label">FUN GAME • MISSION MAZE</div>
     <h1>🎮 Misi Arsiparis</h1>
-    <p>Capai <strong>🏢 Unit Kearsipan</strong> secepat mungkin sambil menghindari <strong>👾 Monster Arsip</strong> yang mengejar.</p>
+    <p>Capai <strong>🏢 Unit Kearsipan</strong> dalam waktu target yang wajar sambil menghindari <strong>👾 Monster Arsip</strong> yang kecepatannya berbeda di setiap level.</p>
   </div>
 
   <div class="page-body">
@@ -958,7 +958,7 @@
         <div class="maze-guide-title">📖 Cara Bermain</div>
         <div class="maze-guide-grid">
           <div><strong>1.</strong> Pilih tingkat kesulitan.</div>
-          <div><strong>2.</strong> Gerakkan 🧑‍💼 Arsiparis menuju 🏢 Unit Kearsipan.</div>
+          <div><strong>2.</strong> Gerakkan 🧑‍💼 Arsiparis menuju 🏢 Unit Kearsipan sebelum waktu target.</div>
           <div><strong>3.</strong> Hindari 🗄️ dinding/rak arsip.</div>
           <div><strong>4.</strong> Jangan sampai ditangkap 👾 Monster Arsip.</div>
           <div><strong>5.</strong> Semakin cepat sampai tujuan, semakin tinggi skor.</div>
@@ -968,7 +968,7 @@
       </div>
 
       <div class="maze-levels">
-        <div class="maze-level-title">Pilih Tingkat Kesulitan</div>
+        <div class="maze-level-title">Pilih Tingkat Kesulitan</div><div class="maze-speed-note">👾 Kecepatan Monster: <span id="maze-monster-speed">Lambat</span></div>
         <div class="maze-level-buttons">
           <button type="button" class="maze-level active" data-level="easy">🟢 Mudah</button>
           <button type="button" class="maze-level" data-level="medium">🟡 Sedang</button>
@@ -978,7 +978,7 @@
 
       <div class="maze-info">
         <div><strong>🎯 Target:</strong> Unit Kearsipan</div>
-        <div><strong>⏱️ Waktu:</strong> <span id="maze-time">0.0</span> detik</div>
+        <div><strong>⏱️ Waktu:</strong> <span id="maze-time">0.0</span> detik</div><div><strong>🎯 Target:</strong> <span id="maze-target-time">—</span></div>
         <div><strong>⭐ Skor:</strong> <span id="maze-score">100</span></div>
       </div>
 
@@ -1766,7 +1766,11 @@ window.addEventListener("beforeunload",()=>{
 
   const LEVELS={
     easy:{
-      name:"Mudah", cols:9, rows:9, monsterDelay:700, tickPenalty:0.7,
+      name:"Mudah",
+      cols:9, rows:9,
+      targetTime:45,
+      monsterDelay:1100,
+      monsterSpeed:"lambat",
       map:[
         "#########",
         "#S..#...#",
@@ -1781,7 +1785,11 @@ window.addEventListener("beforeunload",()=>{
       monsterStart:{r:7,c:1}
     },
     medium:{
-      name:"Sedang", cols:11, rows:11, monsterDelay:500, tickPenalty:1.0,
+      name:"Sedang",
+      cols:11, rows:11,
+      targetTime:60,
+      monsterDelay:800,
+      monsterSpeed:"sedang",
       map:[
         "###########",
         "#S..#.....#",
@@ -1798,7 +1806,11 @@ window.addEventListener("beforeunload",()=>{
       monsterStart:{r:9,c:1}
     },
     hard:{
-      name:"Sulit", cols:13, rows:13, monsterDelay:330, tickPenalty:1.4,
+      name:"Sulit",
+      cols:13, rows:13,
+      targetTime:90,
+      monsterDelay:550,
+      monsterSpeed:"cepat",
       map:[
         "#############",
         "#S..#.......#",
@@ -1825,6 +1837,8 @@ window.addEventListener("beforeunload",()=>{
 
   const scoreEl=document.getElementById("maze-score");
   const timeEl=document.getElementById("maze-time");
+  const targetTimeEl=document.getElementById("maze-target-time");
+  const monsterSpeedEl=document.getElementById("maze-monster-speed");
   const message=document.getElementById("maze-message");
   const result=document.getElementById("maze-result");
   const resultTitle=document.getElementById("maze-result-title");
@@ -1856,12 +1870,19 @@ window.addEventListener("beforeunload",()=>{
     });
     scoreEl.textContent=calculateScore();
     timeEl.textContent=elapsed.toFixed(1);
+    targetTimeEl.textContent=level.targetTime+" detik";
+    monsterSpeedEl.textContent=level.monsterSpeed.charAt(0).toUpperCase()+level.monsterSpeed.slice(1);
   }
 
   function calculateScore(){
     if(!running && !finished && elapsed===0) return 100;
-    const base=levelKey==="easy"?100:levelKey==="medium"?150:200;
-    return Math.max(0,Math.round(base-(elapsed*level.tickPenalty)));
+    // Score is based on the realistic target time for the selected level.
+    // Reaching the target or faster keeps the score high; going beyond it
+    // reduces the score gradually instead of making the score disappear abruptly.
+    const target=level.targetTime;
+    const base=100;
+    if(elapsed<=target) return Math.round(100 - ((elapsed/target)*25));
+    return Math.max(20, Math.round(75 - (((elapsed-target)/target)*55)));
   }
 
   function startGame(){
@@ -1876,7 +1897,7 @@ window.addEventListener("beforeunload",()=>{
     startBtn.disabled=true;
     document.querySelectorAll(".maze-level").forEach(b=>b.disabled=true);
     message.className="maze-message";
-    message.textContent=`🚨 Monster Arsip mulai mengejar! Capai Unit Kearsipan secepat mungkin.`;
+    message.textContent=`🚨 Misi dimulai! Target ${level.targetTime} detik. Monster bergerak dengan kecepatan ${level.monsterSpeed}.`;
     render();
 
     timer=setInterval(()=>{
@@ -1904,7 +1925,7 @@ window.addEventListener("beforeunload",()=>{
     startBtn.disabled=false;
     document.querySelectorAll(".maze-level").forEach(b=>b.disabled=false);
     message.className="maze-message";
-    message.textContent=`Tingkat ${level.name}. Tekan Mulai untuk menjalankan misi.`;
+    message.textContent=`Tingkat ${level.name} • Target ${level.targetTime} detik • Monster ${level.monsterSpeed}. Tekan Mulai untuk menjalankan misi.`;
     render();
   }
 
@@ -1979,13 +2000,16 @@ window.addEventListener("beforeunload",()=>{
     if(win){
       resultIcon.textContent="🏆";
       resultTitle.textContent="Misi Berhasil!";
-      resultText.innerHTML=`Arsiparis berhasil sampai di Unit Kearsipan dalam <strong>${elapsed.toFixed(1)} detik</strong>.<br>Skor akhir: <strong>${score}</strong>.`;
+      const timingText = elapsed <= level.targetTime
+        ? `🎯 Lebih cepat dari target ${level.targetTime} detik.`
+        : `⏱️ Melebihi target ${level.targetTime} detik, tetapi misi tetap berhasil.`;
+      resultText.innerHTML=`Arsiparis berhasil sampai di Unit Kearsipan dalam <strong>${elapsed.toFixed(1)} detik</strong>.<br>${timingText}<br>Skor akhir: <strong>${score}</strong>.`;
       message.className="maze-message success";
       message.textContent="🎉 Arsip berhasil diantar dengan selamat!";
     }else{
       resultIcon.textContent="👾";
       resultTitle.textContent="Tertangkap Monster Arsip!";
-      resultText.innerHTML=`Monster Arsip berhasil mengejar Arsiparis setelah <strong>${elapsed.toFixed(1)} detik</strong>.<br>Coba lagi dan cari rute yang lebih cepat!`;
+      resultText.innerHTML=`Monster Arsip berhasil mengejar Arsiparis setelah <strong>${elapsed.toFixed(1)} detik</strong>.<br>Target level ini <strong>${level.targetTime} detik</strong>.<br>Coba lagi dan gunakan rute yang lebih singkat!`;
       message.className="maze-message danger";
       message.textContent="💥 Aduh! Arsiparis tertangkap. Jangan sampai monster mengejar lagi!";
     }
