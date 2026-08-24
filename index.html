@@ -452,9 +452,9 @@
 }
 
 /* ===== BADGE / SERTIFIKAT ===== */
-.badge-card{background:var(--paper);max-width:640px;padding:2.2rem 2.5rem;border-radius:12px;box-shadow:0 4px 18px rgba(133,14,53,0.08);border-top:4px solid var(--tab);margin-top:2rem}
+.badge-card{background:var(--paper);padding:2rem;border-radius:10px;box-shadow:0 4px 18px rgba(133,14,53,0.07);border-top:4px solid var(--accent);margin-top:2rem;box-sizing:border-box;width:100%}
 .badge-card h3{font-size:1.25rem;margin-bottom:0.6rem}
-.badge-card-desc{color:var(--ink-dim);font-size:0.95rem;margin-bottom:1.1rem}
+.badge-card-desc{color:var(--ink-dim);font-size:0.95rem;margin-bottom:1.1rem;line-height:1.6}
 .badge-progress{background:var(--bg);border-radius:99px;height:10px;overflow:hidden;margin-bottom:0.6rem}
 .badge-progress-fill{height:100%;background:var(--accent);width:0%;transition:width .3s ease}
 .badge-status{font-size:0.85rem;color:var(--ink-dim);margin-bottom:1.1rem}
@@ -588,7 +588,7 @@
 .da-chat-email input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(236,92,120,.10)}
 .da-chat-email.invalid input{border-color:#e85d75}
 #da-chat-email-note{font-size:9.5px;color:var(--ink-dim);margin-top:4px;line-height:1.3}
-#da-chat-toast{display:none;position:fixed;right:24px;bottom:88px;z-index:10001;min-width:220px;max-width:310px;padding:10px 12px;border:1px solid rgba(236,92,120,.25);border-radius:14px;background:#fff;box-shadow:0 12px 35px rgba(64,16,34,.18);color:var(--ink);align-items:center;gap:9px;animation:daHeartPop .24s ease-out}
+#da-chat-toast{display:none;position:fixed;right:24px;bottom:88px;z-index:10001;min-width:220px;max-width:310px;padding:10px 12px;border:1px solid rgba(236,92,120,.25);border-radius:14px;background:#fff;box-shadow:0 12px 35px rgba(64,16,34,.18);color:var(--ink);align-items:center;gap:9px;animation:daHeartPop .24s ease-out;cursor:pointer;pointer-events:auto;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .da-heart-notify{width:28px;height:28px;flex:0 0 28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(236,92,120,.12);color:var(--accent);font-size:18px;line-height:1}
 .da-toast-text{font-size:11px;color:var(--ink-dim);margin-top:2px}
 @keyframes daHeartPop{from{opacity:0;transform:translateY(8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -683,7 +683,7 @@
   💬<span id="da-chat-badge">0</span>
 </button>
 
-<div id="da-chat-toast" role="status" aria-live="polite">
+<div id="da-chat-toast" role="button" tabindex="0" aria-label="Buka chat untuk melihat balasan terbaru">
   <span class="da-heart-notify" aria-hidden="true">♥</span>
   <div>
     <strong id="da-toast-title">Balasan baru dari DalanARSIPARIS</strong>
@@ -742,7 +742,7 @@
 </section>
 
 
-<div id="da-admin-toast" role="status" aria-live="polite">
+<div id="da-admin-toast" role="button" tabindex="0" aria-label="Buka pesan pengunjung terbaru">
   <span class="da-heart-notify" aria-hidden="true">♥</span>
   <div>
     <strong>Pesan baru dari pengunjung</strong>
@@ -1653,7 +1653,25 @@ function openChat(){
 launcher.onclick = openChat;
 closeBtn.onclick = () => panel.classList.remove("open");
 adminOpenBtn.onclick = () => { loginBox.style.display="block"; };
-toast.onclick = openChat;
+
+function handleVisitorToastOpen(e){
+  if(e) e.preventDefault();
+  if(e) e.stopPropagation();
+  openChat();
+  setTimeout(()=>{
+    try{
+      messagesEl.scrollTop=messagesEl.scrollHeight;
+      input.focus();
+    }catch(_){}
+  },50);
+}
+toast.addEventListener("click",handleVisitorToastOpen);
+toast.addEventListener("touchend",handleVisitorToastOpen,{passive:false});
+toast.addEventListener("keydown",e=>{
+  if(e.key==="Enter" || e.key===" "){
+    handleVisitorToastOpen(e);
+  }
+});
 
 document.querySelectorAll(".da-quick").forEach(btn=>{
   const useQuickReply = (e)=>{
@@ -2108,12 +2126,39 @@ logoutBtn.onclick=async()=>{
   }catch(err){ alert("Gagal keluar: "+err.message); }
 };
 
-function showAdminNotification(text){
+let latestAdminNotificationChatId=null;
+let adminToastTimer=null;
+
+function showAdminNotification(text,convId){
   if(!adminToast) return;
+  latestAdminNotificationChatId=convId || latestAdminNotificationChatId;
   if(adminToastText) adminToastText.textContent=text || "Ada pesan baru dari pengunjung.";
   adminToast.style.display="flex";
-  setTimeout(()=>adminToast.style.display="none",8000);
+  clearTimeout(adminToastTimer);
+  adminToastTimer=setTimeout(()=>adminToast.style.display="none",8000);
 }
+
+async function openAdminNotification(e){
+  if(e) e.preventDefault();
+  if(e) e.stopPropagation();
+  adminToast.style.display="none";
+  if(!isAdmin) return;
+  adminDock.style.display="block";
+  if(latestAdminNotificationChatId){
+    selectedConversation=latestAdminNotificationChatId;
+    await renderAdminMessages(latestAdminNotificationChatId);
+    document.querySelectorAll(".da-conv").forEach(x=>x.classList.remove("active"));
+    const cards=[...document.querySelectorAll(".da-conv")];
+    const target=cards.find(x=>x.onclick && x.classList.contains("active"));
+    if(target) target.classList.add("active");
+    adminDock.scrollIntoView({behavior:"smooth",block:"nearest"});
+  }
+}
+adminToast.addEventListener("click",openAdminNotification);
+adminToast.addEventListener("touchend",openAdminNotification,{passive:false});
+adminToast.addEventListener("keydown",e=>{
+  if(e.key==="Enter" || e.key===" ") openAdminNotification(e);
+});
 
 async function purgeAllOldChats(){
   if(!db) return;
@@ -2239,14 +2284,14 @@ if(firebaseConfigured){
         if(!adminChatsInitialLoad &&
            c.lastSender==="visitor" &&
            Number(c.updatedAt||0)>=cutoffTime()){
-          showAdminNotification(c.lastMessage||"Ada pesan baru dari pengunjung.");
+          showAdminNotification(c.lastMessage||"Ada pesan baru dari pengunjung.",snap.key);
         }
       });
       setTimeout(()=>adminChatsInitialLoad=false,1200);
       onChildChanged(ref(db,"chats"),snap=>{
         const c=snap.val()||{};
         if(c.lastSender==="visitor" && Number(c.updatedAt||0)>=cutoffTime()){
-          showAdminNotification(c.lastMessage||"Ada pesan baru dari pengunjung.");
+          showAdminNotification(c.lastMessage||"Ada pesan baru dari pengunjung.",snap.key);
         }
       });
       await update(ref(db,`presence/${user.uid}`),{online:true,email:user.email,updatedAt:Date.now()});
