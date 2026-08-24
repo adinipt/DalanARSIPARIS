@@ -417,9 +417,13 @@
 #da-chat-send{position:relative;z-index:21;border:0;border-radius:12px;background:var(--accent);color:#fff;width:46px;cursor:pointer;font-size:18px;pointer-events:auto;touch-action:manipulation}
 .da-chat-foot{font-size:9px;color:var(--ink-dim);text-align:center;padding:4px;background:#fff}
 #da-chat-toast{
-  position:fixed;right:24px;bottom:100px;z-index:10001;display:none;
-  width:min(340px,calc(100vw - 40px));background:#fff;border-left:4px solid var(--accent);
-  box-shadow:0 12px 35px rgba(64,16,34,.22);padding:13px 15px;border-radius:10px;cursor:pointer;
+  position:fixed;right:24px;bottom:100px;z-index:2147483647;display:none;
+  width:min(340px,calc(100vw - 40px));background:#fff;
+  border-left:4px solid var(--accent);
+  box-shadow:0 12px 35px rgba(64,16,34,.22);
+  padding:13px 15px;border-radius:10px;
+  cursor:pointer;pointer-events:auto!important;
+  touch-action:manipulation;user-select:none;
 }
 #da-chat-toast strong{display:block;color:var(--ink);font-size:13px}.da-toast-text{font-size:12px;color:var(--ink-dim);margin-top:3px}
 #da-admin-dock{
@@ -592,7 +596,7 @@
 .da-heart-notify{width:28px;height:28px;flex:0 0 28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(236,92,120,.12);color:var(--accent);font-size:18px;line-height:1}
 .da-toast-text{font-size:11px;color:var(--ink-dim);margin-top:2px}
 @keyframes daHeartPop{from{opacity:0;transform:translateY(8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
-.da-chat-toast-new{display:flex!important}
+.da-chat-toast-new{display:block!important}
 @media(max-width:600px){
   #da-chat-toast{right:12px;bottom:78px;max-width:calc(100vw - 24px);min-width:0}
   .da-chat-email input{font-size:13px;min-height:40px}
@@ -601,7 +605,7 @@
 
 
 <style id="da-admin-heart-style">
-#da-admin-toast{display:none;position:fixed;right:24px;bottom:24px;z-index:10002;min-width:220px;max-width:310px;padding:10px 12px;border:1px solid rgba(236,92,120,.25);border-radius:14px;background:#fff;box-shadow:0 12px 35px rgba(64,16,34,.18);align-items:center;gap:9px;color:var(--ink)}
+#da-admin-toast{display:none;position:fixed;right:24px;bottom:24px;z-index:2147483647;min-width:220px;max-width:310px;padding:10px 12px;border:1px solid rgba(236,92,120,.25);border-radius:14px;background:#fff;box-shadow:0 12px 35px rgba(64,16,34,.18);align-items:center;gap:9px;color:var(--ink);cursor:pointer;pointer-events:auto;touch-action:manipulation;user-select:none}
 @media(max-width:600px){#da-admin-toast{right:12px;bottom:12px;max-width:calc(100vw - 24px)}}
 </style>
 
@@ -683,7 +687,7 @@
   💬<span id="da-chat-badge">0</span>
 </button>
 
-<div id="da-chat-toast" role="button" tabindex="0" aria-label="Buka chat untuk melihat balasan terbaru">
+<div id="da-chat-toast" onclick="handleVisitorToastOpen()" role="button" tabindex="0" aria-label="Buka chat untuk melihat balasan terbaru">
   <span class="da-heart-notify" aria-hidden="true">♥</span>
   <div>
     <strong id="da-toast-title">Balasan baru dari DalanARSIPARIS</strong>
@@ -813,7 +817,7 @@
 
       <div class="badge-card" id="da-badge-card">
         <h3>🏆 Sertifikat Kelulusan DalanARSIPARIS</h3>
-        <p class="badge-card-desc">Selesaikan Pre Test, tonton video YouTube, dan Post Test pada seluruh 8 tahapan. Pre Test dan Post Test menggunakan soal yang sama. Sertifikat terbuka jika seluruh rangkaian selesai dan <strong>rata-rata nilai Post Test minimal 80</strong>.</p>
+        <p class="badge-card-desc">Selesaikan seluruh rangkaian pembelajaran pada 8 tahapan. Sertifikat terbuka jika seluruh rangkaian selesai dan <strong>rata-rata nilai Post Test minimal 80</strong>.</p>
         <div class="badge-progress"><div class="badge-progress-fill" id="da-badge-fill"></div></div>
         <div class="badge-status" id="da-badge-status">0/8 modul selesai</div>
         <div class="badge-stage-grid" id="da-badge-stages"></div>
@@ -1111,7 +1115,7 @@
     <div class="cert-title">Sertifikat Kelulusan</div>
     <div class="cert-sub">DalanARSIPARIS</div>
     <div class="cert-name" id="da-cert-name">Nama Peserta</div>
-    <p class="cert-desc">Telah menyelesaikan seluruh rangkaian pembelajaran Jalan Hidup Arsip Dinamis — meliputi Penciptaan, Penggunaan, Pemeliharaan, dan Penyusutan Arsip — beserta Pre Test, video pembelajaran, dan Post Test pada 8 tahapan pembelajaran.</p>
+    <p class="cert-desc">Telah menyelesaikan seluruh rangkaian pembelajaran Jalan Hidup Arsip Dinamis — meliputi Penciptaan, Penggunaan, Pemeliharaan, dan Penyusutan Arsip — beserta rangkaian evaluasi pembelajaran pada 8 tahapan.</p>
     <div id="da-cert-score" style="font-weight:700;color:var(--ink);margin-bottom:1.2rem">Rata-rata Post Test: 0</div>
       <div class="cert-footer">
       <div class="cert-date" id="da-cert-date"></div>
@@ -1654,10 +1658,13 @@ launcher.onclick = openChat;
 closeBtn.onclick = () => panel.classList.remove("open");
 adminOpenBtn.onclick = () => { loginBox.style.display="block"; };
 
-function handleVisitorToastOpen(e){
-  if(e) e.preventDefault();
-  if(e) e.stopPropagation();
-  openChat();
+function handleVisitorToastOpen(){
+  // Directly open the existing Live Chat panel — same behavior as the
+  // launcher button, without any intermediate notification logic.
+  panel.classList.add("open");
+  setUnread(0);
+  toast.style.display="none";
+  toast.classList.remove("da-chat-toast-new");
   setTimeout(()=>{
     try{
       messagesEl.scrollTop=messagesEl.scrollHeight;
@@ -1665,13 +1672,12 @@ function handleVisitorToastOpen(e){
     }catch(_){}
   },50);
 }
-toast.addEventListener("click",handleVisitorToastOpen);
-toast.addEventListener("touchend",handleVisitorToastOpen,{passive:false});
-toast.addEventListener("keydown",e=>{
-  if(e.key==="Enter" || e.key===" "){
-    handleVisitorToastOpen(e);
-  }
-});
+toast.onclick = handleVisitorToastOpen;
+toast.addEventListener("touchend",function(e){
+  e.preventDefault();
+  handleVisitorToastOpen();
+},{passive:false});
+window.handleVisitorToastOpen = handleVisitorToastOpen;
 
 document.querySelectorAll(".da-quick").forEach(btn=>{
   const useQuickReply = (e)=>{
@@ -2138,27 +2144,18 @@ function showAdminNotification(text,convId){
   adminToastTimer=setTimeout(()=>adminToast.style.display="none",8000);
 }
 
-async function openAdminNotification(e){
-  if(e) e.preventDefault();
-  if(e) e.stopPropagation();
+function handleAdminToastOpen(){
   adminToast.style.display="none";
-  if(!isAdmin) return;
+  if(!isAdmin || !latestAdminNotificationChatId) return;
   adminDock.style.display="block";
-  if(latestAdminNotificationChatId){
-    selectedConversation=latestAdminNotificationChatId;
-    await renderAdminMessages(latestAdminNotificationChatId);
-    document.querySelectorAll(".da-conv").forEach(x=>x.classList.remove("active"));
-    const cards=[...document.querySelectorAll(".da-conv")];
-    const target=cards.find(x=>x.onclick && x.classList.contains("active"));
-    if(target) target.classList.add("active");
-    adminDock.scrollIntoView({behavior:"smooth",block:"nearest"});
-  }
+  selectedConversation=latestAdminNotificationChatId;
+  renderAdminMessages(latestAdminNotificationChatId);
 }
-adminToast.addEventListener("click",openAdminNotification);
-adminToast.addEventListener("touchend",openAdminNotification,{passive:false});
-adminToast.addEventListener("keydown",e=>{
-  if(e.key==="Enter" || e.key===" ") openAdminNotification(e);
-});
+adminToast.onclick = handleAdminToastOpen;
+adminToast.ontouchend = function(e){
+  e.preventDefault();
+  handleAdminToastOpen();
+};
 
 async function purgeAllOldChats(){
   if(!db) return;
