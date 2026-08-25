@@ -73,6 +73,19 @@
     top:0;
     height:100vh;
     z-index:1000;
+    overflow-y:auto;
+    scrollbar-width:thin;
+    scrollbar-color: rgba(255,196,196,0.35) transparent;
+  }
+
+  .sidebar::-webkit-scrollbar{ width:6px; }
+  .sidebar::-webkit-scrollbar-track{ background:transparent; }
+  .sidebar::-webkit-scrollbar-thumb{
+    background: rgba(255,196,196,0.35);
+    border-radius:3px;
+  }
+  .sidebar::-webkit-scrollbar-thumb:hover{
+    background: rgba(255,196,196,0.55);
   }
 
   .sidebar-header{
