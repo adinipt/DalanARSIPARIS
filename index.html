@@ -172,6 +172,74 @@
     color:rgba(252,245,238,0.55);
   }
 
+/* ===== USER FRIENDLY POLISH — PALETTE TETAP ===== */
+.sidebar{
+  width:270px;
+  box-shadow:4px 0 24px rgba(64,16,34,.08);
+}
+.sidebar-header{
+  padding:1.65rem 1.35rem 1.25rem;
+}
+.nav-group{
+  padding:.9rem .75rem;
+}
+.nav-group-title{
+  padding:0 .7rem;
+  margin-bottom:.45rem;
+}
+.nav-list{gap:.18rem}
+.nav-item{
+  min-height:42px;
+  padding:.62rem .72rem;
+  border-radius:9px;
+  gap:.65rem;
+}
+.nav-item:hover{
+  padding-left:.9rem;
+}
+.nav-item.active{
+  box-shadow:0 5px 14px rgba(64,16,34,.12);
+}
+.nav-item:focus-visible,
+.btn:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible{
+  outline:2px solid var(--tab);
+  outline-offset:2px;
+}
+main{background:var(--bg)}
+.page-hero{
+  padding:3.6rem 5% 2.6rem;
+}
+.page-body{
+  padding:2.8rem 5% 4.5rem;
+}
+.card,.faq-item,.forum-topic-card,.contact-card,.badge-card,.verify-card,.dash-summary-card{
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.card:hover,.faq-item:hover,.contact-card:hover,.badge-card:hover,.verify-card:hover,.dash-summary-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 26px rgba(133,14,53,.10);
+}
+.cycle-step:first-child{border-radius:12px 0 0 12px}
+.cycle-step:last-child{border-radius:0 12px 12px 0}
+.account-box{
+  margin-top:.9rem;
+  padding-top:.85rem;
+}
+.account-login-btn{
+  border-radius:10px;
+  min-height:40px;
+}
+@media(max-width:860px){
+  .sidebar{box-shadow:12px 0 30px rgba(64,16,34,.20)}
+  .page-hero{padding:2.7rem 5% 2.2rem}
+  .page-body{padding:2.2rem 5% 4rem}
+  .cycle-step:first-child,.cycle-step:last-child{border-radius:0}
+}
+
   /* ===== MAIN ===== */
   main{
     flex:1;
@@ -803,6 +871,17 @@
     .page-hero h1{ font-size:1.9rem; }
     .cycle-step::after{ display:none; }
   }
+
+/* ===== FLOATING ELEMENTS: KHUSUS BERANDA ===== */
+body.da-not-home #da-chat-launcher,
+body.da-not-home #da-chat-toast,
+body.da-not-home #da-admin-login{
+  display:none !important;
+}
+body.da-not-home #da-chat-panel{
+  display:none !important;
+}
+
 </style>
 
 <!-- =========================================================
@@ -874,11 +953,21 @@
 .da-admin-compose{display:flex;padding:9px;border-top:1px solid var(--line);gap:6px}.da-admin-compose textarea{flex:1;height:40px;resize:none;border:1px solid var(--line);border-radius:9px;padding:8px}
 .da-admin-compose button{border:0;background:var(--ink);color:#fff;border-radius:9px;width:42px}
 #da-admin-login{
-  position:fixed;left:24px;bottom:24px;z-index:9997;display:none;
-  background:#fff;border:1px solid var(--line);padding:18px;border-radius:14px;
-  box-shadow:0 12px 35px rgba(64,16,34,.2);width:280px
+  position:fixed;left:calc(270px + 18px);bottom:18px;z-index:9997;display:none;
+  background:#fff;border:1px solid var(--line);padding:14px 15px;border-radius:12px;
+  box-shadow:0 12px 35px rgba(64,16,34,.18);width:250px;
+  animation:daAdminLoginIn .22s ease;
 }
-#da-admin-login button{width:100%;padding:10px;border:0;border-radius:8px;background:var(--ink);color:#fff;cursor:pointer}
+#da-admin-login strong{font-size:13px}
+#da-admin-login button{
+  width:100%;padding:9px;border:0;border-radius:8px;background:var(--ink);
+  color:#fff;cursor:pointer;font-weight:700;transition:.2s ease
+}
+#da-admin-login button:hover{background:var(--accent);transform:translateY(-1px)}
+@keyframes daAdminLoginIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(max-width:860px){
+  #da-admin-login{left:14px;bottom:76px;width:min(250px,calc(100vw - 28px))}
+}
 
 /* ===== PANEL REKAP HASIL TES (ADMIN) ===== */
 .da-admin-tabs{display:flex;gap:4px}
@@ -1308,7 +1397,7 @@
 <!-- =========================================================
      CHATARSIPARIS — LIVE CHAT
      ========================================================= -->
-<button id="da-chat-launcher" aria-label="Buka ChatARSIPARIS" title="ChatARSIPARIS">
+<button id="da-chat-launcher" aria-label="Buka ChatARSIPARIS" title="Buka ChatARSIPARIS">
   💬<span id="da-chat-badge">0</span>
 </button>
 
@@ -1342,9 +1431,11 @@
 </section>
 
 <section id="da-admin-login" aria-label="Login Admin">
-  <strong style="display:block;margin-bottom:8px">🔐 Admin Chat</strong>
-  <div style="font-size:11px;color:var(--ink-dim);margin-bottom:12px">
-    Login menggunakan akun Google yang sudah didaftarkan sebagai admin.
+  <button id="da-admin-login-close" type="button" aria-label="Tutup jendela login admin"
+    style="position:absolute;right:8px;top:6px;border:0;background:transparent;color:var(--ink-dim);width:auto;padding:2px 5px;font-size:18px;cursor:pointer">×</button>
+  <strong style="display:block;margin:0 22px 6px 0">🔐 Admin Chat</strong>
+  <div style="font-size:10.5px;color:var(--ink-dim);margin-bottom:10px;line-height:1.45">
+    Masuk dengan akun Google yang sudah didaftarkan sebagai admin.
   </div>
   <button id="da-google-login">Masuk sebagai Admin</button>
 </section>
@@ -2154,11 +2245,28 @@
   const sidebar = document.getElementById('sidebar');
   const menuToggle = document.getElementById('menuToggle');
 
+  function syncBerandaFloating(pageId){
+    document.body.classList.toggle('da-not-home', pageId !== 'beranda');
+
+    // Tutup elemen melayang ketika pengguna meninggalkan Beranda.
+    if(pageId !== 'beranda'){
+      const chatPanel = document.getElementById('da-chat-panel');
+      const toast = document.getElementById('da-chat-toast');
+      const loginBox = document.getElementById('da-admin-login');
+      if(chatPanel) chatPanel.classList.remove('open');
+      if(toast) toast.style.display = 'none';
+      if(loginBox) loginBox.style.display = 'none';
+    }else if(window.daUpdateAdminLoginVisibility){
+      window.daUpdateAdminLoginVisibility();
+    }
+  }
+
   function showPage(pageId){
     pages.forEach(p => p.classList.toggle('active', p.id === 'page-' + pageId));
     document.querySelectorAll('.nav-item').forEach(item => {
       item.classList.toggle('active', item.dataset.page === pageId);
     });
+    syncBerandaFloating(pageId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     sidebar.classList.remove('open');
   }
@@ -2179,6 +2287,8 @@
   const initial = window.location.hash.replace('#','');
   if(initial && document.getElementById('page-' + initial)){
     showPage(initial);
+  }else{
+    syncBerandaFloating('beranda');
   }
 </script>
 
@@ -3717,6 +3827,7 @@ const sendBtn = document.getElementById("da-chat-send");
 const statusEl = document.getElementById("da-chat-status");
 const loginBox = document.getElementById("da-admin-login");
 const loginBtn = document.getElementById("da-google-login");
+const loginCloseBtn = document.getElementById("da-admin-login-close");
 const adminDock = document.getElementById("da-admin-dock");
 const logoutBtn = document.getElementById("da-admin-logout");
 const convList = document.getElementById("da-conversation-list");
@@ -4087,14 +4198,26 @@ function isAllowed(user){
   return !!user && ADMIN_EMAILS.map(x=>x.toLowerCase()).includes((user.email||"").toLowerCase());
 }
 function showAdminLogin(){
-  if(!firebaseConfigured){loginBox.style.display="none";return;}
+  if(!firebaseConfigured || !document.getElementById("page-beranda")?.classList.contains("active")){
+    loginBox.style.display="none";
+    return;
+  }
   loginBox.style.display="block";
 }
+window.daUpdateAdminLoginVisibility = showAdminLogin;
+loginCloseBtn?.addEventListener("click",()=>{
+  loginBox.style.display="none";
+});
 loginBtn.onclick=async()=>{
   try{
+    loginBtn.disabled=true;
+    loginBtn.textContent="Membuka Google...";
     await signInWithPopup(auth,googleProvider);
   }catch(err){
     alert("Login admin gagal: "+err.message);
+  }finally{
+    loginBtn.disabled=false;
+    loginBtn.textContent="Masuk sebagai Admin";
   }
 };
 logoutBtn.onclick=async()=>{
