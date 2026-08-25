@@ -23,6 +23,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Untuk membuat sertifikat PDF di sisi peramban -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{
     --bg: #fcf5ee;
@@ -443,6 +446,20 @@
   box-shadow:0 12px 35px rgba(64,16,34,.2);width:280px
 }
 #da-admin-login button{width:100%;padding:10px;border:0;border-radius:8px;background:var(--ink);color:#fff;cursor:pointer}
+
+/* ===== PANEL REKAP HASIL TES (ADMIN) ===== */
+.da-admin-tabs{display:flex;gap:4px}
+.da-admin-tab{border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;border-radius:8px;padding:6px 9px;cursor:pointer;font-size:11px;white-space:nowrap}
+.da-admin-tab.active{background:var(--tab);color:var(--ink);border-color:var(--tab)}
+.da-admin-tests-body{display:none;flex-direction:column;height:calc(100% - 53px);min-height:0;padding:10px;gap:8px;overflow:hidden}
+.da-tests-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:var(--ink-dim)}
+.da-tests-toolbar button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:11px;white-space:nowrap}
+.da-tests-table-wrap{flex:1;overflow:auto;border:1px solid var(--line);border-radius:10px;min-height:0}
+.da-tests-table{width:100%;border-collapse:collapse;font-size:11px;white-space:nowrap}
+.da-tests-table th,.da-tests-table td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left}
+.da-tests-table th{background:#fcf5ee;position:sticky;top:0}
+.da-tests-table td.num{text-align:center}
+.da-tests-table tr:hover td{background:#fff7f2}
 .da-ai-note{font-size:10px;text-align:center;color:var(--ink-dim);padding:3px}
 @media(max-width:600px){
   #da-chat-launcher{right:15px;bottom:15px}
@@ -468,27 +485,70 @@
 .score-note .low{color:#c62828;font-weight:700}
 .score-note .ok{color:#2e7d32;font-weight:700}
 
-#da-certificate{display:none}
+#da-certificate{position:absolute;left:-99999px;top:0;width:1123px;pointer-events:none}
 .cert-sheet{
-  width:100%;max-width:1000px;margin:0 auto;padding:60px 70px;
-  border:10px solid var(--ink);position:relative;text-align:center;
+  width:1123px;aspect-ratio:1.414/1;margin:0 auto;padding:56px 64px;
+  border:3px solid var(--ink);position:relative;text-align:center;
   font-family:'Inter',sans-serif;box-sizing:border-box;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(238,105,131,0.06), transparent 40%),
+    radial-gradient(circle at 92% 92%, rgba(238,105,131,0.06), transparent 40%),
+    #fffdfb;
+  overflow:hidden;
 }
-.cert-sheet::before{content:'';position:absolute;inset:14px;border:2px solid var(--tab)}
-.cert-eyebrow{font-family:'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-size:0.8rem;margin-bottom:1rem}
-.cert-title{font-family:'Fraunces',serif;font-size:2.6rem;color:var(--ink);margin-bottom:0.3rem}
-.cert-sub{color:var(--ink-dim);font-size:1rem;margin-bottom:2.2rem}
-.cert-name{font-family:'Fraunces',serif;font-size:2rem;color:var(--ink);border-bottom:2px solid var(--accent);display:inline-block;padding:0 1.5rem 0.5rem;margin-bottom:1.5rem}
-.cert-desc{max-width:640px;margin:0 auto 2.5rem;color:var(--ink-dim);line-height:1.7}
-.cert-footer{display:flex;justify-content:space-between;align-items:flex-end;margin-top:2.5rem;text-align:left}
-.cert-date{font-size:0.85rem;color:var(--ink-dim)}
+.cert-sheet::before{content:'';position:absolute;inset:12px;border:1.5px solid var(--tab)}
+.cert-sheet::after{content:'';position:absolute;inset:18px;border:1px solid var(--line)}
+.cert-corner{position:absolute;width:46px;height:46px;border:3px solid var(--accent);z-index:2}
+.cert-corner-tl{top:26px;left:26px;border-right:0;border-bottom:0}
+.cert-corner-tr{top:26px;right:26px;border-left:0;border-bottom:0}
+.cert-corner-bl{bottom:26px;left:26px;border-right:0;border-top:0}
+.cert-corner-br{bottom:26px;right:26px;border-left:0;border-top:0}
+.cert-watermark{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-weight:700;font-size:6.5rem;color:rgba(133,14,53,0.035);
+  letter-spacing:0.08em;white-space:nowrap;pointer-events:none;z-index:0;
+}
+.cert-emblem{font-size:2.4rem;margin-bottom:0.6rem;position:relative;z-index:1}
+.cert-eyebrow{font-family:'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-size:0.8rem;margin-bottom:0.8rem;position:relative;z-index:1}
+.cert-title{font-family:'Fraunces',serif;font-size:2.7rem;color:var(--ink);margin-bottom:0.2rem;position:relative;z-index:1}
+.cert-sub{color:var(--ink-dim);font-size:1rem;margin-bottom:1.6rem;letter-spacing:0.06em;text-transform:uppercase;position:relative;z-index:1}
+.cert-given{font-size:0.9rem;color:var(--ink-dim);font-style:italic;margin-bottom:0.6rem;position:relative;z-index:1}
+.cert-name{font-family:'Fraunces',serif;font-size:2.1rem;color:var(--ink);border-bottom:2px solid var(--accent);display:inline-block;padding:0 1.5rem 0.5rem;margin-bottom:1.4rem;position:relative;z-index:1}
+.cert-desc{max-width:680px;margin:0 auto 1.6rem;color:var(--ink-dim);line-height:1.7;font-size:0.95rem;position:relative;z-index:1}
+.cert-score{font-weight:700;color:var(--ink);margin-bottom:1.4rem;font-size:1.05rem;position:relative;z-index:1}
+.cert-footer{display:flex;justify-content:space-between;align-items:flex-end;margin-top:1.8rem;text-align:left;position:relative;z-index:1}
+.cert-meta{font-size:0.78rem;color:var(--ink-dim);line-height:1.6}
+.cert-meta-row strong{color:var(--ink);font-family:'JetBrains Mono',monospace;letter-spacing:0.03em}
+.cert-meta-hint{max-width:280px;margin-top:0.3rem;font-size:0.7rem;opacity:0.85}
+.cert-date{font-size:0.85rem;color:var(--ink-dim);margin-bottom:0.3rem}
 .cert-sign{text-align:center}
+.cert-seal{font-size:2rem;margin-bottom:0.2rem}
 .cert-sign-line{border-top:1.5px solid var(--ink);width:200px;margin-bottom:0.4rem;padding-top:0.4rem;font-size:0.8rem;color:var(--ink-dim)}
+
+.cert-issued-box{margin-top:1.2rem;padding:1rem 1.1rem;border-radius:10px;background:var(--bg);border:1px dashed var(--accent)}
+.cert-issued-title{font-weight:700;color:var(--ink);margin-bottom:0.4rem;font-size:0.92rem}
+.cert-issued-row{font-size:0.85rem;color:var(--ink-dim);margin-bottom:0.2rem}
+.cert-issued-row strong{color:var(--ink);font-family:'JetBrains Mono',monospace}
+.cert-issued-hint{font-size:0.78rem;color:var(--ink-dim);margin-top:0.4rem}
+
+/* ===== VERIFIKASI SERTIFIKAT ===== */
+.verify-card{background:var(--paper);max-width:640px;padding:2.2rem 2.5rem;border-radius:12px;box-shadow:0 4px 18px rgba(133,14,53,0.07);border-top:4px solid var(--accent)}
+.verify-form{display:flex;gap:0.6rem;flex-wrap:wrap}
+.verify-form input{flex:1;min-width:220px;padding:0.75rem 0.9rem;border:1px solid var(--line);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:0.9rem;text-transform:uppercase}
+.verify-result{margin-top:1.4rem}
+.verify-result:empty{display:none}
+.verify-result-card{padding:1.2rem 1.3rem;border-radius:10px;font-size:0.9rem;line-height:1.7}
+.verify-result-card.valid{background:#eef8ef;border:1px solid #2e7d32}
+.verify-result-card.invalid{background:#fdecec;border:1px solid #c62828}
+.verify-result-title{font-weight:700;margin-bottom:0.5rem;font-size:1rem}
+.verify-result-card.valid .verify-result-title{color:#2e7d32}
+.verify-result-card.invalid .verify-result-title{color:#c62828}
+.verify-result-row strong{font-family:'JetBrains Mono',monospace}
 
 @media print{
   body *{visibility:hidden}
   #da-certificate, #da-certificate *{visibility:visible}
-  #da-certificate{display:block;position:absolute;top:0;left:0;width:100%}
+  #da-certificate{position:absolute;top:0;left:0;width:100%;pointer-events:auto}
 }
 
 /* ===== TEST PRE TEST / POST TEST ===== */
@@ -611,6 +671,14 @@
   </nav>
 
   <nav class="nav-group">
+    <div class="nav-group-title label">Sertifikat</div>
+    <ul class="nav-list">
+      <li><button class="nav-item" data-page="sertifikat"><span class="code">🏆</span> Sertifikat Saya</button></li>
+      <li><button class="nav-item" data-page="verifikasi"><span class="code">🔍</span> Verifikasi Sertifikat</button></li>
+    </ul>
+  </nav>
+
+  <nav class="nav-group">
     <div class="nav-group-title label">Hubungi DalanARSIPARIS</div>
     <ul class="nav-list">
       <li><button class="nav-item" data-page="email"><span class="code">✉</span> EmailARSIPARIS</button></li>
@@ -670,10 +738,14 @@
 
 <section id="da-admin-dock" aria-label="Panel Admin Chat">
   <header class="da-admin-head">
-    <h3>💬 Panel ChatARSIPARIS</h3>
+    <h3>🗂️ Panel Admin</h3>
+    <div class="da-admin-tabs">
+      <button class="da-admin-tab active" id="da-admin-tab-chat" type="button">💬 Chat</button>
+      <button class="da-admin-tab" id="da-admin-tab-tests" type="button">📊 Hasil Tes</button>
+    </div>
     <button class="da-admin-logout" id="da-admin-logout">Keluar</button>
   </header>
-  <div class="da-admin-body">
+  <div class="da-admin-body" id="da-admin-view-chat">
     <div class="da-admin-list" id="da-conversation-list"></div>
     <div class="da-admin-chat">
       <div class="da-admin-msgs" id="da-admin-messages">
@@ -683,6 +755,18 @@
         <textarea id="da-admin-input" placeholder="Balas pengunjung..." maxlength="1000"></textarea>
         <button id="da-admin-send">➤</button>
       </div>
+    </div>
+  </div>
+  <div class="da-admin-tests-body" id="da-admin-view-tests">
+    <div class="da-tests-toolbar">
+      <span id="da-tests-summary">Memuat data...</span>
+      <button id="da-tests-export" type="button">⬇ Unduh CSV</button>
+    </div>
+    <div class="da-tests-table-wrap">
+      <table class="da-tests-table" id="da-tests-table">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
     </div>
   </div>
 </section>
@@ -720,8 +804,25 @@
         </div>
       </div>
 
-      <div class="badge-card" id="da-badge-card">
+      <div class="badge-card badge-card-teaser">
         <h3>🏆 Sertifikat Kelulusan DalanARSIPARIS</h3>
+        <p class="badge-card-desc">Selesaikan Pre Test, tonton video YouTube, dan Post Test pada seluruh 8 tahapan untuk membuka sertifikat resmi ber-nomor unik yang bisa diunduh sebagai PDF dan diverifikasi keasliannya.</p>
+        <button class="btn-badge" data-page="sertifikat">🏆 Buka Halaman Sertifikat</button>
+      </div>
+    </div>
+    <footer class="page-footer">Alur jalan kehidupan arsip dinamis.</footer>
+  </section>
+
+  <!-- SERTIFIKAT -->
+  <section class="page" id="page-sertifikat">
+    <div class="page-hero">
+      <div class="eyebrow label">Kelulusan &amp; Apresiasi</div>
+      <h1>Sertifikat DalanARSIPARIS</h1>
+      <p>Pantau progres pembelajaran Anda pada seluruh 8 tahapan. Sertifikat resmi ber-nomor unik terbuka setelah seluruh tahapan selesai dengan rata-rata nilai Post Test minimal 80, dan dapat diunduh sebagai PDF.</p>
+    </div>
+    <div class="page-body">
+      <div class="badge-card" id="da-badge-card">
+        <h3>🏆 Progres &amp; Sertifikat Kelulusan</h3>
         <p class="badge-card-desc">Selesaikan Pre Test, tonton video YouTube, dan Post Test pada seluruh 8 tahapan. Sertifikat terbuka jika seluruh rangkaian selesai dan <strong>rata-rata nilai Post Test minimal 80</strong>.</p>
         <div class="badge-progress"><div class="badge-progress-fill" id="da-badge-fill"></div></div>
         <div class="badge-status" id="da-badge-status">0/8 modul selesai</div>
@@ -730,10 +831,35 @@
         <div class="badge-name-field">
           <input type="text" id="da-badge-name" placeholder="Nama lengkap untuk dicetak pada sertifikat" maxlength="80">
         </div>
-        <button class="btn-badge" id="da-badge-print" disabled>🖨️ Cetak Sertifikat</button>
+        <button class="btn-badge" id="da-badge-print" disabled>⬇ Unduh Sertifikat (PDF)</button>
+        <div class="cert-issued-box" id="da-cert-issued-box" style="display:none">
+          <div class="cert-issued-title">✅ Sertifikat diterbitkan</div>
+          <div class="cert-issued-row">Nomor Sertifikat: <strong id="da-cert-issued-nomor">—</strong></div>
+          <div class="cert-issued-row">Kode Verifikasi: <strong id="da-cert-issued-kode">—</strong></div>
+          <div class="cert-issued-hint">Simpan kode ini. Siapa pun dapat memeriksa keaslian sertifikat Anda melalui menu <strong>Verifikasi Sertifikat</strong>.</div>
+        </div>
       </div>
     </div>
-    <footer class="page-footer">Alur jalan kehidupan arsip dinamis.</footer>
+    <footer class="page-footer">Sertifikat resmi, dapat diverifikasi keasliannya kapan saja.</footer>
+  </section>
+
+  <!-- VERIFIKASI SERTIFIKAT -->
+  <section class="page" id="page-verifikasi">
+    <div class="page-hero">
+      <div class="eyebrow label">Keabsahan Dokumen</div>
+      <h1>Verifikasi Sertifikat</h1>
+      <p>Masukkan Nomor Sertifikat atau Kode Verifikasi yang tercantum pada sertifikat untuk memastikan dokumen tersebut benar-benar diterbitkan oleh DalanARSIPARIS.</p>
+    </div>
+    <div class="page-body">
+      <div class="verify-card">
+        <div class="verify-form">
+          <input type="text" id="da-verify-input" placeholder="Contoh: DAP-2026-0007 atau kode verifikasi 8 karakter">
+          <button class="btn-badge" id="da-verify-btn" type="button">🔍 Verifikasi</button>
+        </div>
+        <div class="verify-result" id="da-verify-result"></div>
+      </div>
+    </div>
+    <footer class="page-footer">Setiap sertifikat DalanARSIPARIS memiliki nomor dan kode verifikasi yang unik.</footer>
   </section>
 
   <!-- PENCIPTAAN -->
@@ -1016,15 +1142,28 @@
 
 <div id="da-certificate">
   <div class="cert-sheet">
+    <div class="cert-corner cert-corner-tl"></div>
+    <div class="cert-corner cert-corner-tr"></div>
+    <div class="cert-corner cert-corner-bl"></div>
+    <div class="cert-corner cert-corner-br"></div>
+    <div class="cert-watermark">DALANARSIPARIS</div>
+    <div class="cert-emblem">🗂️</div>
     <div class="cert-eyebrow">Media Pembelajaran Terpadu Arsip Dinamis</div>
     <div class="cert-title">Sertifikat Kelulusan</div>
     <div class="cert-sub">DalanARSIPARIS</div>
+    <div class="cert-given">diberikan kepada</div>
     <div class="cert-name" id="da-cert-name">Nama Peserta</div>
     <p class="cert-desc">Telah menyelesaikan seluruh rangkaian pembelajaran Jalan Hidup Arsip Dinamis — meliputi Penciptaan, Penggunaan, Pemeliharaan, dan Penyusutan Arsip — beserta Pre Test, video pembelajaran, dan Post Test pada 8 tahapan pembelajaran.</p>
-    <div id="da-cert-score" style="font-weight:700;color:var(--ink);margin-bottom:1.2rem">Rata-rata Post Test: 0</div>
-      <div class="cert-footer">
-      <div class="cert-date" id="da-cert-date"></div>
+    <div id="da-cert-score" class="cert-score">Rata-rata Post Test: 0</div>
+    <div class="cert-footer">
+      <div class="cert-meta">
+        <div class="cert-date" id="da-cert-date"></div>
+        <div class="cert-meta-row">No. Sertifikat: <strong id="da-cert-nomor">—</strong></div>
+        <div class="cert-meta-row">Kode Verifikasi: <strong id="da-cert-kode">—</strong></div>
+        <div class="cert-meta-hint">Keaslian dapat diperiksa pada menu Verifikasi Sertifikat DalanARSIPARIS.</div>
+      </div>
       <div class="cert-sign">
+        <div class="cert-seal">🔏</div>
         <div class="cert-sign-line">DalanARSIPARIS</div>
       </div>
     </div>
@@ -1032,7 +1171,7 @@
 </div>
 
 <script>
-  const navItems = document.querySelectorAll('.nav-item, .brand');
+  const navItems = document.querySelectorAll('[data-page]');
   const pages = document.querySelectorAll('.page');
   const sidebar = document.getElementById('sidebar');
   const menuToggle = document.getElementById('menuToggle');
@@ -1153,6 +1292,9 @@ const TESTS = {
 };
 
 const TEST_ORDER = Object.keys(TESTS);
+/* Diekspos ke window agar bisa dipakai panel rekap admin (skrip Firebase terpisah). */
+window.TESTS = TESTS;
+window.TEST_ORDER = TEST_ORDER;
 const TEST_KEYS = {
   naskahMasuk:"naskah-masuk", naskahKeluar:"naskah-keluar", penemuanKembali:"penemuan-kembali",
   peminjaman:"peminjaman", pemberkasan:"pemberkasan", penyimpanan:"penyimpanan",
@@ -1182,6 +1324,10 @@ function getResult(type, stage){
 }
 function saveResult(type, stage, data){
   localStorage.setItem(storageKey(type, stage), JSON.stringify(data));
+  /* Sinkron ke Firebase (best-effort, tidak menghalangi tampilan hasil lokal). */
+  if(window.daSyncTestResult){
+    window.daSyncTestResult(type, stage, data).catch(()=>{});
+  }
 }
 function isVideoDone(stage){ return localStorage.getItem(`youtubeDone_stage_${stage}`) === "true"; }
 
@@ -1365,9 +1511,15 @@ document.addEventListener("keydown",e=>{ if(e.key==="Escape" && testOverlay.clas
 
 const badgeNameInput = document.getElementById("da-badge-name");
 const badgePrintBtn = document.getElementById("da-badge-print");
+const certSheetEl = document.getElementById("da-certificate");
 const certName = document.getElementById("da-cert-name");
 const certDate = document.getElementById("da-cert-date");
 const certScore = document.getElementById("da-cert-score");
+const certNomorEl = document.getElementById("da-cert-nomor");
+const certKodeEl = document.getElementById("da-cert-kode");
+const certIssuedBox = document.getElementById("da-cert-issued-box");
+const certIssuedNomorEl = document.getElementById("da-cert-issued-nomor");
+const certIssuedKodeEl = document.getElementById("da-cert-issued-kode");
 const BADGE_NAME_KEY = "dalanarsiparis_badge_name";
 
 badgeNameInput.value = localStorage.getItem(BADGE_NAME_KEY) || "";
@@ -1375,16 +1527,120 @@ badgeNameInput.addEventListener("input",()=>{
   localStorage.setItem(BADGE_NAME_KEY,badgeNameInput.value);
   updateBadgeProgress();
 });
-
-badgePrintBtn.addEventListener("click",()=>{
-  const name=badgeNameInput.value.trim();
-  const stats=overallStats();
-  if(!name || stats.post < MIN_FINAL) return;
-  certName.textContent=name;
-  certDate.textContent=new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
-  certScore.textContent=`Rata-rata Post Test: ${stats.post}`;
-  window.print();
+badgeNameInput.addEventListener("blur",()=>{
+  const name = badgeNameInput.value.trim();
+  if(name && window.daSyncBadgeName){
+    window.daSyncBadgeName(name).catch(()=>{});
+  }
 });
+
+async function downloadCertificatePdf(){
+  const name = badgeNameInput.value.trim();
+  const stats = overallStats();
+  if(!name || stats.post < MIN_FINAL) return;
+
+  if(!window.daIssueCertificate){
+    alert("Koneksi Firebase belum siap. Coba lagi sebentar lagi.");
+    return;
+  }
+  if(!window.jspdf || !window.html2canvas){
+    alert("Modul pembuat PDF belum termuat. Periksa koneksi internet lalu coba lagi.");
+    return;
+  }
+
+  const originalLabel = badgePrintBtn.textContent;
+  badgePrintBtn.disabled = true;
+  badgePrintBtn.textContent = "⏳ Menerbitkan sertifikat...";
+
+  try{
+    const cert = await window.daIssueCertificate({
+      nama: name,
+      skor: stats.post,
+      tahapanSelesai: `${TEST_ORDER.length}/${TEST_ORDER.length}`
+    });
+
+    certName.textContent = name;
+    certDate.textContent = cert.tanggal;
+    certScore.textContent = `Rata-rata Post Test: ${cert.skor}`;
+    certNomorEl.textContent = cert.nomor;
+    certKodeEl.textContent = cert.kode;
+
+    badgePrintBtn.textContent = "🖼️ Menyiapkan PDF...";
+    const canvas = await html2canvas(certSheetEl.querySelector(".cert-sheet"), {
+      scale: 2, backgroundColor: "#fffdfb", useCORS: true
+    });
+    const imgData = canvas.toDataURL("image/png");
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation:"landscape", unit:"pt", format:"a4" });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
+    const w = canvas.width * ratio, h = canvas.height * ratio;
+    pdf.addImage(imgData, "PNG", (pageW - w) / 2, (pageH - h) / 2, w, h);
+    pdf.save(`Sertifikat-DalanARSIPARIS-${cert.nomor}.pdf`);
+
+    certIssuedNomorEl.textContent = cert.nomor;
+    certIssuedKodeEl.textContent = cert.kode;
+    certIssuedBox.style.display = "block";
+  }catch(err){
+    console.error("Gagal menerbitkan/mengunduh sertifikat:", err);
+    alert("Terjadi kendala saat membuat sertifikat. Silakan coba lagi.");
+  }finally{
+    badgePrintBtn.disabled = !(overallStats().post >= MIN_FINAL) || !badgeNameInput.value.trim();
+    badgePrintBtn.textContent = originalLabel;
+  }
+}
+
+badgePrintBtn.addEventListener("click", downloadCertificatePdf);
+
+/* ---- Verifikasi Sertifikat ---- */
+const verifyInput = document.getElementById("da-verify-input");
+const verifyBtn = document.getElementById("da-verify-btn");
+const verifyResultEl = document.getElementById("da-verify-result");
+
+async function runVerification(){
+  const raw = verifyInput.value.trim();
+  if(!raw){
+    verifyResultEl.innerHTML = `<div class="verify-result-card invalid"><div class="verify-result-title">⚠️ Masukkan nomor atau kode</div>Silakan isi Nomor Sertifikat atau Kode Verifikasi terlebih dahulu.</div>`;
+    return;
+  }
+  if(!window.daVerifyCertificate){
+    verifyResultEl.innerHTML = `<div class="verify-result-card invalid"><div class="verify-result-title">⚠️ Koneksi belum siap</div>Layanan verifikasi belum aktif. Coba lagi sebentar lagi.</div>`;
+    return;
+  }
+  const original = verifyBtn.textContent;
+  verifyBtn.disabled = true;
+  verifyBtn.textContent = "⏳ Memeriksa...";
+  try{
+    const result = await window.daVerifyCertificate(raw);
+    if(result.found){
+      verifyResultEl.innerHTML = `
+        <div class="verify-result-card valid">
+          <div class="verify-result-title">✅ Sertifikat Terverifikasi Asli</div>
+          <div class="verify-result-row">Nama Peserta: <strong>${result.nama}</strong></div>
+          <div class="verify-result-row">Nomor Sertifikat: <strong>${result.nomor}</strong></div>
+          <div class="verify-result-row">Kode Verifikasi: <strong>${result.kode}</strong></div>
+          <div class="verify-result-row">Tanggal Terbit: <strong>${result.tanggal}</strong></div>
+          <div class="verify-result-row">Rata-rata Post Test: <strong>${result.skor}</strong></div>
+        </div>`;
+    }else{
+      verifyResultEl.innerHTML = `
+        <div class="verify-result-card invalid">
+          <div class="verify-result-title">❌ Sertifikat Tidak Ditemukan</div>
+          Nomor atau kode verifikasi yang dimasukkan tidak cocok dengan data sertifikat DalanARSIPARIS manapun. Periksa kembali penulisannya.
+        </div>`;
+    }
+  }catch(err){
+    console.error("Gagal memverifikasi sertifikat:", err);
+    verifyResultEl.innerHTML = `<div class="verify-result-card invalid"><div class="verify-result-title">⚠️ Terjadi kendala</div>Verifikasi gagal diproses. Silakan coba lagi.</div>`;
+  }finally{
+    verifyBtn.disabled = false;
+    verifyBtn.textContent = original;
+  }
+}
+
+verifyBtn?.addEventListener("click", runVerification);
+verifyInput?.addEventListener("keydown", e=>{ if(e.key === "Enter") runVerification(); });
 
 updateTestUI();
 </script>
@@ -1396,7 +1652,8 @@ import {
   getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, signInAnonymously
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import {
-  getDatabase, ref, set, push, onValue, onChildAdded, update, serverTimestamp
+  getDatabase, ref, set, push, onValue, onChildAdded, update, serverTimestamp,
+  query, orderByChild, equalTo, get, runTransaction
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
 
 /* =========================================================
@@ -1428,6 +1685,282 @@ if(firebaseConfigured){
   db = getDatabase(app);
   googleProvider = new GoogleAuthProvider();
 }
+
+/* =========================================================
+   1B. SINKRONISASI HASIL PRE TEST & POST TEST PESERTA
+   Setiap peserta diidentifikasi dengan UID anonim per perangkat
+   (dibuat otomatis lewat Firebase Anonymous Auth, sama seperti
+   sesi live chat). Data tersimpan di Realtime Database pada:
+     hasil_test/{uid}/nama
+     hasil_test/{uid}/updatedAt
+     hasil_test/{uid}/tahapan/{stage}/pre   -> {score, answers, submittedAt}
+     hasil_test/{uid}/tahapan/{stage}/post  -> {score, answers, submittedAt}
+   Fungsi ini best-effort: kalau Firebase belum dikonfigurasi atau
+   koneksi gagal, hasil tetap aman tersimpan di localStorage (lihat
+   saveResult() pada skrip TESTARSIPARIS di atas).
+   ========================================================= */
+let testParticipantUid = null;
+
+async function ensureTestParticipantUid(){
+  if(!firebaseConfigured || !auth || !db) return null;
+  if(testParticipantUid) return testParticipantUid;
+  try{
+    let user = auth.currentUser;
+    if(!user){
+      const result = await signInAnonymously(auth);
+      user = result.user;
+    }
+    if(user){
+      testParticipantUid = user.uid;
+      return testParticipantUid;
+    }
+  }catch(err){
+    console.warn("Sesi peserta belum dapat dibuat untuk sinkron tes:", err);
+  }
+  return null;
+}
+
+async function syncTestResultToFirebase(type, stage, data){
+  const uid = await ensureTestParticipantUid();
+  if(!uid) return false;
+  try{
+    await update(ref(db, `hasil_test/${uid}/tahapan/${stage}`), { [type]: data });
+    const namaTersimpan = localStorage.getItem("dalanarsiparis_badge_name");
+    await update(ref(db, `hasil_test/${uid}`), {
+      updatedAt: Date.now(),
+      ...(namaTersimpan ? {nama: namaTersimpan} : {})
+    });
+    return true;
+  }catch(err){
+    console.warn("Hasil tes belum tersimpan ke Firebase:", err);
+    return false;
+  }
+}
+
+async function syncBadgeNameToFirebase(name){
+  const uid = await ensureTestParticipantUid();
+  if(!uid) return false;
+  try{
+    await update(ref(db, `hasil_test/${uid}`), { nama:name, updatedAt:Date.now() });
+    return true;
+  }catch(err){
+    console.warn("Nama peserta belum tersimpan ke Firebase:", err);
+    return false;
+  }
+}
+
+window.daSyncTestResult = syncTestResultToFirebase;
+window.daSyncBadgeName = syncBadgeNameToFirebase;
+
+/* =========================================================
+   1C. PENERBITAN & VERIFIKASI SERTIFIKAT
+   Setiap peserta yang lulus mendapat SATU nomor sertifikat dan
+   SATU kode verifikasi yang unik dan permanen (tidak berubah
+   walau sertifikat diunduh berkali-kali). Struktur data:
+     sertifikat/{kodeVerifikasi}      -> {nomor, nama, uid, skor, tahapanSelesai, tanggal, createdAt}
+     sertifikat_by_uid/{uid}          -> kodeVerifikasi
+     sertifikat_counter/{tahun}       -> angka urut terakhir (dinaikkan via transaction)
+   ========================================================= */
+function generateVerificationCode(){
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // tanpa karakter yang mudah tertukar
+  let code = "";
+  for(let i=0;i<8;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
+async function nextCertificateNumber(){
+  const year = new Date().getFullYear();
+  const counterRef = ref(db, `sertifikat_counter/${year}`);
+  const result = await runTransaction(counterRef, current => (current || 0) + 1);
+  const seq = result.snapshot.val();
+  return { nomor: `DAP-${year}-${String(seq).padStart(4,"0")}`, year, seq };
+}
+
+async function issueCertificate({nama, skor, tahapanSelesai}){
+  const uid = await ensureTestParticipantUid();
+  if(!uid) throw new Error("Sesi peserta tidak tersedia (Firebase belum aktif).");
+
+  // Jika peserta ini sudah pernah punya sertifikat, gunakan kembali data yang sama.
+  const existingKodeSnap = await get(ref(db, `sertifikat_by_uid/${uid}`));
+  if(existingKodeSnap.exists()){
+    const kode = existingKodeSnap.val();
+    const certSnap = await get(ref(db, `sertifikat/${kode}`));
+    if(certSnap.exists()) return { kode, ...certSnap.val() };
+  }
+
+  const {nomor} = await nextCertificateNumber();
+  let kode = generateVerificationCode();
+  // Hindari tabrakan kode (kemungkinan sangat kecil, tetap dicek).
+  for(let attempt=0; attempt<3; attempt++){
+    const clash = await get(ref(db, `sertifikat/${kode}`));
+    if(!clash.exists()) break;
+    kode = generateVerificationCode();
+  }
+
+  const tanggal = new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+  const record = {
+    nomor, nama, uid, skor, tahapanSelesai,
+    tanggal, createdAt: Date.now()
+  };
+
+  await set(ref(db, `sertifikat/${kode}`), record);
+  await set(ref(db, `sertifikat_by_uid/${uid}`), kode);
+
+  return { kode, ...record };
+}
+
+async function verifyCertificate(inputRaw){
+  if(!db) return { found:false, reason:"offline" };
+  const input = inputRaw.trim();
+  if(!input) return { found:false, reason:"empty" };
+
+  // 1) Coba sebagai kode verifikasi (kunci langsung, paling cepat).
+  const asCode = input.toUpperCase();
+  const byCode = await get(ref(db, `sertifikat/${asCode}`));
+  if(byCode.exists()){
+    return { found:true, kode:asCode, ...byCode.val() };
+  }
+
+  // 2) Coba sebagai nomor sertifikat.
+  const byNumberQuery = query(ref(db, "sertifikat"), orderByChild("nomor"), equalTo(input.toUpperCase()));
+  const byNumberSnap = await get(byNumberQuery);
+  if(byNumberSnap.exists()){
+    let result = null;
+    byNumberSnap.forEach(child=>{ result = { found:true, kode:child.key, ...child.val() }; });
+    if(result) return result;
+  }
+
+  return { found:false, reason:"not_found" };
+}
+
+window.daIssueCertificate = issueCertificate;
+window.daVerifyCertificate = verifyCertificate;
+
+/* =========================================================
+   1C. PANEL REKAP HASIL TES (ADMIN)
+   Menampilkan rekap Pre Test / Post Test seluruh peserta yang
+   tersimpan di hasil_test/{uid}, hanya untuk admin yang login.
+   ========================================================= */
+const adminTabChat = document.getElementById("da-admin-tab-chat");
+const adminTabTests = document.getElementById("da-admin-tab-tests");
+const adminViewChat = document.getElementById("da-admin-view-chat");
+const adminViewTests = document.getElementById("da-admin-view-tests");
+const testsSummaryEl = document.getElementById("da-tests-summary");
+const testsTableEl = document.getElementById("da-tests-table");
+const testsExportBtn = document.getElementById("da-tests-export");
+
+let testRecapListening = false;
+let testRecapData = null;
+
+function showAdminView(view){
+  const chatActive = view === "chat";
+  adminTabChat.classList.toggle("active", chatActive);
+  adminTabTests.classList.toggle("active", !chatActive);
+  adminViewChat.style.display = chatActive ? "grid" : "none";
+  adminViewTests.style.display = chatActive ? "none" : "flex";
+  if(!chatActive) startTestRecapListener();
+}
+adminTabChat?.addEventListener("click",()=>showAdminView("chat"));
+adminTabTests?.addEventListener("click",()=>showAdminView("tests"));
+
+function startTestRecapListener(){
+  if(testRecapListening || !db) return;
+  testRecapListening = true;
+  onValue(ref(db,"hasil_test"), snap=>{
+    testRecapData = snap.val() || {};
+    renderTestRecap();
+  }, err=>{
+    console.warn("Gagal memuat rekap hasil tes:", err);
+    if(testsSummaryEl) testsSummaryEl.textContent = "Gagal memuat data hasil tes.";
+  });
+}
+
+function renderTestRecap(){
+  if(!testsTableEl) return;
+  const TESTS = window.TESTS || {};
+  const TEST_ORDER = window.TEST_ORDER || [];
+  const rows = Object.entries(testRecapData || {});
+  const thead = testsTableEl.querySelector("thead");
+  const tbody = testsTableEl.querySelector("tbody");
+  const colCount = 4 + TEST_ORDER.length;
+
+  const stageHeaders = TEST_ORDER.map(stage=>`<th>${(TESTS[stage] && TESTS[stage].title) || stage} (Pre/Post)</th>`).join("");
+  thead.innerHTML = `<tr><th>Nama Peserta</th><th>UID</th>${stageHeaders}<th>Rata Pre</th><th>Rata Post</th><th>Lengkap</th><th>Update</th></tr>`;
+
+  if(!rows.length){
+    tbody.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;color:var(--ink-dim);padding:16px">Belum ada data peserta.</td></tr>`;
+    if(testsSummaryEl) testsSummaryEl.textContent = "0 peserta";
+    return;
+  }
+
+  const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : "–";
+  let bodyHtml = "";
+  rows.forEach(([uid,data])=>{
+    const tahapan = (data && data.tahapan) || {};
+    let preScores=[], postScores=[], completed=0;
+    const cells = TEST_ORDER.map(stage=>{
+      const pre = tahapan[stage] && tahapan[stage].pre;
+      const post = tahapan[stage] && tahapan[stage].post;
+      if(pre) preScores.push(pre.score);
+      if(post) postScores.push(post.score);
+      if(pre && post) completed++;
+      return `<td class="num">${pre ? pre.score : "–"} / ${post ? post.score : "–"}</td>`;
+    }).join("");
+    const updated = data && data.updatedAt ? new Date(data.updatedAt).toLocaleString("id-ID") : "–";
+    const nama = (data && data.nama) ? data.nama : "(tanpa nama)";
+    bodyHtml += `<tr>
+      <td>${nama}</td>
+      <td>${uid.slice(0,8)}…</td>
+      ${cells}
+      <td class="num">${avg(preScores)}</td>
+      <td class="num">${avg(postScores)}</td>
+      <td class="num">${completed}/${TEST_ORDER.length}</td>
+      <td>${updated}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = bodyHtml;
+  if(testsSummaryEl) testsSummaryEl.textContent = `${rows.length} peserta`;
+}
+
+function exportTestRecapCsv(){
+  const TESTS = window.TESTS || {};
+  const TEST_ORDER = window.TEST_ORDER || [];
+  const rows = Object.entries(testRecapData || {});
+  if(!rows.length) return;
+  const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : "";
+  const header = ["Nama","UID", ...TEST_ORDER.flatMap(s=>{
+    const title = (TESTS[s] && TESTS[s].title) || s;
+    return [`${title} Pre`,`${title} Post`];
+  }), "Rata Pre","Rata Post","Lengkap","Update Terakhir"];
+  const lines = [header.join(",")];
+  rows.forEach(([uid,data])=>{
+    const tahapan = (data && data.tahapan) || {};
+    let preScores=[], postScores=[], completed=0;
+    const cells = [];
+    TEST_ORDER.forEach(stage=>{
+      const pre = tahapan[stage] && tahapan[stage].pre;
+      const post = tahapan[stage] && tahapan[stage].post;
+      if(pre) preScores.push(pre.score);
+      if(post) postScores.push(post.score);
+      if(pre && post) completed++;
+      cells.push(pre ? pre.score : "", post ? post.score : "");
+    });
+    const updated = data && data.updatedAt ? new Date(data.updatedAt).toLocaleString("id-ID") : "";
+    const nama = (data && data.nama) ? data.nama : "(tanpa nama)";
+    const namaEsc = `"${nama.replace(/"/g,'""')}"`;
+    lines.push([namaEsc, uid, ...cells, avg(preScores), avg(postScores), `${completed}/${TEST_ORDER.length}`, `"${updated}"`].join(","));
+  });
+  const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `rekap-hasil-tes-${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+testsExportBtn?.addEventListener("click", exportTestRecapCsv);
 
 /* =========================================================
    2. ELEMENT
@@ -1885,6 +2418,7 @@ if(firebaseConfigured){
       loginBox.style.display="none";
       adminDock.style.display="block";
       loadConversations();
+      startTestRecapListener();
       statusEl.textContent="Admin online • Percakapan dapat ditangani admin";
       await update(ref(db,`presence/${user.uid}`),{online:true,email:user.email,updatedAt:Date.now()});
     }else if(user && user.isAnonymous){
