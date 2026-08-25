@@ -1040,6 +1040,90 @@ body.da-not-home #da-chat-panel{
   .da-admin-tabs{flex-wrap:wrap}
 }
 
+
+/* ===== PANEL ADMIN: SCROLL NYAMAN ===== */
+#da-admin-dock{
+  max-height:calc(100vh - 28px) !important;
+  overflow:hidden !important;
+}
+#da-admin-dock .da-admin-head{
+  position:sticky;
+  top:0;
+  z-index:4;
+}
+#da-admin-dock .da-admin-tabs{
+  position:sticky;
+  top:0;
+  z-index:3;
+}
+#da-admin-dock .da-admin-body,
+#da-admin-dock .da-admin-tests-body,
+#da-admin-dock #da-admin-view-video{
+  max-height:calc(100vh - 150px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+}
+#da-admin-dock .da-admin-body::-webkit-scrollbar,
+#da-admin-dock .da-admin-tests-body::-webkit-scrollbar,
+#da-admin-dock #da-admin-view-video::-webkit-scrollbar{
+  width:7px;
+}
+#da-admin-dock .da-admin-body::-webkit-scrollbar-track,
+#da-admin-dock .da-admin-tests-body::-webkit-scrollbar-track,
+#da-admin-dock #da-admin-view-video::-webkit-scrollbar-track{
+  background:var(--bg);
+  border-radius:10px;
+}
+#da-admin-dock .da-admin-body::-webkit-scrollbar-thumb,
+#da-admin-dock .da-admin-tests-body::-webkit-scrollbar-thumb,
+#da-admin-dock #da-admin-view-video::-webkit-scrollbar-thumb{
+  background:var(--ink-dim);
+  border-radius:10px;
+}
+#da-admin-dock .da-admin-body::-webkit-scrollbar-thumb:hover,
+#da-admin-dock .da-admin-tests-body::-webkit-scrollbar-thumb:hover,
+#da-admin-dock #da-admin-view-video::-webkit-scrollbar-thumb:hover{
+  background:var(--accent);
+}
+
+/* Jendela Kelola Video juga punya scroll sendiri */
+.da-video-manager-window{
+  max-height:92vh !important;
+}
+.da-video-manager-body{
+  flex:1;
+  min-height:0;
+  overflow-y:auto !important;
+  overflow-x:hidden;
+  scrollbar-width:thin;
+  overscroll-behavior:contain;
+}
+.da-video-manager-body::-webkit-scrollbar{width:7px}
+.da-video-manager-body::-webkit-scrollbar-track{
+  background:var(--bg);
+  border-radius:10px;
+}
+.da-video-manager-body::-webkit-scrollbar-thumb{
+  background:var(--ink-dim);
+  border-radius:10px;
+}
+.da-video-manager-body::-webkit-scrollbar-thumb:hover{
+  background:var(--accent);
+}
+
+@media(max-width:650px){
+  #da-admin-dock{
+    max-height:calc(100vh - 12px) !important;
+  }
+  #da-admin-dock .da-admin-body,
+  #da-admin-dock .da-admin-tests-body,
+  #da-admin-dock #da-admin-view-video{
+    max-height:calc(100vh - 125px);
+  }
+}
+
 </style>
 
 <!-- =========================================================
