@@ -274,6 +274,182 @@
     content:' 🔒';
   }
 
+  /* ===== FAQ ===== */
+  .faq-list{ display:flex; flex-direction:column; gap:0.9rem; max-width:820px; }
+
+  .faq-item{
+    background: var(--paper);
+    border-radius:10px;
+    box-shadow:0 4px 18px rgba(133,14,53,0.07);
+    border-left:4px solid var(--accent);
+    overflow:hidden;
+  }
+
+  .faq-question{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+    background:none;
+    border:none;
+    text-align:left;
+    cursor:pointer;
+    padding:1.15rem 1.5rem;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:1rem;
+    color: var(--ink);
+  }
+
+  .faq-question .faq-icon{
+    flex-shrink:0;
+    width:1.6rem;
+    height:1.6rem;
+    border-radius:50%;
+    background: var(--tab);
+    color: var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0.9rem;
+    transition: transform 0.25s ease;
+  }
+
+  .faq-item.open .faq-icon{ transform: rotate(45deg); }
+
+  .faq-answer{
+    max-height:0;
+    overflow:hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding:0 1.5rem;
+    color: var(--ink-dim);
+    font-size:0.95rem;
+  }
+
+  .faq-item.open .faq-answer{
+    max-height:600px;
+    padding:0 1.5rem 1.3rem;
+  }
+
+  .faq-search{
+    max-width:820px;
+    margin-bottom:1.75rem;
+    position:relative;
+  }
+
+  .faq-search input, .gloss-search input{
+    width:100%;
+    padding:0.85rem 1.1rem 0.85rem 2.6rem;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background: var(--paper);
+    font-family:'Inter', sans-serif;
+    font-size:0.95rem;
+    color: var(--ink);
+  }
+
+  .faq-search input:focus, .gloss-search input:focus{
+    outline:none;
+    border-color: var(--accent);
+  }
+
+  .faq-search::before, .gloss-search::before{
+    content:'🔍';
+    position:absolute;
+    left:1rem;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:0.9rem;
+    opacity:0.6;
+  }
+
+  .faq-empty, .gloss-empty{
+    color: var(--ink-dim);
+    font-style:italic;
+    padding:1rem 0;
+    display:none;
+  }
+
+  /* ===== GLOSSARIUM ===== */
+  .gloss-search{ max-width:820px; margin-bottom:1rem; }
+
+  .gloss-alphabet{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0.4rem;
+    max-width:1100px;
+    margin-bottom:1.75rem;
+  }
+
+  .gloss-alphabet button{
+    width:2.1rem;
+    height:2.1rem;
+    border-radius:6px;
+    border:1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink-dim);
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.8rem;
+    font-weight:600;
+    cursor:pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .gloss-alphabet button:hover,
+  .gloss-alphabet button.active{
+    background: var(--accent);
+    color:#fff;
+    border-color: var(--accent);
+  }
+
+  .gloss-alphabet button:disabled{
+    opacity:0.3;
+    cursor:not-allowed;
+  }
+
+  .gloss-list{ max-width:1100px; }
+
+  .gloss-letter-group{ margin-bottom:1.75rem; }
+
+  .gloss-letter-heading{
+    font-family:'Fraunces', serif;
+    font-size:1.5rem;
+    color: var(--accent);
+    border-bottom:2px solid var(--line);
+    padding-bottom:0.4rem;
+    margin-bottom:0.9rem;
+  }
+
+  .gloss-term{
+    background: var(--paper);
+    border-radius:8px;
+    box-shadow:0 3px 14px rgba(133,14,53,0.06);
+    padding:1.1rem 1.4rem;
+    margin-bottom:0.7rem;
+  }
+
+  .gloss-term dt{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:1.05rem;
+    color: var(--ink);
+    margin-bottom:0.35rem;
+  }
+
+  .gloss-term dt .gloss-abbr{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.7rem;
+    font-weight:500;
+    color: var(--accent);
+    margin-left:0.5rem;
+  }
+
+  .gloss-term dd{
+    color: var(--ink-dim);
+    font-size:0.93rem;
+  }
+
   /* Beranda cycle diagram */
   .cycle{
     display:flex;
@@ -692,6 +868,14 @@
   </nav>
 
   <nav class="nav-group">
+    <div class="nav-group-title label">Bantuan</div>
+    <ul class="nav-list">
+      <li><button class="nav-item" data-page="faq"><span class="code">❓</span> FAQ</button></li>
+      <li><button class="nav-item" data-page="glossarium"><span class="code">📖</span> Glossarium</button></li>
+    </ul>
+  </nav>
+
+  <nav class="nav-group">
     <div class="nav-group-title label">Hubungi DalanARSIPARIS</div>
     <ul class="nav-list">
       <li><button class="nav-item" data-page="email"><span class="code">✉</span> EmailARSIPARIS</button></li>
@@ -1082,6 +1266,110 @@
 </section>
 
 
+<!-- FAQ -->
+<section class="page" id="page-faq">
+  <div class="page-hero">
+    <div class="eyebrow label">BANTUAN</div>
+    <h1>FAQ Pengelolaan Arsip Dinamis</h1>
+    <p>Kumpulan pertanyaan umum seputar substansi pengelolaan arsip dinamis, mulai dari penciptaan, penggunaan, pemeliharaan, hingga penyusutan arsip.</p>
+  </div>
+  <div class="page-body">
+    <div class="faq-search">
+      <input type="text" id="faqSearchInput" placeholder="Cari pertanyaan, misal: retensi, disposisi, pemusnahan...">
+    </div>
+    <div class="faq-empty" id="faqEmpty">Tidak ada pertanyaan yang cocok dengan pencarian Anda.</div>
+    <div class="faq-list" id="faqList">
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Apa yang dimaksud dengan arsip dinamis?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>Arsip dinamis adalah arsip yang digunakan secara langsung dalam kegiatan pencipta arsip dan disimpan selama jangka waktu tertentu. Arsip dinamis terdiri atas arsip vital, arsip aktif, dan arsip inaktif.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Apa perbedaan arsip aktif dan arsip inaktif?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>Arsip aktif adalah arsip yang frekuensi penggunaannya masih tinggi sehingga dikelola oleh unit pengolah, sedangkan arsip inaktif adalah arsip yang frekuensi penggunaannya telah menurun sehingga dikelola dan disimpan oleh unit kearsipan.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Apa saja tahapan dalam pengelolaan arsip dinamis?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>Pengelolaan arsip dinamis meliputi empat tahap utama, yaitu penciptaan arsip (pengurusan naskah dinas masuk dan keluar), penggunaan arsip (penemuan kembali dan peminjaman), pemeliharaan arsip (pemberkasan dan penyimpanan), serta penyusutan arsip (pemindahan dan pemusnahan).</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Apa fungsi disposisi dalam pengurusan naskah dinas masuk?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>Disposisi berfungsi sebagai petunjuk tertulis dari pimpinan mengenai tindak lanjut yang harus dilakukan terhadap suatu naskah dinas masuk, sehingga naskah dapat diarahkan kepada pejabat atau unit yang berwenang untuk diproses lebih lanjut.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Bagaimana cara menemukan kembali arsip yang dibutuhkan?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>Penemuan kembali arsip dapat dilakukan dengan menggunakan sarana bantu seperti indeks, kode klasifikasi, nomor urut, asal surat, tanggal surat, dan nomor surat, sehingga arsip yang dicari dapat ditemukan secara cepat dan tepat.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Apa yang perlu diperhatikan saat meminjamkan arsip?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>Peminjaman arsip harus dilakukan melalui prosedur yang telah ditetapkan dan disertai pencatatan administrasi, seperti nama peminjam, tanggal peminjaman, dan batas waktu pengembalian, guna menjamin keamanan serta memudahkan pengendalian keberadaan arsip.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Apa itu pemberkasan arsip dan mengapa penting dilakukan?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>Pemberkasan arsip adalah proses menata arsip ke dalam satu berkas berdasarkan kesamaan masalah, fungsi, atau kegiatan sesuai klasifikasi arsip. Kegiatan ini penting agar arsip tersusun sistematis dan mudah ditemukan kembali saat dibutuhkan.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Apa yang dimaksud dengan Jadwal Retensi Arsip (JRA)?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>JRA adalah daftar yang memuat sekurang-kurangnya jangka waktu penyimpanan atau retensi, jenis arsip, dan keterangan yang berisi rekomendasi mengenai penetapan suatu jenis arsip, yang dijadikan pedoman dalam melakukan penyusutan dan penyelamatan arsip.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Apa perbedaan pemindahan dan pemusnahan arsip?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>Pemindahan arsip adalah kegiatan memindahkan arsip inaktif dari unit pengolah ke unit kearsipan, sedangkan pemusnahan arsip adalah kegiatan memusnahkan arsip yang telah habis retensinya dan tidak memiliki nilai guna, sesuai prosedur dan ketentuan yang berlaku.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Siapa yang berwenang melakukan penyusutan arsip?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>Penyusutan arsip, termasuk pemindahan dan pemusnahan, dilaksanakan oleh Tata Usaha Pengolah atau unit kearsipan sesuai dengan kewenangannya, dengan berpedoman pada Jadwal Retensi Arsip yang telah ditetapkan.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Mengapa arsip yang telah habis nilai gunanya tidak boleh langsung dimusnahkan?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>Karena pemusnahan arsip harus dilakukan sesuai prosedur, yaitu setelah dipastikan tidak ada peraturan perundang-undangan yang melarang serta arsip tersebut tidak berkaitan dengan penyelesaian suatu perkara, dan harus dituangkan dalam berita acara pemusnahan.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Apa manfaat pengelolaan arsip dinamis yang baik bagi suatu organisasi?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>Pengelolaan arsip dinamis yang baik membantu organisasi menghemat tempat penyimpanan dan biaya, mempercepat proses penemuan kembali arsip, mendukung pengambilan keputusan, serta menjadi bahan pertanggungjawaban dan alat bukti yang sah.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Saya menemukan istilah kearsipan yang tidak saya pahami, harus bagaimana?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>Silakan kunjungi menu "Glossarium" yang memuat daftar lengkap istilah-istilah kearsipan beserta penjelasannya secara alfabetis.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question"><span>Bagaimana jika saya ingin bertanya lebih lanjut mengenai materi arsip dinamis?</span><span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>Anda dapat menghubungi tim DalanARSIPARIS melalui menu "EmailARSIPARIS" atau "ChatARSIPARIS" pada bagian "Hubungi DalanARSIPARIS".</p></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- GLOSSARIUM -->
+<section class="page" id="page-glossarium">
+  <div class="page-hero">
+    <div class="eyebrow label">BANTUAN</div>
+    <h1>Glossarium Istilah Kearsipan</h1>
+    <p>Kumpulan istilah-istilah dalam bidang kearsipan beserta pengertiannya, disusun secara alfabetis untuk memudahkan pencarian.</p>
+  </div>
+  <div class="page-body">
+    <div class="gloss-search">
+      <input type="text" id="glossSearchInput" placeholder="Cari istilah kearsipan, misal: akuisisi, disposisi, JRA...">
+    </div>
+    <div class="gloss-alphabet" id="glossAlphabet"></div>
+    <div class="gloss-empty" id="glossEmpty">Tidak ada istilah yang cocok dengan pencarian Anda.</div>
+    <div class="gloss-list" id="glossList"></div>
+  </div>
+</section>
 
 <!-- FUN GAME ARSIP — MISSION MAZE 3 LEVEL -->
 <section class="page" id="page-game">
@@ -1212,6 +1500,189 @@
   if(initial && document.getElementById('page-' + initial)){
     showPage(initial);
   }
+</script>
+
+<script>
+/* ===================== FAQ ===================== */
+(function(){
+  const items = document.querySelectorAll('#faqList .faq-item');
+  const searchInput = document.getElementById('faqSearchInput');
+  const emptyMsg = document.getElementById('faqEmpty');
+
+  items.forEach(item => {
+    const question = item.querySelector('.faq-question');
+    question.addEventListener('click', () => {
+      const wasOpen = item.classList.contains('open');
+      items.forEach(i => i.classList.remove('open'));
+      if(!wasOpen) item.classList.add('open');
+    });
+  });
+
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    let visibleCount = 0;
+    items.forEach(item => {
+      const text = item.textContent.toLowerCase();
+      const match = text.includes(q);
+      item.style.display = match ? '' : 'none';
+      if(match) visibleCount++;
+    });
+    emptyMsg.style.display = visibleCount === 0 ? 'block' : 'none';
+  });
+})();
+
+/* ===================== GLOSSARIUM ===================== */
+(function(){
+  const GLOSSARY = [
+    {term:"Akses Arsip", def:"Ketersediaan arsip sebagai hasil dari kewenangan hukum dan otorisasi legal serta keberadaan sarana bantu untuk mempermudah penemuan dan pemanfaatan arsip."},
+    {term:"Akuisisi Arsip", def:"Proses penambahan khazanah arsip statis pada lembaga kearsipan yang berasal dari pencipta arsip dan/atau sumber lain sesuai peraturan yang berlaku."},
+    {term:"Alih Media Arsip", def:"Kegiatan mengubah media arsip dari satu media ke media lain, misalnya dari media kertas ke media elektronik/digital, untuk kepentingan pelestarian atau kemudahan akses."},
+    {term:"Arsip", def:"Rekaman kegiatan atau peristiwa dalam berbagai bentuk dan media sesuai dengan perkembangan teknologi informasi dan komunikasi yang dibuat dan diterima oleh lembaga negara, pemerintahan daerah, lembaga pendidikan, perusahaan, organisasi politik, organisasi kemasyarakatan, dan perseorangan dalam pelaksanaan kehidupan bermasyarakat, berbangsa, dan bernegara."},
+    {term:"Arsip Aktif", def:"Arsip yang frekuensi penggunaannya tinggi dan/atau terus-menerus sehingga dikelola oleh unit pengolah pada suatu instansi."},
+    {term:"Arsip Dinamis", def:"Arsip yang digunakan secara langsung dalam kegiatan pencipta arsip dan disimpan selama jangka waktu tertentu, terdiri atas arsip vital, arsip aktif, dan arsip inaktif."},
+    {term:"Arsip Inaktif", def:"Arsip yang frekuensi penggunaannya telah menurun sehingga dikelola dan disimpan oleh unit kearsipan pada suatu instansi."},
+    {term:"Arsip Statis", def:"Arsip yang dihasilkan oleh pencipta arsip karena memiliki nilai guna kesejarahan, telah habis retensinya, dan berketerangan dipermanenkan yang diserahkan oleh unit kearsipan ke lembaga kearsipan."},
+    {term:"Arsip Terjaga", def:"Arsip negara yang berkaitan dengan keberadaan dan kelangsungan hidup bangsa dan negara yang harus dijaga keutuhan, keamanan, dan keselamatannya."},
+    {term:"Arsip Vital", def:"Arsip yang keberadaannya merupakan persyaratan dasar bagi kelangsungan operasional pencipta arsip, tidak dapat diperbarui, dan tidak tergantikan apabila rusak atau hilang."},
+    {term:"Arsiparis", def:"Seseorang yang memiliki kompetensi di bidang kearsipan yang diperoleh melalui pendidikan formal dan/atau pendidikan dan pelatihan kearsipan serta mempunyai fungsi, tugas, dan tanggung jawab melaksanakan kegiatan kearsipan."},
+    {term:"Autentikasi Arsip", def:"Pernyataan bahwa arsip dinamis yang dikelola oleh lembaga kearsipan/pencipta arsip merupakan arsip yang autentik berdasarkan sistem yang andal, sehingga dapat digunakan sebagai alat bukti yang sah."},
+    {term:"Autentikasi Tanda Tangan Elektronik", def:"Proses verifikasi untuk memastikan keaslian dan keabsahan tanda tangan elektronik yang melekat pada suatu naskah/arsip elektronik."},
+    {term:"Berita Acara Pemindahan Arsip", def:"Dokumen resmi yang dibuat pada saat pemindahan arsip inaktif dari unit pengolah ke unit kearsipan, memuat keterangan mengenai arsip yang dipindahkan."},
+    {term:"Berita Acara Pemusnahan Arsip", def:"Naskah dinas yang menjelaskan proses pelaksanaan pemusnahan arsip serta memuat daftar arsip yang dimusnahkan, ditandatangani oleh pihak yang berwenang dan saksi."},
+    {term:"Boks Arsip", def:"Wadah yang digunakan untuk menyimpan dan melindungi arsip fisik, biasanya terbuat dari karton, agar arsip tersusun rapi dan terlindung dari debu maupun kerusakan."},
+    {term:"Daftar Arsip", def:"Sarana bantu penemuan arsip yang berisi data tentang arsip yang tercipta, sekurang-kurangnya memuat unit pengolah, nomor, kode klasifikasi, uraian informasi, kurun waktu, jumlah, serta keterangan mengenai arsip."},
+    {term:"Daftar Arsip Vital", def:"Daftar yang memuat informasi mengenai arsip vital suatu instansi, digunakan sebagai sarana bantu perlindungan dan penyelamatan arsip vital."},
+    {term:"Daftar Pencarian Arsip (DPA)", def:"Daftar yang berisi nama dan/atau tempat lahir orang yang terlibat perkara serta uraian singkat perkaranya, yang disusun untuk keperluan penelusuran arsip terkait."},
+    {term:"Deposit", def:"Bahan pustaka atau arsip yang dititipkan/diserahkan pihak lain kepada lembaga kearsipan tanpa disertai pengalihan hak kepemilikan."},
+    {term:"Deskripsi Arsip", def:"Kegiatan pencatatan isi dan struktur informasi arsip dalam suatu sarana bantu, seperti kartu deskripsi, sebagai dasar penyusunan daftar arsip statis."},
+    {term:"Disposisi", def:"Petunjuk tertulis mengenai tindakan yang akan diambil terhadap surat/naskah dinas masuk, berisi arahan singkat dari pimpinan kepada bawahan atau unit terkait."},
+    {term:"Duplikasi Arsip", def:"Kegiatan menggandakan atau membuat salinan arsip untuk keperluan pengamanan informasi, backup, atau layanan penggunaan tanpa merusak arsip asli."},
+    {term:"Fumigasi", def:"Kegiatan pembasmian hama perusak arsip (jamur, serangga, rayap) menggunakan bahan kimia dalam ruang tertutup guna melindungi fisik arsip."},
+    {term:"Guide Arsip", def:"Sarana bantu penemuan arsip statis yang bersifat umum, berisi gambaran ringkas mengenai isi/khazanah arsip yang disimpan oleh suatu lembaga kearsipan."},
+    {term:"Indeks", def:"Tanda pengenal berupa kata, istilah, atau kelompok kata yang digunakan sebagai sarana penemuan kembali arsip, biasanya diambil dari isi pokok arsip."},
+    {term:"Inventarisasi Arsip", def:"Kegiatan mendata seluruh arsip yang ada di suatu unit kerja, baik jumlah, jenis, kondisi, maupun lokasi penyimpanannya."},
+    {term:"Jadwal Retensi Arsip (JRA)", def:"Daftar yang berisi sekurang-kurangnya jangka waktu penyimpanan atau retensi, jenis arsip, dan keterangan yang berisi rekomendasi tentang penetapan suatu jenis arsip, dijadikan pedoman penyusutan dan penyelamatan arsip."},
+    {term:"Kartu Kendali", def:"Sarana pengendalian naskah dinas berupa kartu berisi keterangan mengenai naskah dinas masuk/keluar, digunakan untuk mengendalikan, mencatat, dan menyimpan informasi surat."},
+    {term:"Kearsipan", def:"Hal-hal yang berkenaan dengan arsip, mencakup penciptaan, penggunaan, pemeliharaan, dan penyusutan arsip."},
+    {term:"Khazanah Arsip", def:"Keseluruhan arsip yang disimpan oleh suatu lembaga kearsipan, baik arsip statis maupun koleksi arsip lainnya."},
+    {term:"Klasifikasi Arsip", def:"Pola pengaturan arsip secara berjenjang, mulai dari yang bersifat umum sampai dengan yang bersifat khusus, berdasarkan fungsi, masalah, atau kegiatan yang menghasilkan arsip."},
+    {term:"Klasifikasi Keamanan Arsip", def:"Kategorisasi arsip berdasarkan tingkat kerahasiaan dan dampak yang ditimbulkan terhadap kepentingan pihak-pihak terkait apabila diketahui oleh pihak yang tidak berhak."},
+    {term:"Kode Klasifikasi", def:"Tanda pengenal berupa kombinasi huruf dan/atau angka yang mewakili suatu unit informasi dalam skema klasifikasi arsip."},
+    {term:"Konservasi Arsip", def:"Kegiatan memelihara dan merawat fisik arsip agar tetap dalam kondisi baik dan mencegah kerusakan lebih lanjut."},
+    {term:"Kurun Waktu", def:"Rentang waktu tercipta atau terhimpunnya arsip, mencakup tanggal tertua dan tanggal termuda dari suatu berkas atau kelompok arsip."},
+    {term:"Layanan Arsip", def:"Kegiatan memberikan akses dan pemanfaatan arsip kepada pengguna sesuai dengan ketentuan dan prosedur yang berlaku."},
+    {term:"Lembaga Kearsipan", def:"Lembaga yang memiliki fungsi, tugas, dan tanggung jawab di bidang pengelolaan arsip statis dan pembinaan kearsipan, misalnya Arsip Nasional Republik Indonesia (ANRI)."},
+    {term:"Manuver", def:"Kegiatan menyusun dan mengelompokkan kembali kartu/lembar arsip berdasarkan indeks atau klasifikasi tertentu sebelum disatukan menjadi berkas."},
+    {term:"Naskah Dinas", def:"Komunikasi tulis sebagai alat komunikasi kedinasan yang dibuat oleh pejabat yang berwenang di lingkungan lembaga negara/pemerintahan dalam rangka penyelenggaraan tugas pemerintahan."},
+    {term:"Nilai Guna Arsip", def:"Nilai yang menjadi tolok ukur penentuan jangka waktu simpan atau retensi arsip yang didasarkan pada kegunaan bagi kepentingan pencipta arsip maupun kepentingan publik sebagai bahan pertanggungjawaban."},
+    {term:"Nomor Berkas", def:"Nomor urut yang diberikan pada suatu berkas arsip untuk memudahkan pengendalian dan penemuan kembali."},
+    {term:"Pemberkasan Arsip", def:"Proses menata arsip ke dalam suatu berkas atau himpunan berkas dengan menggunakan sistem tertentu (klasifikasi, alfabetis, kronologis, dsb.)."},
+    {term:"Pemeliharaan Arsip", def:"Kegiatan menjaga keutuhan, keamanan, dan keselamatan arsip baik fisik maupun informasinya, termasuk pemberkasan, penataan, dan penyimpanan arsip aktif maupun inaktif."},
+    {term:"Peminjaman Arsip", def:"Kegiatan penyerahan sementara arsip kepada peminjam yang berwenang melalui prosedur tertentu untuk keperluan tugas, disertai pencatatan agar arsip dapat dikendalikan dan dikembalikan."},
+    {term:"Pemindahan Arsip", def:"Kegiatan memindahkan arsip inaktif dari unit pengolah ke unit kearsipan dalam lingkungan lembaga pencipta arsip."},
+    {term:"Pemusnahan Arsip", def:"Kegiatan memusnahkan arsip yang telah habis retensinya, tidak memiliki nilai guna, tidak ada peraturan perundang-undangan yang melarang, serta tidak berkaitan dengan penyelesaian suatu perkara."},
+    {term:"Penataan Arsip", def:"Kegiatan mengatur fisik dan informasi arsip sesuai dengan sistem tertentu agar mudah ditemukan kembali saat diperlukan."},
+    {term:"Pencipta Arsip", def:"Pihak yang mempunyai kemandirian dan otoritas dalam pelaksanaan fungsi, tugas, dan tanggung jawabnya yang menimbulkan penciptaan arsip, meliputi satuan kerja perangkat pemerintahan, perusahaan, organisasi politik, dan perseorangan."},
+    {term:"Penemuan Kembali Arsip", def:"Kegiatan menelusuri dan menemukan arsip yang dibutuhkan dengan menggunakan sarana bantu seperti indeks, kode klasifikasi, nomor urut, asal, tanggal, atau nomor surat."},
+    {term:"Pengelolaan Arsip Dinamis", def:"Proses pengendalian arsip dinamis secara efisien, efektif, dan sistematis meliputi penciptaan, penggunaan dan pemeliharaan, serta penyusutan arsip."},
+    {term:"Penilaian Arsip", def:"Proses menentukan jangka waktu simpan dan nasib akhir arsip melalui pemeriksaan dan pengujian informasi guna menentukan nilai guna suatu arsip."},
+    {term:"Penomoran Arsip", def:"Pemberian nomor pada surat/arsip untuk kepentingan pengendalian, pengurutan, dan penemuan kembali arsip."},
+    {term:"Penyimpanan Arsip", def:"Kegiatan meletakkan arsip di tempat penyimpanan (rak, boks, lemari, atau media elektronik) dengan menerapkan sistem tertentu agar arsip aman dan mudah ditemukan."},
+    {term:"Penyusutan Arsip", def:"Kegiatan pengurangan jumlah arsip dengan cara pemindahan arsip inaktif dari unit pengolah ke unit kearsipan, pemusnahan arsip yang tidak memiliki nilai guna, dan penyerahan arsip statis kepada lembaga kearsipan."},
+    {term:"Preservasi Arsip", def:"Keseluruhan usaha pemeliharaan dan pelestarian arsip, baik fisik maupun informasinya, agar terhindar dari kerusakan dan dapat digunakan dalam jangka waktu yang lama."},
+    {term:"Restorasi Arsip", def:"Kegiatan memperbaiki fisik arsip yang mengalami kerusakan agar dapat digunakan kembali dan diselamatkan informasinya."},
+    {term:"Retensi Arsip", def:"Jangka waktu penyimpanan suatu jenis arsip yang menunjukkan berapa lama arsip tersebut disimpan sebelum dimusnahkan, dinilai kembali, atau dipermanenkan."},
+    {term:"Sentralisasi Arsip", def:"Sistem pengelolaan arsip yang memusatkan penyimpanan dan pengendalian arsip pada satu unit tertentu dalam suatu organisasi."},
+    {term:"Sistem Klasifikasi Keamanan dan Akses Arsip (SKKAA)", def:"Pola yang digunakan sebagai pedoman untuk menentukan klasifikasi keamanan dan hak akses arsip dinamis dalam suatu instansi."},
+    {term:"Skedul Retensi", def:"Istilah lain untuk Jadwal Retensi Arsip (JRA), yaitu pedoman lama penyimpanan setiap jenis arsip sebelum dilakukan penyusutan."},
+    {term:"SRIKANDI", def:"Sistem Informasi Kearsipan Dinamis Terintegrasi, yaitu aplikasi umum bidang kearsipan yang dikembangkan untuk mengelola arsip dinamis secara elektronik di lingkungan instansi pemerintah."},
+    {term:"Tanda Tangan Elektronik", def:"Tanda tangan yang terdiri atas informasi elektronik yang dilekatkan, terasosiasi, atau terkait dengan informasi elektronik lainnya yang digunakan sebagai alat verifikasi dan autentikasi identitas penandatangan naskah/arsip elektronik."},
+    {term:"Tata Naskah Dinas", def:"Pengelolaan informasi tertulis meliputi pengaturan jenis, format, penyiapan, pengamanan, pengabsahan, distribusi, dan penyimpanan naskah dinas serta media yang digunakan dalam komunikasi kedinasan."},
+    {term:"Tata Usaha Pengolah", def:"Satuan kerja pada unit pengolah yang melaksanakan tugas dan tanggung jawab pengelolaan arsip aktif di lingkungan unit kerjanya."},
+    {term:"Tunjuk Silang", def:"Sarana bantu penemuan arsip yang menunjukkan hubungan atau kaitan antara satu berkas dengan berkas lain yang memiliki informasi terkait."},
+    {term:"Unit Kearsipan", def:"Satuan kerja pada pencipta arsip yang mempunyai tugas dan tanggung jawab dalam pengelolaan arsip inaktif dan pembinaan kearsipan di lingkungan lembaga pencipta arsip."},
+    {term:"Unit Pengolah", def:"Satuan kerja pada pencipta arsip yang mempunyai tugas dan tanggung jawab mengolah semua arsip yang berkaitan dengan kegiatan penciptaan arsip di lingkungannya."},
+    {term:"Warkat", def:"Setiap catatan tertulis, baik dalam bentuk gambar maupun bagan, yang memuat keterangan mengenai suatu subjek atau peristiwa, yang dibuat orang untuk membantu daya ingatan."}
+  ];
+
+  const listEl = document.getElementById('glossList');
+  const emptyEl = document.getElementById('glossEmpty');
+  const searchInput = document.getElementById('glossSearchInput');
+  const alphabetEl = document.getElementById('glossAlphabet');
+
+  GLOSSARY.sort((a,b) => a.term.localeCompare(b.term, 'id'));
+
+  const lettersPresent = new Set(GLOSSARY.map(g => g.term.charAt(0).toUpperCase()));
+  const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+  let activeLetter = null;
+
+  ALPHABET.forEach(letter => {
+    const btn = document.createElement('button');
+    btn.textContent = letter;
+    btn.type = 'button';
+    if(!lettersPresent.has(letter)) btn.disabled = true;
+    btn.addEventListener('click', () => {
+      if(activeLetter === letter){
+        activeLetter = null;
+      } else {
+        activeLetter = letter;
+      }
+      searchInput.value = '';
+      render();
+    });
+    alphabetEl.appendChild(btn);
+  });
+
+  function render(){
+    const q = searchInput.value.trim().toLowerCase();
+    let filtered = GLOSSARY.filter(g => {
+      const matchesQuery = !q || g.term.toLowerCase().includes(q) || g.def.toLowerCase().includes(q);
+      const matchesLetter = !activeLetter || g.term.charAt(0).toUpperCase() === activeLetter;
+      return matchesQuery && matchesLetter;
+    });
+
+    alphabetEl.querySelectorAll('button').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent === activeLetter);
+    });
+
+    listEl.innerHTML = '';
+    emptyEl.style.display = filtered.length === 0 ? 'block' : 'none';
+
+    const groups = {};
+    filtered.forEach(g => {
+      const letter = g.term.charAt(0).toUpperCase();
+      if(!groups[letter]) groups[letter] = [];
+      groups[letter].push(g);
+    });
+
+    Object.keys(groups).sort().forEach(letter => {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'gloss-letter-group';
+      const heading = document.createElement('div');
+      heading.className = 'gloss-letter-heading';
+      heading.textContent = letter;
+      groupDiv.appendChild(heading);
+
+      groups[letter].forEach(g => {
+        const dl = document.createElement('dl');
+        dl.className = 'gloss-term';
+        const dt = document.createElement('dt');
+        dt.textContent = g.term;
+        const dd = document.createElement('dd');
+        dd.textContent = g.def;
+        dl.appendChild(dt);
+        dl.appendChild(dd);
+        groupDiv.appendChild(dl);
+      });
+
+      listEl.appendChild(groupDiv);
+    });
+  }
+
+  searchInput.addEventListener('input', () => { activeLetter = null; render(); });
+
+  render();
+})();
 </script>
 
 <script>
