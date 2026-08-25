@@ -984,6 +984,7 @@ body.da-not-home #da-chat-panel{
   padding:6px 10px;cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap;
 }
 .da-admin-video-open:hover{background:var(--accent);color:#fff}
+.da-admin-video-open:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .da-video-manager-modal{
   position:fixed;inset:0;z-index:22000;display:none;
   align-items:center;justify-content:center;padding:14px;
@@ -1123,6 +1124,37 @@ body.da-not-home #da-chat-panel{
     max-height:calc(100vh - 125px);
   }
 }
+
+
+/* ===== TODOS OS ELEMENTOS FLUTUANTES: ARRASTAR E POSICIONAR ===== */
+.da-draggable-floating{
+  touch-action:none !important;
+}
+.da-draggable-floating.da-dragging{
+  user-select:none !important;
+  cursor:grabbing !important;
+}
+.da-drag-handle{
+  cursor:grab !important;
+  user-select:none;
+}
+.da-drag-handle.da-dragging{
+  cursor:grabbing !important;
+}
+.da-floating-position-reset{
+  position:absolute;
+  right:8px;
+  top:6px;
+  z-index:5;
+  border:0;
+  background:transparent;
+  color:inherit;
+  font-size:10px;
+  opacity:.7;
+  cursor:pointer;
+  padding:3px 5px;
+}
+.da-floating-position-reset:hover{opacity:1}
 
 </style>
 
@@ -1688,7 +1720,6 @@ body.da-not-home #da-chat-panel{
     <div class="da-admin-tabs">
       <button class="da-admin-tab active" id="da-admin-tab-chat" type="button">💬 Chat</button>
       <button class="da-admin-tab" id="da-admin-tab-tests" type="button">📊 Hasil Tes</button>
-        <button class="da-admin-tab" id="da-admin-tab-video" type="button">🎬 Video</button>
         <button class="da-admin-video-open" id="da-admin-video-open" type="button">🎬 Kelola Video</button>
     </div>
     <button class="da-admin-logout" id="da-admin-logout">Keluar</button>
@@ -1716,17 +1747,6 @@ body.da-not-home #da-chat-panel{
         <tbody></tbody>
       </table>
     </div>
-  </div>
-
-  <div class="da-admin-tests-body" id="da-admin-view-video" style="display:none">
-    <div class="da-yt-admin-card">
-      <h4>🎬 Video Pembelajaran</h4>
-      <p>
-        Masukkan link video YouTube untuk setiap materi. Pengunjung akan menonton
-        video langsung di dalam DalanARSIPARIS tanpa diarahkan ke halaman/channel YouTube.
-      </p>
-    </div>
-    <div id="da-yt-stage-list"></div>
   </div>
 </section>
 
@@ -6105,21 +6125,16 @@ window.addEventListener("beforeunload",()=>{
   function initAdminTab(){
     const tabChat=document.getElementById("da-admin-tab-chat");
     const tabTests=document.getElementById("da-admin-tab-tests");
-    const tabVideo=document.getElementById("da-admin-tab-video");
     const viewChat=document.getElementById("da-admin-view-chat");
     const viewTests=document.getElementById("da-admin-view-tests");
-    const viewVideo=document.getElementById("da-admin-view-video");
-    if(!tabVideo) return;
 
     function activate(which){
-      const chat=which==="chat", tests=which==="tests", video=which==="video";
+      const chat=which==="chat", tests=which==="tests";
       tabChat?.classList.toggle("active",chat);
       tabTests?.classList.toggle("active",tests);
-      tabVideo.classList.toggle("active",video);
       if(viewChat) viewChat.style.display=chat?"grid":"none";
       if(viewTests) viewTests.style.display=tests?"flex":"none";
-      if(viewVideo) viewVideo.style.display=video?"flex":"none";
-      if(video) renderAdmin();
+
     }
 
     tabChat?.addEventListener("click",()=>activate("chat"));
@@ -6280,6 +6295,213 @@ window.addEventListener("beforeunload",()=>{
   document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
 
   window.daAdminVideoManagerRender=render;
+})();
+</script>
+
+
+<script id="da-universal-floating-drag">
+(function(){
+  "use strict";
+
+  /*
+   * Semua floating window/widget di bawah dibuat dapat dipindahkan.
+   * Posisi disimpan di localStorage agar tetap berada di posisi terakhir
+   * ketika halaman dibuka kembali pada browser yang sama.
+   */
+
+  const POSITION_KEY="dalanarsiparis_floating_positions_v1";
+
+  function loadPositions(){
+    try{return JSON.parse(localStorage.getItem(POSITION_KEY)||"{}")}catch(e){return {}}
+  }
+  function savePositions(data){
+    try{localStorage.setItem(POSITION_KEY,JSON.stringify(data))}catch(e){}
+  }
+
+  function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+
+  function makeDraggable(el, handle){
+    if(!el || el.dataset.dragReady==="1") return;
+    el.dataset.dragReady="1";
+    el.classList.add("da-draggable-floating");
+
+    const dragHandle=handle||el;
+    dragHandle.classList.add("da-drag-handle");
+
+    let dragging=false, offsetX=0, offsetY=0;
+
+    function start(e){
+      if(e.button!==undefined && e.button!==0) return;
+      if(e.target.closest("button,input,textarea,select,a,video,iframe")) return;
+
+      const rect=el.getBoundingClientRect();
+
+      // Convert the current position to viewport coordinates so it can be
+      // moved freely regardless of the original CSS anchoring.
+      el.style.left=rect.left+"px";
+      el.style.top=rect.top+"px";
+      el.style.right="auto";
+      el.style.bottom="auto";
+      el.style.margin="0";
+
+      dragging=true;
+      el.classList.add("da-dragging");
+      offsetX=(e.clientX??e.touches?.[0]?.clientX)-rect.left;
+      offsetY=(e.clientY??e.touches?.[0]?.clientY)-rect.top;
+
+      if(e.pointerId!==undefined && dragHandle.setPointerCapture){
+        try{dragHandle.setPointerCapture(e.pointerId)}catch(_){}
+      }
+      e.preventDefault();
+    }
+
+    function move(e){
+      if(!dragging)return;
+      const x=(e.clientX??e.touches?.[0]?.clientX)-offsetX;
+      const y=(e.clientY??e.touches?.[0]?.clientY)-offsetY;
+      const maxX=window.innerWidth-el.offsetWidth;
+      const maxY=window.innerHeight-el.offsetHeight;
+
+      el.style.left=clamp(x,0,Math.max(0,maxX))+"px";
+      el.style.top=clamp(y,0,Math.max(0,maxY))+"px";
+    }
+
+    function end(){
+      if(!dragging)return;
+      dragging=false;
+      el.classList.remove("da-dragging");
+
+      const r=el.getBoundingClientRect();
+      const positions=loadPositions();
+      positions[el.id]={left:r.left,top:r.top};
+      savePositions(positions);
+    }
+
+    dragHandle.addEventListener("pointerdown",start,{passive:false});
+    window.addEventListener("pointermove",move,{passive:false});
+    window.addEventListener("pointerup",end);
+    window.addEventListener("pointercancel",end);
+
+    // Restore last position.
+    const positions=loadPositions();
+    if(positions[el.id]){
+      const p=positions[el.id];
+      el.style.left=clamp(p.left,0,Math.max(0,window.innerWidth-el.offsetWidth))+"px";
+      el.style.top=clamp(p.top,0,Math.max(0,window.innerHeight-el.offsetHeight))+"px";
+      el.style.right="auto";
+      el.style.bottom="auto";
+      el.style.margin="0";
+    }
+  }
+
+  function addResetButton(el, handle){
+    if(!el || el.querySelector(".da-floating-position-reset"))return;
+    const btn=document.createElement("button");
+    btn.type="button";
+    btn.className="da-floating-position-reset";
+    btn.title="Kembalikan posisi awal";
+    btn.textContent="↺";
+    btn.addEventListener("click",e=>{
+      e.stopPropagation();
+      const positions=loadPositions();
+      delete positions[el.id];
+      savePositions(positions);
+      el.style.left="";
+      el.style.top="";
+      el.style.right="";
+      el.style.bottom="";
+      el.style.margin="";
+    });
+    (handle||el).appendChild(btn);
+  }
+
+  function init(){
+    // Known floating elements in the site.
+    const candidates=[
+      ["da-chat-launcher",null],
+      ["da-chat-toast",null],
+      ["da-chat-panel",".da-chat-header"],
+      ["da-admin-dock",".da-admin-head"],
+      ["da-admin-login",null],
+      ["da-yt-video-modal",".da-yt-video-head"],
+      ["da-video-manager-modal",".da-video-manager-head"],
+      ["da-test-overlay",".da-test-head"],
+      ["da-local-video-modal",".da-local-video-head"]
+    ];
+
+    candidates.forEach(([id,handleSelector])=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      let handle=handleSelector?el.querySelector(handleSelector):el;
+
+      // For full-screen modal wrappers, drag the inner window instead of
+      // moving the full-screen backdrop.
+      if(id==="da-yt-video-modal"){
+        const inner=el.querySelector(".da-yt-video-window");
+        if(inner){
+          makeDraggable(inner,inner.querySelector(".da-yt-video-head")||inner);
+          addResetButton(inner,inner.querySelector(".da-yt-video-head")||inner);
+        }
+        return;
+      }
+      if(id==="da-video-manager-modal"){
+        const inner=el.querySelector(".da-video-manager-window");
+        if(inner){
+          makeDraggable(inner,inner.querySelector(".da-video-manager-head")||inner);
+          addResetButton(inner,inner.querySelector(".da-video-manager-head")||inner);
+        }
+        return;
+      }
+      if(id==="da-test-overlay"){
+        const inner=el.querySelector(".da-test-modal,.da-test-window,.da-test-body");
+        if(inner){
+          const h=inner.querySelector(".da-test-head,.da-test-title")||inner;
+          makeDraggable(inner,h);
+          addResetButton(inner,h);
+        }
+        return;
+      }
+      if(id==="da-local-video-modal"){
+        const inner=el.querySelector(".da-local-video-box");
+        if(inner){
+          makeDraggable(inner,inner.querySelector(".da-local-video-head")||inner);
+          addResetButton(inner,inner.querySelector(".da-local-video-head")||inner);
+        }
+        return;
+      }
+
+      makeDraggable(el,handle);
+      addResetButton(el,handle);
+    });
+  }
+
+  // Elements are sometimes created/initialized after the main scripts.
+  // Run now, after DOM is ready, and once more shortly after.
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",init);
+  }else{
+    init();
+  }
+  setTimeout(init,800);
+  setTimeout(init,2000);
+
+  // Keep floating windows inside the viewport after resize.
+  window.addEventListener("resize",()=>{
+    const positions=loadPositions();
+    Object.keys(positions).forEach(id=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      const r=el.getBoundingClientRect();
+      const x=clamp(r.left,0,Math.max(0,window.innerWidth-el.offsetWidth));
+      const y=clamp(r.top,0,Math.max(0,window.innerHeight-el.offsetHeight));
+      el.style.left=x+"px";
+      el.style.top=y+"px";
+      el.style.right="auto";
+      el.style.bottom="auto";
+      positions[id]={left:x,top:y};
+    });
+    savePositions(positions);
+  });
 })();
 </script>
 
