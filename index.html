@@ -1072,7 +1072,152 @@
 }
 </style>
 
-<style id="da-chat-click-fix">#da-chat-panel{z-index:10000}.da-chat-quick,.da-chat-compose{pointer-events:auto}</style>\n</head>
+<style id="da-chat-click-fix">#da-chat-panel{z-index:10000}.da-chat-quick,.da-chat-compose{pointer-events:auto}</style>
+
+<style id="da-account-dashboard-style">
+/* ===== AKUN / LOGIN DI SIDEBAR ===== */
+.account-box{
+  margin-top:1.1rem;
+  padding-top:1rem;
+  border-top:1px solid rgba(255,255,255,0.12);
+}
+.account-login-btn{
+  width:100%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:0.5rem;
+  background: var(--tab);
+  color: var(--ink);
+  border:none;
+  border-radius:8px;
+  padding:0.65rem 0.8rem;
+  font-family:'Inter', sans-serif;
+  font-weight:700;
+  font-size:0.85rem;
+  cursor:pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.account-login-btn:hover{ background:#fff; transform:translateY(-1px); }
+.account-login-btn:disabled{ opacity:0.7; cursor:progress; }
+.account-profile{
+  display:none;
+  align-items:center;
+  gap:0.6rem;
+  background: rgba(255,196,196,0.08);
+  border-radius:8px;
+  padding:0.55rem 0.7rem;
+}
+.account-avatar{
+  width:32px; height:32px; border-radius:50%;
+  object-fit:cover; flex-shrink:0;
+  background: var(--tab);
+  display:none;
+}
+.account-details{ min-width:0; flex:1; }
+.account-name{
+  display:block; color:var(--bg); font-size:0.82rem; font-weight:600;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.account-logout-btn{
+  background:none; border:none; color:var(--tab); font-size:0.72rem;
+  cursor:pointer; padding:0; text-decoration:underline;
+}
+.account-hint{
+  margin-top:0.55rem;
+  color:rgba(252,245,238,0.55);
+  font-size:0.7rem;
+  line-height:1.4;
+}
+
+/* ===== DASHBOARD ===== */
+.dash-summary{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+  gap:1.5rem;
+  max-width:1100px;
+  margin-bottom:2rem;
+}
+.dash-summary-card{
+  background:var(--paper);
+  border-radius:12px;
+  padding:1.6rem 1.8rem;
+  box-shadow:0 4px 18px rgba(133,14,53,0.07);
+  border-top:4px solid var(--accent);
+}
+.dash-summary-card .label{ color:var(--accent); display:block; margin-bottom:0.5rem; }
+.dash-overall-pct{ font-family:'Fraunces',serif; font-size:2.2rem; font-weight:700; }
+.dash-overall-track{
+  background:var(--bg); border-radius:99px; height:10px; overflow:hidden; margin-top:0.9rem;
+}
+.dash-overall-fill{ height:100%; background:var(--accent); width:0%; transition:width .3s ease; }
+.dash-tier{ font-family:'Fraunces',serif; font-size:1.3rem; font-weight:700; }
+.dash-count{ color:var(--ink-dim); font-size:0.9rem; margin-top:0.5rem; }
+
+.dash-section-title{ font-size:1.15rem; margin:2.2rem 0 1rem; }
+.dash-stage-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+  gap:1.25rem;
+  max-width:1100px;
+}
+.dash-stage-card{
+  background:var(--paper); border-radius:10px; padding:1.3rem 1.4rem;
+  box-shadow:0 4px 18px rgba(133,14,53,0.06);
+}
+.dash-stage-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem; }
+.dash-stage-pct{ font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--accent); }
+.dash-stage-bar{ background:var(--bg); border-radius:99px; height:7px; overflow:hidden; margin-bottom:0.7rem; }
+.dash-stage-bar-fill{ height:100%; background:var(--accent); }
+.dash-stage-steps{ display:flex; gap:0.7rem; flex-wrap:wrap; font-size:0.78rem; color:var(--ink-dim); margin-bottom:0.8rem; }
+.dash-stage-steps span.done{ color:var(--ink); font-weight:600; }
+.dash-continue-btn, .dash-reco-btn, .dash-bookmark-goto{
+  background:var(--ink); color:#fff; border:none; border-radius:6px;
+  padding:0.5rem 0.9rem; font-size:0.8rem; font-weight:600; cursor:pointer;
+  transition: background 0.2s ease;
+}
+.dash-continue-btn:hover, .dash-reco-btn:hover, .dash-bookmark-goto:hover{ background:var(--accent); }
+.dash-complete-tag{ color:#2e8b57; font-weight:700; font-size:0.85rem; }
+
+.dash-recommend-list{ list-style:none; max-width:800px; display:flex; flex-direction:column; gap:0.7rem; }
+.dash-recommend-list li{
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  background:var(--paper); border-radius:8px; padding:0.9rem 1.1rem;
+  box-shadow:0 2px 10px rgba(133,14,53,0.06); font-size:0.92rem;
+}
+.dash-reco-empty{ justify-content:flex-start !important; color:var(--ink-dim); }
+
+.dash-bookmarks{ max-width:800px; display:flex; flex-direction:column; gap:0.9rem; }
+.dash-bookmark-item{ background:var(--paper); border-radius:8px; padding:1rem 1.2rem; box-shadow:0 2px 10px rgba(133,14,53,0.06); }
+.dash-bookmark-head{ display:flex; justify-content:space-between; align-items:center; gap:1rem; font-weight:600; }
+.dash-bookmark-note{ margin-top:0.5rem; color:var(--ink-dim); font-size:0.88rem; white-space:pre-wrap; }
+.dash-empty-hint{ color:var(--ink-dim); font-size:0.9rem; }
+
+/* ===== BOOKMARK/CATATAN DI KARTU MATERI ===== */
+.bookmark-box{
+  margin-top:1rem;
+  padding-top:0.9rem;
+  border-top:1px dashed var(--line);
+}
+.bookmark-toggle{
+  background:var(--bg); color:var(--ink); border:1px solid var(--line);
+  border-radius:6px; padding:0.45rem 0.8rem; font-size:0.78rem; font-weight:600;
+  cursor:pointer; margin-bottom:0.6rem; transition: background 0.2s ease, color 0.2s ease;
+}
+.bookmark-toggle.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
+.bookmark-note{
+  width:100%; resize:vertical; min-height:44px;
+  border:1px solid var(--line); border-radius:6px; padding:0.55rem 0.7rem;
+  font-family:'Inter',sans-serif; font-size:0.85rem; color:var(--ink);
+  background:var(--bg);
+}
+.bookmark-note:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+
+@media(max-width:768px){
+  .dash-summary, .dash-stage-grid{ grid-template-columns:1fr; }
+}
+</style>
+</head>
 <body>
 
 <button class="menu-toggle" id="menuToggle" aria-label="Buka menu">☰</button>
@@ -1080,12 +1225,25 @@
   <div class="sidebar-header">
     <a href="#" class="brand" data-page="beranda">Dalan<span>ARSIPARIS</span></a>
     <span class="brand-tag">Media Pembelajaran Terpadu Arsip Dinamis</span>
+
+    <div class="account-box" id="da-account-box">
+      <button type="button" class="account-login-btn" id="da-account-login-btn">🔐 Masuk dengan Google</button>
+      <div class="account-profile" id="da-account-profile">
+        <img class="account-avatar" id="da-account-avatar" alt="">
+        <div class="account-details">
+          <span class="account-name" id="da-account-name">Peserta</span>
+          <button type="button" class="account-logout-btn" id="da-account-logout-btn">Keluar</button>
+        </div>
+      </div>
+      <p class="account-hint" id="da-account-hint">Masuk agar progres belajar tersimpan ke akun &amp; bisa dibuka dari perangkat lain.</p>
+    </div>
   </div>
 
   <nav class="nav-group">
     <div class="nav-group-title label">Jalan Hidup Arsip Dinamis</div>
     <ul class="nav-list">
       <li><button class="nav-item active" data-page="beranda"><span class="code">ARS-00</span> Beranda</button></li>
+      <li><button class="nav-item" data-page="dashboard"><span class="code">📊</span> Dashboard Saya</button></li>
       <li><button class="nav-item" data-page="penciptaan"><span class="code">ARS-01</span> Penciptaan Arsip</button></li>
       <li><button class="nav-item" data-page="penggunaan"><span class="code">ARS-02</span> Penggunaan Arsip</button></li>
       <li><button class="nav-item" data-page="pemeliharaan"><span class="code">ARS-03</span> Pemeliharaan Arsip</button></li>
@@ -1257,6 +1415,39 @@
       </div>
     </div>
     <footer class="page-footer">Alur jalan kehidupan arsip dinamis.</footer>
+  </section>
+
+  <!-- DASHBOARD PROGRES & PERSONALISASI -->
+  <section class="page" id="page-dashboard">
+    <div class="page-hero">
+      <div class="eyebrow label">Progres &amp; Personalisasi</div>
+      <h1>Dashboard Saya</h1>
+      <p>Pantau persentase penyelesaian tiap tahapan, capaian belajar Anda, dan materi yang direkomendasikan untuk dituntaskan. Masuk dengan akun Google agar progres ini tersimpan dan bisa dibuka lagi dari perangkat lain.</p>
+    </div>
+    <div class="page-body">
+      <div class="dash-summary">
+        <div class="dash-summary-card">
+          <span class="label">Progres Keseluruhan</span>
+          <div class="dash-overall-pct" id="da-dash-overall-pct">0%</div>
+          <div class="dash-overall-track"><div class="dash-overall-fill" id="da-dash-overall-fill"></div></div>
+        </div>
+        <div class="dash-summary-card">
+          <span class="label">Badge Pencapaian</span>
+          <div class="dash-tier" id="da-dash-tier">🏅 Pemula</div>
+          <div class="dash-count" id="da-dash-count">0/8 tahapan lengkap</div>
+        </div>
+      </div>
+
+      <h2 class="dash-section-title">Progres Tiap Tahapan</h2>
+      <div class="dash-stage-grid" id="da-dash-stage-grid"></div>
+
+      <h2 class="dash-section-title">Rekomendasi Materi Belum Dituntaskan</h2>
+      <ul class="dash-recommend-list" id="da-dash-recommend"></ul>
+
+      <h2 class="dash-section-title">🔖 Bookmark &amp; Catatan Pribadi</h2>
+      <div class="dash-bookmarks" id="da-dash-bookmarks"></div>
+    </div>
+    <footer class="page-footer">Progres tersimpan otomatis di perangkat ini; masuk dengan akun agar tersinkron di mana saja.</footer>
   </section>
 
   <!-- SERTIFIKAT -->
@@ -1836,6 +2027,9 @@
       if(target){ showPage(target); history.replaceState(null, '', '#' + target); }
     });
   });
+  window.daShowPage = function(target){
+    if(target){ showPage(target); history.replaceState(null, '', '#' + target); }
+  };
 
   menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
 
@@ -2481,6 +2675,11 @@ function saveResult(type, stage, data){
   }
 }
 function isVideoDone(stage){ return localStorage.getItem(`youtubeDone_stage_${stage}`) === "true"; }
+/* Diekspos agar bisa dipakai skrip akun/dashboard & sinkron Firebase. */
+window.daGetResult = getResult;
+window.daStorageKey = storageKey;
+window.daIsVideoDone = isVideoDone;
+window.daBadgeNameKey = "dalanarsiparis_badge_name";
 
 function renderTest(stage, type){
   const data = TESTS[stage];
@@ -2563,6 +2762,10 @@ function submitTest(){
 
 function markVideo(stage){
   localStorage.setItem(`youtubeDone_stage_${stage}`,"true");
+  /* Sinkron status video ke Firebase (best-effort), agar terhitung di akun. */
+  if(window.daSyncVideoDone){
+    window.daSyncVideoDone(stage).catch(()=>{});
+  }
   updateTestUI();
 }
 
@@ -2634,7 +2837,10 @@ function updateBadgeProgress(){
   }
 
   badgePrintBtn.disabled = !eligible || !badgeNameInput.value.trim();
+
+  if(window.daRenderDashboard) window.daRenderDashboard();
 }
+window.daUpdateUI = updateTestUI;
 
 document.querySelectorAll("[data-test]").forEach(btn=>{
   btn.addEventListener("click",e=>{
@@ -2902,6 +3108,153 @@ async function syncBadgeNameToFirebase(name){
 
 window.daSyncTestResult = syncTestResultToFirebase;
 window.daSyncBadgeName = syncBadgeNameToFirebase;
+
+async function syncVideoDoneToFirebase(stage){
+  const uid = await ensureTestParticipantUid();
+  if(!uid) return false;
+  try{
+    await update(ref(db, `hasil_test/${uid}/tahapan/${stage}`), { video:true });
+    return true;
+  }catch(err){
+    console.warn("Status video belum tersinkron ke Firebase:", err);
+    return false;
+  }
+}
+window.daSyncVideoDone = syncVideoDoneToFirebase;
+
+async function pushNoteToFirebase(stage, data){
+  const uid = await ensureTestParticipantUid();
+  if(!uid) return false;
+  try{
+    await update(ref(db, `catatan/${uid}/${stage}`), data);
+    return true;
+  }catch(err){
+    console.warn("Catatan belum tersinkron ke Firebase:", err);
+    return false;
+  }
+}
+window.daPushNoteToCloud = pushNoteToFirebase;
+
+/* =========================================================
+   1B-2. AKUN PENGGUNA (LOGIN & SINKRON PROGRES LINTAS PERANGKAT)
+   Peserta bisa masuk dengan akun Google. Begitu masuk, UID
+   anonim sebelumnya digantikan oleh UID akun Google yang
+   permanen (ensureTestParticipantUid() otomatis memakai
+   auth.currentUser yang aktif). Progres lokal (localStorage)
+   dan progres di cloud (hasil_test/{uid}, catatan/{uid})
+   digabung: hasil yang paling baru (submittedAt/updatedAt)
+   dipakai, lalu kedua sisi disamakan lagi. Dengan begitu
+   peserta bisa membuka progres yang sama dari perangkat lain
+   selama masuk dengan akun Google yang sama.
+   ========================================================= */
+const accountBox = document.getElementById("da-account-box");
+const accountLoginBtn = document.getElementById("da-account-login-btn");
+const accountLogoutBtn = document.getElementById("da-account-logout-btn");
+const accountProfile = document.getElementById("da-account-profile");
+const accountAvatar = document.getElementById("da-account-avatar");
+const accountName = document.getElementById("da-account-name");
+const accountHint = document.getElementById("da-account-hint");
+
+if(!firebaseConfigured && accountBox){ accountBox.style.display = "none"; }
+
+if(accountLoginBtn){
+  accountLoginBtn.addEventListener("click", async ()=>{
+    const original = accountLoginBtn.textContent;
+    try{
+      accountLoginBtn.disabled = true;
+      accountLoginBtn.textContent = "Menghubungkan…";
+      await signInWithPopup(auth, googleProvider);
+    }catch(err){
+      alert("Login gagal: "+err.message);
+    }finally{
+      accountLoginBtn.disabled = false;
+      accountLoginBtn.textContent = original;
+    }
+  });
+}
+if(accountLogoutBtn){
+  accountLogoutBtn.addEventListener("click", async ()=>{
+    try{ await signOut(auth); }
+    catch(err){ alert("Gagal keluar: "+err.message); }
+  });
+}
+
+async function pullAndMergeUserData(uid){
+  const getResult = window.daGetResult, storageKey = window.daStorageKey,
+        isVideoDone = window.daIsVideoDone, BADGE_NAME_KEY_LOCAL = window.daBadgeNameKey;
+  if(!getResult || !storageKey) return;
+
+  try{
+    const snap = await get(ref(db, `hasil_test/${uid}`));
+    const cloud = snap.exists() ? snap.val() : null;
+    const stages = window.TEST_ORDER || [];
+
+    if(cloud && cloud.tahapan){
+      Object.entries(cloud.tahapan).forEach(([stage, val])=>{
+        ["pre","post"].forEach(type=>{
+          if(!val[type]) return;
+          const localVal = getResult(type, stage);
+          const cloudTime = new Date(val[type].submittedAt || 0).getTime();
+          const localTime = localVal ? new Date(localVal.submittedAt || 0).getTime() : -1;
+          if(cloudTime >= localTime){
+            localStorage.setItem(storageKey(type, stage), JSON.stringify(val[type]));
+          }
+        });
+        if(val.video){ localStorage.setItem(`youtubeDone_stage_${stage}`, "true"); }
+      });
+      if(cloud.nama && !localStorage.getItem(BADGE_NAME_KEY_LOCAL)){
+        localStorage.setItem(BADGE_NAME_KEY_LOCAL, cloud.nama);
+      }
+    }
+
+    /* Samakan lagi ke cloud (mengunggah hasil lokal yang lebih baru / belum ada di cloud). */
+    stages.forEach(stage=>{
+      ["pre","post"].forEach(type=>{
+        const localVal = getResult(type, stage);
+        if(localVal) syncTestResultToFirebase(type, stage, localVal);
+      });
+      if(isVideoDone(stage)) syncVideoDoneToFirebase(stage);
+    });
+  }catch(err){
+    console.warn("Progres belum bisa disinkron sepenuhnya:", err);
+  }
+
+  const badgeNameInputEl = document.getElementById("da-badge-name");
+  if(badgeNameInputEl){ badgeNameInputEl.value = localStorage.getItem(BADGE_NAME_KEY_LOCAL) || ""; }
+  if(window.daUpdateUI) window.daUpdateUI();
+
+  /* Catatan / bookmark pribadi. */
+  try{
+    const notesSnap = await get(ref(db, `catatan/${uid}`));
+    const cloudNotes = notesSnap.exists() ? notesSnap.val() : null;
+    if(window.daApplyCloudNotes) window.daApplyCloudNotes(cloudNotes);
+    const localNotes = window.daGetNotes ? window.daGetNotes() : {};
+    Object.entries(localNotes).forEach(([stage, val])=>{
+      if(val) update(ref(db, `catatan/${uid}/${stage}`), val).catch(()=>{});
+    });
+  }catch(err){
+    console.warn("Catatan belum bisa disinkron sepenuhnya:", err);
+  }
+}
+
+if(firebaseConfigured){
+  onAuthStateChanged(auth, async user=>{
+    if(!accountBox) return;
+    if(user && !user.isAnonymous){
+      accountLoginBtn.style.display = "none";
+      accountProfile.style.display = "flex";
+      accountName.textContent = user.displayName || user.email || "Peserta";
+      if(user.photoURL){ accountAvatar.src = user.photoURL; accountAvatar.style.display = "block"; }
+      else{ accountAvatar.style.display = "none"; }
+      accountHint.textContent = "Progres tersimpan ke akun ini dan bisa dibuka dari perangkat lain.";
+      await pullAndMergeUserData(user.uid);
+    } else {
+      accountLoginBtn.style.display = "inline-flex";
+      accountProfile.style.display = "none";
+      accountHint.textContent = "Masuk agar progres belajar tersimpan ke akun & bisa dibuka dari perangkat lain.";
+    }
+  });
+}
 
 /* =========================================================
    1C. PENERBITAN & VERIFIKASI SERTIFIKAT
@@ -4025,6 +4378,228 @@ window.addEventListener("beforeunload",()=>{
   window.addEventListener("resize",render);
 
   resetGame();
+})();
+</script>
+
+<script id="da-account-dashboard-script">
+(function(){
+  /* Peta tahapan -> halaman, dipakai dashboard & rekomendasi. */
+  const STAGE_META = {
+    "naskah-masuk":{page:"penciptaan"},
+    "naskah-keluar":{page:"penciptaan"},
+    "penemuan-kembali":{page:"penggunaan"},
+    "peminjaman":{page:"penggunaan"},
+    "pemberkasan":{page:"pemeliharaan"},
+    "penyimpanan":{page:"pemeliharaan"},
+    "pemindahan":{page:"penyusutan"},
+    "pemusnahan":{page:"penyusutan"}
+  };
+  const NOTES_KEY = "dalanarsiparis_notes";
+
+  function escapeHtml(str){
+    const div = document.createElement("div");
+    div.textContent = str == null ? "" : String(str);
+    return div.innerHTML;
+  }
+
+  function getNotes(){
+    try{ return JSON.parse(localStorage.getItem(NOTES_KEY) || "{}"); }
+    catch(e){ return {}; }
+  }
+  function saveNotes(obj){
+    try{ localStorage.setItem(NOTES_KEY, JSON.stringify(obj)); }catch(e){}
+  }
+  window.daGetNotes = getNotes;
+
+  function setStageNote(stage, patch){
+    const notes = getNotes();
+    const cur = notes[stage] || {bookmarked:false, note:""};
+    const updated = Object.assign({}, cur, patch, {updatedAt: new Date().toISOString()});
+    notes[stage] = updated;
+    saveNotes(notes);
+    if(window.daPushNoteToCloud){ window.daPushNoteToCloud(stage, updated).catch(()=>{}); }
+    renderBookmarkList();
+    return updated;
+  }
+
+  function refreshBookmarkBoxUI(stage){
+    const notes = getNotes();
+    const v = notes[stage];
+    if(!v) return;
+    document.querySelectorAll(`.bookmark-toggle[data-bm-stage="${stage}"]`).forEach(btn=>{
+      btn.classList.toggle("active", !!v.bookmarked);
+      btn.textContent = v.bookmarked ? "🔖 Ditandai untuk diulang" : "🔖 Tandai untuk diulang";
+    });
+    document.querySelectorAll(`.bookmark-note[data-note-stage="${stage}"]`).forEach(ta=>{
+      if(document.activeElement !== ta){ ta.value = v.note || ""; }
+    });
+  }
+
+  /* Terima catatan dari cloud saat login, gabungkan dengan yang tersimpan lokal (ambil yang terbaru). */
+  window.daApplyCloudNotes = function(cloudNotes){
+    if(!cloudNotes) return;
+    const local = getNotes();
+    Object.entries(cloudNotes).forEach(([stage, val])=>{
+      const localVal = local[stage];
+      const cloudTime = new Date((val && val.updatedAt) || 0).getTime();
+      const localTime = localVal ? new Date(localVal.updatedAt || 0).getTime() : -1;
+      if(cloudTime >= localTime){ local[stage] = val; }
+    });
+    saveNotes(local);
+    Object.keys(local).forEach(refreshBookmarkBoxUI);
+    renderBookmarkList();
+  };
+
+  /* Menambahkan tombol bookmark + kolom catatan pada tiap kartu materi (ARS-01..ARS-04). */
+  function initBookmarkBoxes(){
+    const seen = new Set();
+    document.querySelectorAll(".content-grid .card").forEach(card=>{
+      const testBtn = card.querySelector("[data-stage]");
+      if(!testBtn) return;
+      const stage = testBtn.dataset.stage;
+      if(seen.has(stage)) return;
+      seen.add(stage);
+
+      const notes = getNotes();
+      const cur = notes[stage] || {bookmarked:false, note:""};
+
+      const box = document.createElement("div");
+      box.className = "bookmark-box";
+      box.innerHTML =
+        `<button type="button" class="bookmark-toggle${cur.bookmarked ? " active" : ""}" data-bm-stage="${stage}">` +
+        (cur.bookmarked ? "🔖 Ditandai untuk diulang" : "🔖 Tandai untuk diulang") +
+        `</button>` +
+        `<textarea class="bookmark-note" data-note-stage="${stage}" rows="2" placeholder="Catatan pribadi untuk materi ini, misalnya bagian yang perlu diulang...">${escapeHtml(cur.note)}</textarea>`;
+      card.appendChild(box);
+
+      const toggleBtn = box.querySelector(".bookmark-toggle");
+      toggleBtn.addEventListener("click", ()=>{
+        const notesNow = getNotes();
+        const curNow = notesNow[stage] || {bookmarked:false, note:""};
+        const updated = setStageNote(stage, {bookmarked: !curNow.bookmarked});
+        toggleBtn.classList.toggle("active", updated.bookmarked);
+        toggleBtn.textContent = updated.bookmarked ? "🔖 Ditandai untuk diulang" : "🔖 Tandai untuk diulang";
+      });
+
+      const textarea = box.querySelector(".bookmark-note");
+      let noteTimer = null;
+      textarea.addEventListener("input", ()=>{
+        clearTimeout(noteTimer);
+        noteTimer = setTimeout(()=>{ setStageNote(stage, {note: textarea.value}); }, 700);
+      });
+    });
+  }
+
+  function renderBookmarkList(){
+    const el = document.getElementById("da-dash-bookmarks");
+    if(!el) return;
+    const notes = getNotes();
+    const TESTS = window.TESTS || {};
+    const items = Object.entries(notes).filter(([,v])=> v && (v.bookmarked || (v.note && v.note.trim())));
+
+    if(!items.length){
+      el.innerHTML = `<p class="dash-empty-hint">Belum ada materi yang ditandai. Buka salah satu tahapan lalu tekan "🔖 Tandai untuk diulang" pada materi yang ingin disimpan.</p>`;
+      return;
+    }
+
+    el.innerHTML = items.map(([stage, v])=>{
+      const title = (TESTS[stage] && TESTS[stage].title) || stage;
+      const page = (STAGE_META[stage] && STAGE_META[stage].page) || "beranda";
+      return `<div class="dash-bookmark-item">
+        <div class="dash-bookmark-head">
+          <span>${v.bookmarked ? "🔖" : "📝"} ${escapeHtml(title)}</span>
+          <button type="button" class="dash-bookmark-goto" data-page="${page}">Buka</button>
+        </div>
+        ${v.note && v.note.trim() ? `<p class="dash-bookmark-note">${escapeHtml(v.note)}</p>` : ""}
+      </div>`;
+    }).join("");
+
+    el.querySelectorAll("[data-page]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{ if(window.daShowPage) window.daShowPage(btn.dataset.page); });
+    });
+  }
+
+  /* Merender ringkasan progres, badge, dan rekomendasi di halaman Dashboard Saya. */
+  function renderDashboard(){
+    const TESTS = window.TESTS || {};
+    const TEST_ORDER = window.TEST_ORDER || [];
+    const getResult = window.daGetResult;
+    const isVideoDone = window.daIsVideoDone;
+    if(!getResult || !isVideoDone || !TEST_ORDER.length) return;
+
+    let totalPct = 0, completedStages = 0;
+    const rows = TEST_ORDER.map(stage=>{
+      const pre = getResult("pre", stage), post = getResult("post", stage), video = isVideoDone(stage);
+      let doneSteps = 0;
+      if(pre) doneSteps++;
+      if(video) doneSteps++;
+      if(post) doneSteps++;
+      const pct = Math.round((doneSteps/3)*100);
+      totalPct += pct;
+      if(doneSteps === 3) completedStages++;
+      return {
+        stage, pct, pre, post, video,
+        title: (TESTS[stage] && TESTS[stage].title) || stage,
+        page: (STAGE_META[stage] && STAGE_META[stage].page) || "beranda"
+      };
+    });
+    const overallPct = Math.round(totalPct / TEST_ORDER.length);
+
+    let tier = "Pemula";
+    if(completedStages >= 8) tier = "Arsiparis Purna";
+    else if(completedStages >= 6) tier = "Arsiparis Andal";
+    else if(completedStages >= 3) tier = "Pembelajar Aktif";
+    else if(completedStages >= 1) tier = "Pemula Bersemangat";
+
+    const overallEl = document.getElementById("da-dash-overall-pct");
+    if(overallEl) overallEl.textContent = overallPct + "%";
+    const overallFill = document.getElementById("da-dash-overall-fill");
+    if(overallFill) overallFill.style.width = overallPct + "%";
+    const tierEl = document.getElementById("da-dash-tier");
+    if(tierEl) tierEl.textContent = "🏅 " + tier;
+    const countEl = document.getElementById("da-dash-count");
+    if(countEl) countEl.textContent = completedStages + "/" + TEST_ORDER.length + " tahapan lengkap";
+
+    const grid = document.getElementById("da-dash-stage-grid");
+    if(grid){
+      grid.innerHTML = rows.map(r=>`
+        <div class="dash-stage-card">
+          <div class="dash-stage-top">
+            <strong>${escapeHtml(r.title)}</strong>
+            <span class="dash-stage-pct">${r.pct}%</span>
+          </div>
+          <div class="dash-stage-bar"><div class="dash-stage-bar-fill" style="width:${r.pct}%"></div></div>
+          <div class="dash-stage-steps">
+            <span class="${r.pre ? "done" : ""}">📝 Pre${r.pre ? " ("+r.pre.score+")" : ""}</span>
+            <span class="${r.video ? "done" : ""}">▶ Video</span>
+            <span class="${r.post ? "done" : ""}">✅ Post${r.post ? " ("+r.post.score+")" : ""}</span>
+          </div>
+          ${r.pct < 100
+            ? `<button type="button" class="dash-continue-btn" data-page="${r.page}">Lanjutkan Materi →</button>`
+            : `<div class="dash-complete-tag">✓ Selesai</div>`}
+        </div>`).join("");
+      grid.querySelectorAll("[data-page]").forEach(btn=>{
+        btn.addEventListener("click", ()=>{ if(window.daShowPage) window.daShowPage(btn.dataset.page); });
+      });
+    }
+
+    const recoEl = document.getElementById("da-dash-recommend");
+    if(recoEl){
+      const incomplete = rows.filter(r=>r.pct < 100).sort((a,b)=>b.pct-a.pct);
+      recoEl.innerHTML = incomplete.length
+        ? incomplete.map(r=>`<li><strong>${escapeHtml(r.title)}</strong> — ${r.pct}% selesai. <button type="button" class="dash-reco-btn" data-page="${r.page}">Lanjutkan</button></li>`).join("")
+        : `<li class="dash-reco-empty">🎉 Semua materi sudah dituntaskan!</li>`;
+      recoEl.querySelectorAll("[data-page]").forEach(btn=>{
+        btn.addEventListener("click", ()=>{ if(window.daShowPage) window.daShowPage(btn.dataset.page); });
+      });
+    }
+
+    renderBookmarkList();
+  }
+  window.daRenderDashboard = renderDashboard;
+
+  initBookmarkBoxes();
+  renderDashboard();
 })();
 </script>
 
