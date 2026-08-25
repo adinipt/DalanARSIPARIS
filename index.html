@@ -1141,20 +1141,32 @@ body.da-not-home #da-chat-panel{
 .da-drag-handle.da-dragging{
   cursor:grabbing !important;
 }
-.da-floating-position-reset{
-  position:absolute;
-  right:8px;
-  top:6px;
-  z-index:5;
-  border:0;
-  background:transparent;
-  color:inherit;
-  font-size:10px;
-  opacity:.7;
-  cursor:pointer;
-  padding:3px 5px;
+
+
+/* ===== LIVE CHAT FLOATING: BISA DIPINDAHKAN ===== */
+#da-chat-launcher,
+#da-chat-toast,
+#da-chat-panel{
+  touch-action:none;
 }
-.da-floating-position-reset:hover{opacity:1}
+#da-chat-launcher.da-chat-dragging,
+#da-chat-toast.da-chat-dragging,
+#da-chat-panel.da-chat-dragging{
+  cursor:grabbing !important;
+  user-select:none !important;
+}
+#da-chat-launcher,
+#da-chat-toast{
+  cursor:grab;
+}
+#da-chat-panel .da-chat-header{
+  cursor:grab;
+  user-select:none;
+  touch-action:none;
+}
+#da-chat-panel .da-chat-header.da-chat-dragging{
+  cursor:grabbing;
+}
 
 </style>
 
@@ -6299,6 +6311,136 @@ window.addEventListener("beforeunload",()=>{
 </script>
 
 
+
+<script id="da-livechat-drag-fix">
+(function(){
+  "use strict";
+
+  const KEY="dalanarsiparis_floating_positions_v1";
+
+  function read(){
+    try{return JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){return {}}
+  }
+  function write(v){
+    try{localStorage.setItem(KEY,JSON.stringify(v))}catch(e){}
+  }
+  function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+
+  function restore(el){
+    const p=read()[el.id];
+    if(!p)return;
+    const maxX=Math.max(0,innerWidth-el.offsetWidth);
+    const maxY=Math.max(0,innerHeight-el.offsetHeight);
+    el.style.left=clamp(p.left,0,maxX)+"px";
+    el.style.top=clamp(p.top,0,maxY)+"px";
+    el.style.right="auto";
+    el.style.bottom="auto";
+  }
+
+  function dragElement(el, handle, allowClick){
+    if(!el || el.dataset.liveDragReady==="1")return;
+    el.dataset.liveDragReady="1";
+
+    let down=false,moved=false,startX=0,startY=0,baseX=0,baseY=0;
+
+    function pointerDown(e){
+      if(e.button!==undefined && e.button!==0)return;
+
+      // For the chat panel, don't start dragging from buttons/inputs/links.
+      if(e.target.closest("button,input,textarea,select,a"))return;
+
+      const r=el.getBoundingClientRect();
+      el.style.left=r.left+"px";
+      el.style.top=r.top+"px";
+      el.style.right="auto";
+      el.style.bottom="auto";
+      el.style.margin="0";
+
+      startX=e.clientX;
+      startY=e.clientY;
+      baseX=r.left;
+      baseY=r.top;
+      down=true;
+      moved=false;
+      el.classList.add("da-chat-dragging");
+
+      try{handle.setPointerCapture(e.pointerId)}catch(_){}
+      e.preventDefault();
+    }
+
+    function pointerMove(e){
+      if(!down)return;
+      const dx=e.clientX-startX;
+      const dy=e.clientY-startY;
+
+      if(Math.abs(dx)>4 || Math.abs(dy)>4)moved=true;
+
+      const x=clamp(baseX+dx,0,Math.max(0,innerWidth-el.offsetWidth));
+      const y=clamp(baseY+dy,0,Math.max(0,innerHeight-el.offsetHeight));
+
+      el.style.left=x+"px";
+      el.style.top=y+"px";
+    }
+
+    function pointerUp(e){
+      if(!down)return;
+      down=false;
+      el.classList.remove("da-chat-dragging");
+
+      const r=el.getBoundingClientRect();
+      const positions=read();
+      positions[el.id]={left:r.left,top:r.top};
+      write(positions);
+
+      // Prevent the launcher's normal click after an actual drag.
+      if(allowClick && moved){
+        el.dataset.suppressNextClick="1";
+        setTimeout(()=>delete el.dataset.suppressNextClick,80);
+      }
+    }
+
+    handle.addEventListener("pointerdown",pointerDown,{passive:false});
+    handle.addEventListener("pointermove",pointerMove,{passive:false});
+    handle.addEventListener("pointerup",pointerUp);
+    handle.addEventListener("pointercancel",pointerUp);
+
+    if(allowClick){
+      el.addEventListener("click",e=>{
+        if(el.dataset.suppressNextClick==="1"){
+          e.preventDefault();
+          e.stopImmediatePropagation();
+        }
+      },true);
+    }
+
+    restore(el);
+  }
+
+  function init(){
+    const launcher=document.getElementById("da-chat-launcher");
+    const toast=document.getElementById("da-chat-toast");
+    const panel=document.getElementById("da-chat-panel");
+    const header=panel?.querySelector(".da-chat-header");
+
+    // Launcher and notification can be dragged directly.
+    if(launcher)dragElement(launcher,launcher,true);
+    if(toast)dragElement(toast,toast,true);
+
+    // Chat window is dragged from its header only.
+    if(panel && header)dragElement(panel,header,false);
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",init);
+  }else{
+    init();
+  }
+
+  setTimeout(init,500);
+  setTimeout(init,1500);
+})();
+</script>
+
 <script id="da-universal-floating-drag">
 (function(){
   "use strict";
@@ -6394,27 +6536,6 @@ window.addEventListener("beforeunload",()=>{
     }
   }
 
-  function addResetButton(el, handle){
-    if(!el || el.querySelector(".da-floating-position-reset"))return;
-    const btn=document.createElement("button");
-    btn.type="button";
-    btn.className="da-floating-position-reset";
-    btn.title="Kembalikan posisi awal";
-    btn.textContent="↺";
-    btn.addEventListener("click",e=>{
-      e.stopPropagation();
-      const positions=loadPositions();
-      delete positions[el.id];
-      savePositions(positions);
-      el.style.left="";
-      el.style.top="";
-      el.style.right="";
-      el.style.bottom="";
-      el.style.margin="";
-    });
-    (handle||el).appendChild(btn);
-  }
-
   function init(){
     // Known floating elements in the site.
     const candidates=[
@@ -6440,16 +6561,14 @@ window.addEventListener("beforeunload",()=>{
         const inner=el.querySelector(".da-yt-video-window");
         if(inner){
           makeDraggable(inner,inner.querySelector(".da-yt-video-head")||inner);
-          addResetButton(inner,inner.querySelector(".da-yt-video-head")||inner);
-        }
+}
         return;
       }
       if(id==="da-video-manager-modal"){
         const inner=el.querySelector(".da-video-manager-window");
         if(inner){
           makeDraggable(inner,inner.querySelector(".da-video-manager-head")||inner);
-          addResetButton(inner,inner.querySelector(".da-video-manager-head")||inner);
-        }
+}
         return;
       }
       if(id==="da-test-overlay"){
@@ -6457,22 +6576,19 @@ window.addEventListener("beforeunload",()=>{
         if(inner){
           const h=inner.querySelector(".da-test-head,.da-test-title")||inner;
           makeDraggable(inner,h);
-          addResetButton(inner,h);
-        }
+}
         return;
       }
       if(id==="da-local-video-modal"){
         const inner=el.querySelector(".da-local-video-box");
         if(inner){
           makeDraggable(inner,inner.querySelector(".da-local-video-head")||inner);
-          addResetButton(inner,inner.querySelector(".da-local-video-head")||inner);
-        }
+}
         return;
       }
 
       makeDraggable(el,handle);
-      addResetButton(el,handle);
-    });
+});
   }
 
   // Elements are sometimes created/initialized after the main scripts.
