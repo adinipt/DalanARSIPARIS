@@ -977,6 +977,69 @@ body.da-not-home #da-chat-panel{
   .da-yt-video-body{padding:5px}
 }
 
+
+/* ===== JENDELA KELOLA VIDEO ADMIN ===== */
+.da-admin-video-open{
+  border:0;background:var(--tab);color:var(--ink);border-radius:8px;
+  padding:6px 10px;cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap;
+}
+.da-admin-video-open:hover{background:var(--accent);color:#fff}
+.da-video-manager-modal{
+  position:fixed;inset:0;z-index:22000;display:none;
+  align-items:center;justify-content:center;padding:14px;
+  background:rgba(64,16,34,.58);
+}
+.da-video-manager-modal.open{display:flex}
+.da-video-manager-window{
+  width:min(900px,96vw);height:min(760px,92vh);background:#fff;
+  border-radius:16px;overflow:hidden;box-shadow:0 25px 80px rgba(64,16,34,.4);
+  display:flex;flex-direction:column;
+}
+.da-video-manager-head{
+  display:flex;align-items:center;gap:12px;padding:13px 16px;
+  background:var(--ink);color:#fff;
+}
+.da-video-manager-head h3{flex:1;margin:0;font-size:16px}
+.da-video-manager-close{
+  width:34px;height:34px;border:0;border-radius:8px;
+  background:rgba(255,255,255,.12);color:#fff;font-size:24px;cursor:pointer;
+}
+.da-video-manager-close:hover{background:var(--accent)}
+.da-video-manager-body{overflow:auto;padding:12px;background:var(--bg)}
+.da-video-manager-intro{
+  background:#fff;border:1px solid var(--line);border-radius:11px;
+  padding:12px;margin-bottom:10px;font-size:10px;line-height:1.55;color:var(--ink-dim)
+}
+.da-video-manager-intro strong{color:var(--ink)}
+.da-video-manager-row{
+  background:#fff;border:1px solid var(--line);border-radius:11px;
+  padding:11px;margin-bottom:8px;
+}
+.da-video-manager-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:7px}
+.da-video-manager-controls{display:flex;gap:7px}
+.da-video-manager-input{
+  flex:1;min-width:0;padding:9px 10px;border:1px solid var(--line);
+  border-radius:8px;background:var(--bg);color:var(--ink);font-size:11px;
+}
+.da-video-manager-save,.da-video-manager-delete{
+  border:0;border-radius:8px;padding:9px 12px;color:#fff;
+  background:var(--ink);cursor:pointer;font-size:10px;font-weight:700;
+}
+.da-video-manager-save:hover{background:var(--accent)}
+.da-video-manager-delete{background:var(--ink-dim)}
+.da-video-manager-status{font-size:9px;color:var(--ink-dim);margin-top:6px}
+@media(max-width:650px){
+  .da-admin-video-open{display:none}
+  .da-video-manager-controls{flex-wrap:wrap}
+  .da-video-manager-input{flex-basis:100%}
+  .da-video-manager-save,.da-video-manager-delete{flex:1}
+}
+
+
+@media(min-width:651px){
+  .da-admin-tabs{flex-wrap:wrap}
+}
+
 </style>
 
 <!-- =========================================================
@@ -1542,6 +1605,7 @@ body.da-not-home #da-chat-panel{
       <button class="da-admin-tab active" id="da-admin-tab-chat" type="button">💬 Chat</button>
       <button class="da-admin-tab" id="da-admin-tab-tests" type="button">📊 Hasil Tes</button>
         <button class="da-admin-tab" id="da-admin-tab-video" type="button">🎬 Video</button>
+        <button class="da-admin-video-open" id="da-admin-video-open" type="button">🎬 Kelola Video</button>
     </div>
     <button class="da-admin-logout" id="da-admin-logout">Keluar</button>
   </header>
@@ -1600,6 +1664,25 @@ body.da-not-home #da-chat-panel{
         referrerpolicy="strict-origin-when-cross-origin"></iframe>
     </div>
     <div class="da-yt-video-note">Video diputar langsung di DalanARSIPARIS</div>
+  </div>
+</section>
+
+
+<!-- ===== KELOLA LINK VIDEO YOUTUBE ADMIN ===== -->
+<section id="da-video-manager-modal" class="da-video-manager-modal" aria-label="Kelola Video Admin">
+  <div class="da-video-manager-window" role="dialog" aria-modal="true" aria-labelledby="da-video-manager-title">
+    <header class="da-video-manager-head">
+      <h3 id="da-video-manager-title">🎬 Kelola Video Pembelajaran</h3>
+      <button class="da-video-manager-close" id="da-video-manager-close" type="button" aria-label="Tutup">×</button>
+    </header>
+    <div class="da-video-manager-body">
+      <div class="da-video-manager-intro">
+        <strong>Di sinilah tempat memasukkan link video.</strong><br>
+        Upload video seperti biasa ke YouTube → buka video → pilih <strong>Bagikan</strong> → salin link → tempel ke kolom materi di bawah → klik <strong>Simpan</strong>.
+        Pengunjung tetap menonton video di dalam website, bukan membuka halaman postingan YouTube.
+      </div>
+      <div id="da-video-manager-list"></div>
+    </div>
   </div>
 </section>
 
@@ -5976,6 +6059,143 @@ window.addEventListener("beforeunload",()=>{
 
   window.daYouTubeRefresh=refreshCards;
   window.daYouTubeRenderAdmin=renderAdmin;
+})();
+</script>
+
+
+<script id="da-admin-video-manager-script">
+(function(){
+  "use strict";
+  const PATH="dalanarsiparis_videos";
+  const STAGES=[
+    ["naskah-masuk","01.1","Naskah Dinas Masuk"],
+    ["naskah-keluar","01.2","Naskah Dinas Keluar"],
+    ["penemuan-kembali","02.1","Penemuan Kembali Arsip"],
+    ["peminjaman","02.2","Peminjaman Arsip"],
+    ["pemberkasan","03.1","Pemberkasan Arsip"],
+    ["penyimpanan","03.2","Penyimpanan Arsip"],
+    ["pemindahan","04.1","Pemindahan Arsip"],
+    ["pemusnahan","04.2","Pemusnahan Arsip"]
+  ];
+
+  function getId(v){
+    if(!v) return null;
+    v=String(v).trim();
+    let m=v.match(/youtu\.be\/([A-Za-z0-9_-]{11})/); if(m)return m[1];
+    m=v.match(/[?&]v=([A-Za-z0-9_-]{11})/); if(m)return m[1];
+    m=v.match(/youtube(?:-nocookie)?\.com\/embed\/([A-Za-z0-9_-]{11})/); if(m)return m[1];
+    if(/^[A-Za-z0-9_-]{11}$/.test(v))return v;
+    return null;
+  }
+
+  async function readAll(){
+    if(!window.firebaseDb) return {};
+    try{const s=await firebaseDb.ref(PATH).once("value");return s.val()||{}}
+    catch(e){return {}}
+  }
+
+  async function render(){
+    const list=document.getElementById("da-video-manager-list");
+    if(!list)return;
+    const all=await readAll();
+    list.innerHTML="";
+
+    STAGES.forEach(([stage,code,name])=>{
+      const item=all[stage]||{};
+      const value=item.url || (item.id ? "https://www.youtube.com/watch?v="+item.id : "");
+
+      const row=document.createElement("div");
+      row.className="da-video-manager-row";
+      row.innerHTML=
+        '<div class="da-video-manager-title">'+code+' — '+name+'</div>'+
+        '<div class="da-video-manager-controls"></div>'+
+        '<div class="da-video-manager-status">'+(value?'✓ Link video sudah tersimpan':'Belum ada link video')+'</div>';
+
+      const controls=row.querySelector(".da-video-manager-controls");
+
+      const input=document.createElement("input");
+      input.className="da-video-manager-input";
+      input.type="url";
+      input.placeholder="Tempel link YouTube di sini";
+      input.value=value;
+
+      const save=document.createElement("button");
+      save.className="da-video-manager-save";
+      save.type="button";
+      save.textContent="Simpan";
+
+      save.onclick=async()=>{
+        const id=getId(input.value);
+        if(!id){
+          alert("Link YouTube tidak valid. Gunakan link video, bukan link channel.");
+          return;
+        }
+        if(!window.firebaseDb){
+          alert("Firebase Realtime Database belum siap.");
+          return;
+        }
+        try{
+          save.disabled=true;
+          save.textContent="Menyimpan...";
+          await firebaseDb.ref(PATH+"/"+stage).set({
+            id:id,
+            url:"https://www.youtube.com/watch?v="+id,
+            updatedAt:firebase.database.ServerValue.TIMESTAMP
+          });
+          if(window.daYouTubeRefresh) await window.daYouTubeRefresh();
+          await render();
+        }catch(e){
+          alert("Gagal menyimpan link video: "+(e?.message||e));
+        }finally{
+          save.disabled=false;
+          save.textContent="Simpan";
+        }
+      };
+
+      controls.appendChild(input);
+      controls.appendChild(save);
+
+      if(value){
+        const del=document.createElement("button");
+        del.className="da-video-manager-delete";
+        del.type="button";
+        del.textContent="Hapus";
+        del.onclick=async()=>{
+          if(!confirm("Hapus link video "+name+"?"))return;
+          try{
+            await firebaseDb.ref(PATH+"/"+stage).remove();
+            if(window.daYouTubeRefresh) await window.daYouTubeRefresh();
+            await render();
+          }catch(e){alert("Gagal menghapus link video.")}
+        };
+        controls.appendChild(del);
+      }
+
+      list.appendChild(row);
+    });
+  }
+
+  function open(){
+    const modal=document.getElementById("da-video-manager-modal");
+    if(!modal)return;
+    modal.classList.add("open");
+    document.body.style.overflow="hidden";
+    render();
+  }
+  function close(){
+    const modal=document.getElementById("da-video-manager-modal");
+    if(modal)modal.classList.remove("open");
+    document.body.style.overflow="";
+  }
+
+  document.getElementById("da-admin-video-open")?.addEventListener("click",open);
+  document.getElementById("da-video-manager-close")?.addEventListener("click",close);
+  document.getElementById("da-video-manager-modal")?.addEventListener("click",e=>{
+    if(e.target.id==="da-video-manager-modal")close();
+  });
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+
+  window.daAdminVideoManagerRender=render;
 })();
 </script>
 
