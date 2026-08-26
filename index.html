@@ -1887,7 +1887,7 @@ body.da-not-home #da-chat-panel{
     <div class="page-body">
       <div class="badge-card" id="da-badge-card">
         <h3>🏆 Progres &amp; Sertifikat Kelulusan</h3>
-        <p class="badge-card-desc">Selesaikan Pre Test dan Post Test pada seluruh 8 tahapan. Sertifikat terbuka jika seluruh Pre Test &amp; Post Test selesai dan <strong>rata-rata nilai Post Test minimal 80</strong>. Menonton video dianjurkan tapi tidak wajib untuk membuka sertifikat.</p>
+        <p class="badge-card-desc">Selesaikan seluruh rangkaian pembelajaran. Kamu dapat mengunduh sertifikat jika minimal nilai rata-rata 80.</p>
         <div class="badge-progress"><div class="badge-progress-fill" id="da-badge-fill"></div></div>
         <div class="badge-status" id="da-badge-status">0/8 modul selesai</div>
         <div class="badge-stage-grid" id="da-badge-stages"></div>
@@ -3279,6 +3279,21 @@ function saveResult(type, stage, data){
   }
 }
 function isVideoDone(stage){ return localStorage.getItem(`youtubeDone_stage_${stage}`) === "true"; }
+/* ---- Penyimpanan progres jawaban test (draft) ----
+   Menyimpan jawaban yang sudah dipilih setiap kali berubah, agar jika
+   pengguna tiba-tiba menutup web di tengah pengerjaan, saat kembali
+   lagi jawabannya masih ada dan bisa melanjutkan dari titik terakhir. */
+function draftKey(type, stage){ return `dalanarsiparis_draft_${type}_${stage}`; }
+function getDraftAnswers(type, stage){
+  try { return JSON.parse(localStorage.getItem(draftKey(type, stage)) || "null"); }
+  catch(e){ return null; }
+}
+function saveDraftAnswers(type, stage, answers){
+  try { localStorage.setItem(draftKey(type, stage), JSON.stringify(answers)); } catch(e){}
+}
+function clearDraftAnswers(type, stage){
+  try { localStorage.removeItem(draftKey(type, stage)); } catch(e){}
+}
 /* Diekspos agar bisa dipakai skrip akun/dashboard & sinkron Firebase. */
 window.daGetResult = getResult;
 window.daStorageKey = storageKey;
@@ -3293,9 +3308,10 @@ function renderTest(stage, type){
   activeSubmitted = false;
   testType.textContent = type === "pre" ? "PRE TEST" : "POST TEST";
   testTitle.textContent = data.title;
-  testNote.innerHTML = type === "pre"
+  testNote.innerHTML = (type === "pre"
     ? "Jawablah 5 soal untuk mengetahui pemahaman awal sebelum menonton video. Setiap jawaban benar bernilai 20 dan jawaban salah bernilai 0."
-    : "Jawablah 5 soal yang sama dengan Pre Test setelah menonton video. Setelah submit, kunci jawaban dan pembahasan singkat akan ditampilkan.";
+    : "Jawablah 5 soal yang sama dengan Pre Test setelah menonton video. Setelah submit, kunci jawaban dan pembahasan singkat akan ditampilkan.")
+    + " <em>Jawaban Anda tersimpan otomatis di perangkat ini — jika keluar di tengah jalan, Anda bisa melanjutkan dari jawaban terakhir.</em>";
   testResult.classList.remove("show");
   testForm.innerHTML = data.questions.map((item,i)=>`
     <div class="da-question" id="da-q-${i}">
@@ -3307,10 +3323,35 @@ function renderTest(stage, type){
         </label>`).join("")}
       <div class="da-answer" id="da-a-${i}"></div>
     </div>`).join("");
+
+  /* Pulihkan jawaban yang sempat tersimpan sebelumnya (jika ada), agar
+     pengerjaan test bisa dilanjutkan dari titik terakhir ditinggalkan. */
+  const draft = getDraftAnswers(type, stage);
+  if(draft && Array.isArray(draft)){
+    draft.forEach((val,i)=>{
+      if(val === null || val === undefined) return;
+      const input = testForm.querySelector(`input[name="q${i}"][value="${val}"]`);
+      if(input) input.checked = true;
+    });
+  }
+
   testSubmit.disabled = false;
   testOverlay.classList.add("open");
   testOverlay.setAttribute("aria-hidden","false");
 }
+
+/* Setiap kali pengguna memilih/mengganti jawaban, simpan progresnya
+   agar tidak hilang jika tiba-tiba keluar dari web. */
+testForm.addEventListener("change", e=>{
+  if(!activeTestStage || !activeTestType || activeSubmitted) return;
+  if(!e.target.matches('input[type="radio"]')) return;
+  const questions = TESTS[activeTestStage].questions;
+  const answers = questions.map((item,i)=>{
+    const selected = testForm.querySelector(`input[name="q${i}"]:checked`);
+    return selected ? Number(selected.value) : null;
+  });
+  saveDraftAnswers(activeTestType, activeTestStage, answers);
+});
 
 function closeTest(){
   testOverlay.classList.remove("open");
@@ -3341,6 +3382,7 @@ function submitTest(){
 
   const result = {score, answers, submittedAt:new Date().toISOString()};
   saveResult(activeTestType, activeTestStage, result);
+  clearDraftAnswers(activeTestType, activeTestStage);
   activeSubmitted = true;
   testSubmit.disabled = true;
 
