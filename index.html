@@ -1837,7 +1837,7 @@ body.da-not-home #da-chat-panel{
 
       <div class="badge-card badge-card-teaser">
         <h3>🏆 Sertifikat Kelulusan DalanARSIPARIS</h3>
-        <p class="badge-card-desc">Selesaikan Pre Test, tonton video YouTube, dan Post Test pada seluruh 8 tahapan untuk membuka sertifikat resmi ber-nomor unik yang bisa diunduh sebagai PDF dan diverifikasi keasliannya.</p>
+        <p class="badge-card-desc">Selesaikan Pre Test dan Post Test pada seluruh 8 tahapan dengan rata-rata nilai Post Test minimal 80 untuk membuka sertifikat resmi ber-nomor unik yang bisa diunduh sebagai PDF dan diverifikasi keasliannya. Video pembelajaran sangat dianjurkan untuk ditonton, namun tidak menjadi syarat wajib.</p>
         <button class="btn-badge" data-page="sertifikat">🏆 Buka Halaman Sertifikat</button>
       </div>
     </div>
@@ -1882,16 +1882,16 @@ body.da-not-home #da-chat-panel{
     <div class="page-hero">
       <div class="eyebrow label">Kelulusan &amp; Apresiasi</div>
       <h1>Sertifikat DalanARSIPARIS</h1>
-      <p>Pantau progres pembelajaran Anda pada seluruh 8 tahapan. Sertifikat resmi ber-nomor unik terbuka setelah seluruh tahapan selesai dengan rata-rata nilai Post Test minimal 80, dan dapat diunduh sebagai PDF.</p>
+      <p>Pantau progres pembelajaran Anda pada seluruh 8 tahapan. Sertifikat resmi ber-nomor unik terbuka setelah Pre Test dan Post Test seluruh tahapan selesai dengan rata-rata nilai Post Test minimal 80, dan dapat diunduh sebagai PDF kapan saja — tidak harus pada hari yang sama saat mengerjakan tes.</p>
     </div>
     <div class="page-body">
       <div class="badge-card" id="da-badge-card">
         <h3>🏆 Progres &amp; Sertifikat Kelulusan</h3>
-        <p class="badge-card-desc">Selesaikan Pre Test, tonton video YouTube, dan Post Test pada seluruh 8 tahapan. Sertifikat terbuka jika seluruh rangkaian selesai dan <strong>rata-rata nilai Post Test minimal 80</strong>.</p>
+        <p class="badge-card-desc">Selesaikan Pre Test dan Post Test pada seluruh 8 tahapan. Sertifikat terbuka jika seluruh Pre Test &amp; Post Test selesai dan <strong>rata-rata nilai Post Test minimal 80</strong>. Menonton video dianjurkan tapi tidak wajib untuk membuka sertifikat.</p>
         <div class="badge-progress"><div class="badge-progress-fill" id="da-badge-fill"></div></div>
         <div class="badge-status" id="da-badge-status">0/8 modul selesai</div>
         <div class="badge-stage-grid" id="da-badge-stages"></div>
-        <div class="score-note" id="da-final-score-note">Syarat sertifikat: seluruh 8 tahapan selesai dan rata-rata Post Test minimal <strong>80</strong>.</div>
+        <div class="score-note" id="da-final-score-note">Syarat sertifikat: Pre Test &amp; Post Test seluruh 8 tahapan selesai dan rata-rata Post Test minimal <strong>80</strong>.</div>
         <div class="badge-name-field">
           <input type="text" id="da-badge-name" placeholder="Nama lengkap untuk dicetak pada sertifikat" maxlength="80">
         </div>
@@ -3412,7 +3412,10 @@ function updateBadgeProgress(){
   let completed=0;
   const rows = TEST_ORDER.map(stage=>{
     const pre=getResult("pre",stage), post=getResult("post",stage), video=isVideoDone(stage);
-    const done=!!pre && !!post && video;
+    /* Video tidak lagi menjadi syarat wajib untuk membuka sertifikat.
+       Tahapan dianggap lengkap jika Pre Test dan Post Test sudah dikerjakan,
+       terlepas dari apakah video sudah ditonton atau belum. */
+    const done=!!pre && !!post;
     if(done) completed++;
     return {stage,pre,post,video,done};
   });
@@ -3436,7 +3439,7 @@ function updateBadgeProgress(){
 
   const finalNote = document.getElementById("da-final-score-note");
   if(finalNote){
-    finalNote.innerHTML = `Syarat sertifikat: seluruh 8 tahapan selesai dan rata-rata Post Test minimal <strong>${MIN_FINAL}</strong>. ` +
+    finalNote.innerHTML = `Syarat sertifikat: Pre Test &amp; Post Test seluruh 8 tahapan selesai dan rata-rata Post Test minimal <strong>${MIN_FINAL}</strong>. ` +
       `Rata-rata Post Test saat ini: <strong class="${stats.post>=MIN_FINAL?'ok':'low'}">${stats.post}</strong>.`;
   }
 
