@@ -1653,6 +1653,9 @@ body.da-not-home #da-chat-panel{
   .dash-summary, .dash-stage-grid{ grid-template-columns:1fr; }
 }
 </style>
+
+<style>
+
 </head>
 <body>
 
@@ -1704,9 +1707,12 @@ body.da-not-home #da-chat-panel{
   </nav>
 
   <nav class="nav-group">
-    <div class="nav-group-title label">Alat Bantu</div>
+    <div class="nav-group-title label">Instrumen Kearsipan</div>
     <ul class="nav-list">
-      <li><button class="nav-item" data-page="template-naskah-dinas"><span class="code">📄</span> Template Naskah Dinas</button></li>
+      <li><button class="nav-item" data-page="template-naskah-dinas"><span class="code">📄</span> Tata Naskah Dinas</button></li>
+      <li><button class="nav-item" data-page="jadwal-retensi-arsip"><span class="code">🗂</span> Jadwal Retensi Arsip</button></li>
+      <li><button class="nav-item" data-page="kode-klasifikasi-arsip"><span class="code">🔖</span> Kode Klasifikasi Arsip</button></li>
+      <li><button class="nav-item" data-page="sistem-klasifikasi-keamanan-akses-arsip"><span class="code">🔐</span> Sistem Klasifikasi Keamanan dan Akses Arsip</button></li>
     </ul>
   </nav>
 
@@ -2442,8 +2448,8 @@ body.da-not-home #da-chat-panel{
 <!-- TEMPLATE NASKAH DINAS -->
 <section class="page" id="page-template-naskah-dinas">
   <div class="page-hero">
-    <div class="eyebrow label">ALAT BANTU</div>
-    <h1>Template Naskah Dinas</h1>
+    <div class="eyebrow label">INSTRUMEN KEARSIPAN</div>
+    <h1>Tata Naskah Dinas</h1>
     <p>Susun naskah dinas sesuai format Peraturan Menteri Dalam Negeri Nomor 1 Tahun 2023 tentang Tata Naskah Dinas di Lingkungan Pemerintah Daerah, lalu unduh langsung dalam bentuk file Word (.docx) siap cetak di kertas F4/Folio.</p>
   </div>
   <div class="page-body">
@@ -2468,6 +2474,120 @@ body.da-not-home #da-chat-panel{
       </div>
     </div>
 
+  </div>
+</section>
+
+<!-- JADWAL RETENSI ARSIP -->
+<section class="page" id="page-jadwal-retensi-arsip">
+  <div class="page-hero">
+    <div class="eyebrow label">INSTRUMEN KEARSIPAN</div>
+    <h1>Jadwal Retensi Arsip</h1>
+    <p>Daftar retensi arsip yang relevan dengan fungsi Perpustakaan dan Kearsipan berdasarkan Peraturan Bupati Malaka Nomor 15 Tahun 2014.</p>
+  </div>
+  <div class="page-body">
+    <div class="opd-instrumen-list">
+      <article class="opd-instrumen-card">
+        <div class="opd-instrumen-head">
+          <span class="code">DINAS PERPUSTAKAAN DAN KEARSIPAN</span>
+          <h3>Perpustakaan</h3>
+        </div>
+        <div class="arsip-table-wrap">
+          <div class="arsip-table-title">JRA Perpustakaan — arsip penting</div>
+          <table class="arsip-table">
+      <thead><tr><th>Kode</th><th>Jenis arsip</th><th>Aktif</th><th>Inaktif</th><th>Keterangan</th></tr></thead>
+      <tbody><tr><td>JRA-DPK-01</td><td>Buku tanda koleksi</td><td class="center">Sampai dengan tidak dipergunakan</td><td class="center">3 tahun</td><td>Vital</td></tr><tr><td>JRA-DPK-02</td><td>Daftar buku terseleksi</td><td class="center">1 tahun</td><td class="center">3 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-03</td><td>Daftar buku dalam pemesanan</td><td class="center">1 tahun</td><td class="center">2 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-04</td><td>Daftar buku yang dibeli</td><td class="center">1 tahun</td><td class="center">2 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-05</td><td>Daftar pengiriman bahan pustaka surplus</td><td class="center">1 tahun</td><td class="center">2 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-06</td><td>Data statistik anggota, pengunjung dan peminjaman bahan pustaka</td><td class="center">Sampai diperbaharui</td><td class="center">2 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-07</td><td>Survey kondisi bahan pustaka</td><td class="center">1 tahun</td><td class="center">2 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-08</td><td>Perawatan fisik bahan pustaka</td><td class="center">2 tahun</td><td class="center">4 tahun</td><td>Musnah</td></tr></tbody>
+    </table>
+        </div>
+      </article>
+
+      <article class="opd-instrumen-card">
+        <div class="opd-instrumen-head">
+          <span class="code">DINAS PERPUSTAKAAN DAN KEARSIPAN</span>
+          <h3>Kearsipan</h3>
+        </div>
+        <div class="arsip-table-wrap">
+          <div class="arsip-table-title">JRA Kearsipan — arsip penting</div>
+          <table class="arsip-table">
+      <thead><tr><th>Kode</th><th>Jenis arsip</th><th>Aktif</th><th>Inaktif</th><th>Keterangan</th></tr></thead>
+      <tbody><tr><td>JRA-DPK-K-01</td><td>Kartu Kendali</td><td class="center">2 tahun</td><td class="center">3 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-K-02</td><td>Buku Agenda</td><td class="center">2 tahun</td><td class="center">3 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-K-03</td><td>Lembar Pengantar / Buku Ekspedisi</td><td class="center">2 tahun</td><td class="center">3 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-K-04</td><td>Daftar Arsip</td><td class="center">Selama dipergunakan</td><td class="center">2 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-K-05</td><td>Persetujuan Jadwal Retensi Arsip (JRA)</td><td class="center">Sampai ditetapkan</td><td class="center">3 tahun</td><td>Permanen</td></tr><tr><td>JRA-DPK-K-06</td><td>Penetapan Jadwal Retensi Arsip (JRA)</td><td class="center">Sampai diperbaharui</td><td class="center">3 tahun</td><td>Musnah</td></tr></tbody>
+    </table>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- KODE KLASIFIKASI ARSIP -->
+<section class="page" id="page-kode-klasifikasi-arsip">
+  <div class="page-hero">
+    <div class="eyebrow label">INSTRUMEN KEARSIPAN</div>
+    <h1>Kode Klasifikasi Arsip</h1>
+    <p>Kode klasifikasi yang paling relevan untuk pelaksanaan tugas Perpustakaan dan Kearsipan berdasarkan Peraturan Bupati Malaka Nomor 15 Tahun 2014.</p>
+  </div>
+  <div class="page-body">
+    <div class="opd-instrumen-list">
+      <article class="opd-instrumen-card">
+        <div class="opd-instrumen-head">
+          <span class="code">DINAS PERPUSTAKAAN DAN KEARSIPAN</span>
+          <h3>Kode Perpustakaan dan Kearsipan</h3>
+        </div>
+        <div class="arsip-table-wrap">
+          <div class="arsip-table-title">Kode klasifikasi arsip terpenting</div>
+          <table class="arsip-table" style="min-width:560px">
+          <thead><tr><th>Kode</th><th>Masalah / jenis urusan</th></tr></thead>
+          <tbody><tr><td>040</td><td>Perpustakaan, Dokumentasi, Kearsipan, Sandi</td></tr><tr><td>041</td><td>Perpustakaan</td></tr><tr><td>041.1</td><td>Umum</td></tr><tr><td>041.2</td><td>Khusus</td></tr><tr><td>041.3</td><td>Perguruan Tinggi</td></tr><tr><td>041.4</td><td>Sekolah</td></tr><tr><td>041.5</td><td>Keliling</td></tr><tr><td>042</td><td>Dokumentasi</td></tr><tr><td>045</td><td>Kearsipan</td></tr><tr><td>045.1</td><td>Pola Klasifikasi</td></tr><tr><td>045.2</td><td>Pengurusan Arsip</td></tr><tr><td>045.3</td><td>Penyusutan Arsip</td></tr><tr><td>045.31</td><td>Jadwal Retensi Arsip</td></tr><tr><td>045.32</td><td>Pemindahan Arsip</td></tr><tr><td>045.33</td><td>Penilaian Arsip</td></tr><tr><td>045.34</td><td>Pemusnahan Arsip</td></tr><tr><td>045.35</td><td>Penyerahan Arsip</td></tr><tr><td>045.36</td><td>Berita Acara Penyusutan Arsip</td></tr><tr><td>045.37</td><td>Daftar Pencarian Arsip</td></tr><tr><td>045.4</td><td>Pembinaan Kearsipan</td></tr><tr><td>045.41</td><td>Bimbingan Kearsipan</td></tr><tr><td>045.5</td><td>Pemeliharaan / Perawatan Arsip</td></tr></tbody>
+        </table>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- SISTEM KLASIFIKASI KEAMANAN DAN AKSES ARSIP -->
+<section class="page" id="page-sistem-klasifikasi-keamanan-akses-arsip">
+  <div class="page-hero">
+    <div class="eyebrow label">INSTRUMEN KEARSIPAN</div>
+    <h1>Sistem Klasifikasi Keamanan dan Akses Arsip</h1>
+    <p>Pengaturan keamanan dan akses arsip di lingkungan Pemerintah Daerah Kabupaten Malaka bertumpu pada prinsip menjamin keselamatan dan keamanan arsip serta melindungi kepentingan negara dan hak keperdataan masyarakat, sebagaimana diatur dalam Peraturan Bupati Malaka Nomor 15 Tahun 2014 tentang Tata Kearsipan di Lingkungan Pemerintah Daerah Kabupaten Malaka.</p>
+  </div>
+  <div class="page-body">
+
+    <div class="tnd-note">
+      ℹ️ Materi pada halaman ini disarikan dari Peraturan Bupati Malaka Nomor 15 Tahun 2014, khususnya Pasal 3 huruf d dan huruf g, BAB V tentang Pemeliharaan, Pengamanan, dan Peminjaman Arsip (Pasal 18–19), serta Pasal 17 ayat (5) mengenai perlengkapan pengamanan berkas.
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <span class="code">SKKAA-01</span>
+        <h3>Tujuan Pengamanan Arsip (Pasal 3)</h3>
+        <p>Penyelenggaraan tata kearsipan bertujuan antara lain menjamin perlindungan kepentingan negara dan hak-hak keperdataan rakyat (huruf d), serta menjamin keselamatan dan keamanan arsip sebagai bukti pertanggungjawaban dalam kehidupan bermasyarakat, berbangsa, dan bernegara (huruf g).</p>
+      </div>
+      <div class="card">
+        <span class="code">SKKAA-02</span>
+        <h3>Penanggung Jawab (Pasal 18)</h3>
+        <p>Unit kearsipan bertanggung jawab melakukan pemeliharaan, pengamanan, dan peminjaman arsip — menjadikan ketiga fungsi ini satu kesatuan tugas dalam menjaga keutuhan, kerahasiaan, dan ketersediaan arsip.</p>
+      </div>
+      <div class="card">
+        <span class="code">SKKAA-03</span>
+        <h3>Perlengkapan Pengamanan Fisik (Pasal 17 ayat 5)</h3>
+        <p>Pada tahap pemberkasan, kertas pembungkus digunakan untuk menjaga keamanan dan kebersihan surat, sedangkan penyimpanan arsip inaktif dilakukan dalam folder, box, dan rak arsip yang tertata di unit kearsipan.</p>
+      </div>
+      <div class="card">
+        <span class="code">SKKAA-04</span>
+        <h3>Pengendalian Akses melalui Peminjaman (Pasal 19)</h3>
+        <p>Akses terhadap arsip inaktif dikendalikan melalui mekanisme peminjaman: peminjaman hanya dapat dilakukan terhadap <em>copy</em> arsip inaktif, dan hanya atas dasar permohonan tertulis dari pihak yang meminjam — arsip asli tetap berada dalam pengelolaan unit kearsipan.</p>
+      </div>
+      <div class="card">
+        <span class="code">SKKAA-05</span>
+        <h3>Keterkaitan dengan Penemuan Kembali</h3>
+        <p>Karena akses selalu diawali dengan permohonan tertulis dan penelusuran melalui indeks serta kode klasifikasi (Pasal 15), setiap permintaan akses arsip tercatat dan dapat ditelusuri kembali, sehingga keamanan dan akuntabilitas arsip tetap terjaga.</p>
+      </div>
+      <div class="card">
+        <span class="code">SKKAA-06</span>
+        <h3>Pembinaan &amp; Pengawasan (Pasal 23)</h3>
+        <p>Bupati melakukan pembinaan dan pengawasan atas penyelenggaraan tata kearsipan, termasuk aspek pemeliharaan, pengamanan, dan peminjaman arsip, untuk memastikan ketentuan keamanan dan akses arsip berjalan sesuai peraturan ini.</p>
+      </div>
+    </div>
   </div>
 </section>
 
