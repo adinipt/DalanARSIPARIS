@@ -1655,6 +1655,167 @@ body.da-not-home #da-chat-panel{
 </style>
 
 <style>
+  /* ===== INSTRUMEN KEARSIPAN — JRA & KKA PER KOMPONEN ===== */
+  .arsip-instrumen-note{
+    background:var(--paper);
+    border-left:4px solid var(--accent);
+    border-radius:10px;
+    padding:1rem 1.2rem;
+    margin-bottom:1.5rem;
+    box-shadow:0 4px 18px rgba(133,14,53,.06);
+    color:var(--ink-dim);
+    font-size:.9rem;
+  }
+  .arsip-instrumen-note strong{color:var(--ink);}
+  .opd-instrumen-list{
+    display:flex;
+    flex-direction:column;
+    gap:1.25rem;
+    max-width:1200px;
+  }
+  .opd-instrumen-card{
+    background:var(--paper);
+    border-radius:12px;
+    box-shadow:0 4px 18px rgba(133,14,53,.07);
+    border-top:4px solid var(--accent);
+    overflow:hidden;
+  }
+  .opd-instrumen-head{
+    padding:1.25rem 1.4rem 1rem;
+    border-bottom:1px solid var(--line);
+  }
+  .opd-instrumen-head .code{
+    display:block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:.7rem;
+    letter-spacing:.08em;
+    color:var(--accent);
+    margin-bottom:.35rem;
+  }
+  .opd-instrumen-head h3{
+    font-size:1.25rem;
+    margin-bottom:.35rem;
+  }
+  .opd-instrumen-head p{
+    color:var(--ink-dim);
+    font-size:.88rem;
+    margin:0;
+  }
+  .arsip-table-wrap{
+    overflow-x:auto;
+    padding:0 1.4rem 1.4rem;
+  }
+  .arsip-table-title{
+    font-family:'Fraunces',serif;
+    font-size:1.05rem;
+    margin:1.1rem 0 .7rem;
+    color:var(--ink);
+  }
+  .arsip-table{
+    width:100%;
+    min-width:720px;
+    border-collapse:collapse;
+    font-size:.84rem;
+  }
+  .arsip-table th,
+  .arsip-table td{
+    border:1px solid var(--line);
+    padding:.65rem .7rem;
+    text-align:left;
+    vertical-align:top;
+  }
+  .arsip-table th{
+    background:rgba(255,196,196,.28);
+    color:var(--ink);
+    font-weight:700;
+  }
+  .arsip-table td:first-child{
+    width:70px;
+    font-family:'JetBrains Mono',monospace;
+    color:var(--accent);
+    font-size:.75rem;
+    white-space:nowrap;
+  }
+  .arsip-table .center{
+    text-align:center;
+    white-space:nowrap;
+  }
+  .arsip-table .permanent{
+    font-weight:700;
+  }
+  .arsip-subnote{
+    margin-top:.65rem;
+    color:var(--ink-dim);
+    font-size:.78rem;
+    font-style:italic;
+  }
+  .arsip-empty{
+    margin:1rem 1.4rem 1.4rem;
+    padding:.85rem 1rem;
+    border:1px dashed var(--line);
+    border-radius:8px;
+    background:rgba(255,196,196,.10);
+    color:var(--ink-dim);
+    font-size:.86rem;
+  }
+  @media(max-width:640px){
+    .opd-instrumen-head{padding:1rem;}
+    .arsip-table-wrap{padding:0 1rem 1rem;}
+    .arsip-table{font-size:.78rem;}
+  }
+</style>
+
+
+<style id="da-jra-kka-fixed-style">
+  .arsip-instrumen-card{
+    background:#fff;
+    border:1px solid rgba(139,0,0,.14);
+    border-radius:14px;
+    padding:20px;
+    margin:0 0 22px;
+    box-shadow:0 6px 18px rgba(80,30,20,.06);
+  }
+  .arsip-instrumen-heading{
+    margin-bottom:14px;
+  }
+  .arsip-instrumen-heading .code{
+    display:inline-block;
+    margin-bottom:5px;
+    font-weight:700;
+    letter-spacing:.04em;
+  }
+  .arsip-instrumen-heading h2{
+    margin:0;
+  }
+  .arsip-table-scroll{
+    width:100%;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .arsip-table{
+    width:100%;
+    min-width:760px;
+    border-collapse:collapse;
+    background:#fff;
+  }
+  .arsip-table th,
+  .arsip-table td{
+    padding:10px 11px;
+    border:1px solid rgba(139,0,0,.12);
+    text-align:left;
+    vertical-align:top;
+    line-height:1.45;
+  }
+  .arsip-table th{
+    font-weight:700;
+  }
+  .arsip-table .center{
+    text-align:center;
+  }
+  .kka-table{
+    min-width:560px;
+  }
+</style>
 
 </head>
 <body>
@@ -2482,38 +2643,30 @@ body.da-not-home #da-chat-panel{
   <div class="page-hero">
     <div class="eyebrow label">INSTRUMEN KEARSIPAN</div>
     <h1>Jadwal Retensi Arsip</h1>
-    <p>Daftar retensi arsip yang relevan dengan fungsi Perpustakaan dan Kearsipan berdasarkan Peraturan Bupati Malaka Nomor 15 Tahun 2014.</p>
+    <p>Jadwal retensi arsip yang relevan dengan pelaksanaan tugas Perpustakaan dan Kearsipan.</p>
   </div>
   <div class="page-body">
-    <div class="opd-instrumen-list">
-      <article class="opd-instrumen-card">
-        <div class="opd-instrumen-head">
-          <span class="code">DINAS PERPUSTAKAAN DAN KEARSIPAN</span>
-          <h3>Perpustakaan</h3>
-        </div>
-        <div class="arsip-table-wrap">
-          <div class="arsip-table-title">JRA Perpustakaan — arsip penting</div>
-          <table class="arsip-table">
-      <thead><tr><th>Kode</th><th>Jenis arsip</th><th>Aktif</th><th>Inaktif</th><th>Keterangan</th></tr></thead>
-      <tbody><tr><td>JRA-DPK-01</td><td>Buku tanda koleksi</td><td class="center">Sampai dengan tidak dipergunakan</td><td class="center">3 tahun</td><td>Vital</td></tr><tr><td>JRA-DPK-02</td><td>Daftar buku terseleksi</td><td class="center">1 tahun</td><td class="center">3 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-03</td><td>Daftar buku dalam pemesanan</td><td class="center">1 tahun</td><td class="center">2 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-04</td><td>Daftar buku yang dibeli</td><td class="center">1 tahun</td><td class="center">2 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-05</td><td>Daftar pengiriman bahan pustaka surplus</td><td class="center">1 tahun</td><td class="center">2 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-06</td><td>Data statistik anggota, pengunjung dan peminjaman bahan pustaka</td><td class="center">Sampai diperbaharui</td><td class="center">2 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-07</td><td>Survey kondisi bahan pustaka</td><td class="center">1 tahun</td><td class="center">2 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-08</td><td>Perawatan fisik bahan pustaka</td><td class="center">2 tahun</td><td class="center">4 tahun</td><td>Musnah</td></tr></tbody>
-    </table>
-        </div>
-      </article>
+    <article class="arsip-instrumen-card">
+      <div class="arsip-instrumen-heading">
+        <span class="code">IX</span>
+        <h2>Perpustakaan</h2>
+      </div>
+      <div class="arsip-table-scroll"><table class="arsip-table">
+      <thead><tr><th>No.</th><th>Jenis Arsip</th><th>Aktif</th><th>Inaktif</th><th>Keterangan</th></tr></thead>
+      <tbody><tr><td>01.a</td><td>Buku Tanda Koleksi</td><td>Sampai dengan tidak dipergunakan</td><td>3 tahun</td><td>Vital</td></tr><tr><td>01.b</td><td>Daftar buku terseleksi</td><td>1 tahun</td><td>3 tahun</td><td>Musnah</td></tr><tr><td>01.c</td><td>Daftar buku dalam pemesanan</td><td>1 tahun</td><td>2 tahun</td><td>Musnah</td></tr><tr><td>01.d</td><td>Daftar buku permintaan pengadaan</td><td>1 tahun</td><td>2 tahun</td><td>Musnah</td></tr><tr><td>01.e</td><td>Daftar buku yang dibeli</td><td>1 tahun</td><td>2 tahun</td><td>Musnah</td></tr><tr><td>01.f</td><td>Daftar hasil pembelian, hadiah/hibah, dan lain-lain</td><td>1 tahun</td><td>2 tahun</td><td>Musnah</td></tr><tr><td>01.g</td><td>Daftar pengiriman bahan pustaka surplus</td><td>1 tahun</td><td>2 tahun</td><td>Musnah</td></tr><tr><td>01.h</td><td>Daftar penjagaan koleksi perpustakaan</td><td>1 tahun</td><td>2 tahun</td><td>Musnah</td></tr><tr><td>01.i</td><td>Daftar tambahan buku (accession list)</td><td>2 tahun</td><td>3 tahun</td><td>Musnah</td></tr><tr><td>01.j</td><td>Daftar / jajaran kendali (subjek dan pengarang)</td><td>Sampai dengan dipergunakan</td><td>3 tahun</td><td>Musnah</td></tr><tr><td>02</td><td>Layanan perpustakaan dan informasi</td><td>Sampai diperbaharui</td><td>2 tahun</td><td>Musnah</td></tr><tr><td>02.a</td><td>Data statistik anggota, pengunjung, dan peminjaman bahan pustaka</td><td>Sampai diperbaharui</td><td>2 tahun</td><td>Musnah</td></tr><tr><td>03</td><td>Preservasi bahan pustaka</td><td>1 tahun</td><td>2 tahun</td><td>Musnah</td></tr><tr><td>03.a</td><td>Survei kondisi bahan pustaka</td><td>1 tahun</td><td>2 tahun</td><td>Musnah</td></tr><tr><td>03.b</td><td>Perawatan fisik bahan pustaka</td><td>2 tahun</td><td>4 tahun</td><td>Musnah</td></tr></tbody>
+    </table></div>
+    </article>
 
-      <article class="opd-instrumen-card">
-        <div class="opd-instrumen-head">
-          <span class="code">DINAS PERPUSTAKAAN DAN KEARSIPAN</span>
-          <h3>Kearsipan</h3>
-        </div>
-        <div class="arsip-table-wrap">
-          <div class="arsip-table-title">JRA Kearsipan — arsip penting</div>
-          <table class="arsip-table">
-      <thead><tr><th>Kode</th><th>Jenis arsip</th><th>Aktif</th><th>Inaktif</th><th>Keterangan</th></tr></thead>
-      <tbody><tr><td>JRA-DPK-K-01</td><td>Kartu Kendali</td><td class="center">2 tahun</td><td class="center">3 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-K-02</td><td>Buku Agenda</td><td class="center">2 tahun</td><td class="center">3 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-K-03</td><td>Lembar Pengantar / Buku Ekspedisi</td><td class="center">2 tahun</td><td class="center">3 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-K-04</td><td>Daftar Arsip</td><td class="center">Selama dipergunakan</td><td class="center">2 tahun</td><td>Musnah</td></tr><tr><td>JRA-DPK-K-05</td><td>Persetujuan Jadwal Retensi Arsip (JRA)</td><td class="center">Sampai ditetapkan</td><td class="center">3 tahun</td><td>Permanen</td></tr><tr><td>JRA-DPK-K-06</td><td>Penetapan Jadwal Retensi Arsip (JRA)</td><td class="center">Sampai diperbaharui</td><td class="center">3 tahun</td><td>Musnah</td></tr></tbody>
-    </table>
-        </div>
-      </article>
-    </div>
+    <article class="arsip-instrumen-card">
+      <div class="arsip-instrumen-heading">
+        <span class="code">IV</span>
+        <h2>Kearsipan</h2>
+      </div>
+      <div class="arsip-table-scroll"><table class="arsip-table">
+      <thead><tr><th>No.</th><th>Jenis Arsip</th><th>Aktif</th><th>Inaktif</th><th>Keterangan</th></tr></thead>
+      <tbody><tr><td>1.a</td><td>Kartu Kendali</td><td>2 tahun</td><td>3 tahun</td><td>Musnah</td></tr><tr><td>1.b</td><td>Buku Agenda</td><td>2 tahun</td><td>3 tahun</td><td>Musnah</td></tr><tr><td>1.c</td><td>Lembar Pengantar / Buku Ekspedisi</td><td>2 tahun</td><td>3 tahun</td><td>Musnah</td></tr><tr><td>2.a</td><td>Daftar Arsip</td><td>Selama dipergunakan</td><td>2 tahun</td><td>Musnah</td></tr><tr><td>3</td><td>Persetujuan Jadwal Retensi Arsip (JRA)</td><td>Sampai ditetapkan</td><td>3 tahun</td><td>Permanen</td></tr><tr><td>4</td><td>Penetapan Jadwal Retensi Arsip</td><td>Sampai diperbaharui</td><td>3 tahun</td><td>Musnah</td></tr><tr><td>5.a</td><td>Berita Acara Penyusutan Arsip</td><td>Selama berlaku</td><td>2 tahun</td><td>Musnah</td></tr></tbody>
+    </table></div>
+    </article>
   </div>
 </section>
 
@@ -2522,24 +2675,19 @@ body.da-not-home #da-chat-panel{
   <div class="page-hero">
     <div class="eyebrow label">INSTRUMEN KEARSIPAN</div>
     <h1>Kode Klasifikasi Arsip</h1>
-    <p>Kode klasifikasi yang paling relevan untuk pelaksanaan tugas Perpustakaan dan Kearsipan berdasarkan Peraturan Bupati Malaka Nomor 15 Tahun 2014.</p>
+    <p>Kode klasifikasi yang relevan dengan fungsi Perpustakaan dan Kearsipan berdasarkan Peraturan Bupati Malaka Nomor 15 Tahun 2014.</p>
   </div>
   <div class="page-body">
-    <div class="opd-instrumen-list">
-      <article class="opd-instrumen-card">
-        <div class="opd-instrumen-head">
-          <span class="code">DINAS PERPUSTAKAAN DAN KEARSIPAN</span>
-          <h3>Kode Perpustakaan dan Kearsipan</h3>
-        </div>
-        <div class="arsip-table-wrap">
-          <div class="arsip-table-title">Kode klasifikasi arsip terpenting</div>
-          <table class="arsip-table" style="min-width:560px">
-          <thead><tr><th>Kode</th><th>Masalah / jenis urusan</th></tr></thead>
-          <tbody><tr><td>040</td><td>Perpustakaan, Dokumentasi, Kearsipan, Sandi</td></tr><tr><td>041</td><td>Perpustakaan</td></tr><tr><td>041.1</td><td>Umum</td></tr><tr><td>041.2</td><td>Khusus</td></tr><tr><td>041.3</td><td>Perguruan Tinggi</td></tr><tr><td>041.4</td><td>Sekolah</td></tr><tr><td>041.5</td><td>Keliling</td></tr><tr><td>042</td><td>Dokumentasi</td></tr><tr><td>045</td><td>Kearsipan</td></tr><tr><td>045.1</td><td>Pola Klasifikasi</td></tr><tr><td>045.2</td><td>Pengurusan Arsip</td></tr><tr><td>045.3</td><td>Penyusutan Arsip</td></tr><tr><td>045.31</td><td>Jadwal Retensi Arsip</td></tr><tr><td>045.32</td><td>Pemindahan Arsip</td></tr><tr><td>045.33</td><td>Penilaian Arsip</td></tr><tr><td>045.34</td><td>Pemusnahan Arsip</td></tr><tr><td>045.35</td><td>Penyerahan Arsip</td></tr><tr><td>045.36</td><td>Berita Acara Penyusutan Arsip</td></tr><tr><td>045.37</td><td>Daftar Pencarian Arsip</td></tr><tr><td>045.4</td><td>Pembinaan Kearsipan</td></tr><tr><td>045.41</td><td>Bimbingan Kearsipan</td></tr><tr><td>045.5</td><td>Pemeliharaan / Perawatan Arsip</td></tr></tbody>
-        </table>
-        </div>
-      </article>
-    </div>
+    <article class="arsip-instrumen-card">
+      <div class="arsip-instrumen-heading">
+        <span class="code">040–045</span>
+        <h2>Perpustakaan dan Kearsipan</h2>
+      </div>
+      <div class="arsip-table-scroll"><table class="arsip-table kka-table">
+      <thead><tr><th>Kode</th><th>Masalah / Jenis Urusan</th></tr></thead>
+      <tbody><tr><td>040</td><td>PERPUSTAKAAN DOKUMENTASI / KEARSIPAN / SANDI</td></tr><tr><td>041</td><td>Perpustakaan</td></tr><tr><td>041.1</td><td>Umum</td></tr><tr><td>041.2</td><td>Khusus</td></tr><tr><td>041.3</td><td>Perguruan Tinggi</td></tr><tr><td>041.4</td><td>Sekolah</td></tr><tr><td>041.5</td><td>Keliling</td></tr><tr><td>042</td><td>Dokumentasi</td></tr><tr><td>045</td><td>Kearsipan</td></tr><tr><td>045.1</td><td>Pola Klasifikasi</td></tr><tr><td>045.2</td><td>Pengurusan Arsip</td></tr><tr><td>045.3</td><td>Penyusutan Arsip</td></tr><tr><td>045.31</td><td>Jadwal Retensi Arsip</td></tr><tr><td>045.32</td><td>Pemindahan Arsip</td></tr><tr><td>045.33</td><td>Penilaian Arsip</td></tr><tr><td>045.34</td><td>Pemusnahan Arsip</td></tr><tr><td>045.35</td><td>Penyerahan Arsip</td></tr><tr><td>045.36</td><td>Berita Acara Penyusutan Arsip</td></tr><tr><td>045.37</td><td>Daftar Pencarian Arsip</td></tr><tr><td>045.4</td><td>Pembinaan Kearsipan</td></tr><tr><td>045.41</td><td>Bimbingan Kearsipan</td></tr><tr><td>045.5</td><td>Pemeliharaan / Perawatan Arsip</td></tr></tbody>
+    </table></div>
+    </article>
   </div>
 </section>
 
