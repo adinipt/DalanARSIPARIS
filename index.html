@@ -4036,6 +4036,35 @@ if(firebaseConfigured){
   auth = getAuth(app);
   db = getDatabase(app);
   googleProvider = new GoogleAuthProvider();
+
+  // Bridge Firebase modular v12 ke kode video yang memakai pola API lama.
+  // Dibuat sebagai Promise agar skrip video bisa menunggu Firebase siap.
+  window.daFirebaseReady = Promise.resolve().then(() => {
+    window.firebaseDb = {
+      ref(path){
+        const r = ref(db, path);
+        return {
+          once: async (event) => {
+            if(event !== "value") throw new Error("Event Firebase tidak didukung: " + event);
+            return await get(r);
+          },
+          set: async (value) => await set(r, value),
+          update: async (value) => await update(r, value),
+          remove: async () => await set(r, null),
+          on: (event, callback) => {
+            if(event !== "value") throw new Error("Event Firebase tidak didukung: " + event);
+            return onValue(r, callback);
+          },
+          off: () => {}
+        };
+      }
+    };
+    window.firebase = window.firebase || {};
+    window.firebase.database = window.firebase.database || {};
+    window.firebase.database.ServerValue = window.firebase.database.ServerValue || { TIMESTAMP: serverTimestamp() };
+    window.dispatchEvent(new Event("daFirebaseReady"));
+    return true;
+  });
 }
 
 /* =========================================================
@@ -6783,8 +6812,11 @@ function notifSubscribeForumReplies(topicId){
           alert("Link tidak valid. Tempel link video YouTube, bukan link channel.");
           return;
         }
+        if(!dbReady() && window.daFirebaseReady){
+          try{ await window.daFirebaseReady; }catch(e){}
+        }
         if(!dbReady()){
-          alert("Firebase Realtime Database belum siap.");
+          alert("Firebase Realtime Database belum siap. Silakan tunggu koneksi Firebase selesai lalu coba lagi.");
           return;
         }
         try{
@@ -6868,6 +6900,10 @@ function notifSubscribeForumReplies(topicId){
 
   window.daYouTubeRefresh=refreshCards;
   window.daYouTubeRenderAdmin=renderAdmin;
+  window.addEventListener("daFirebaseReady",()=>{
+    try{ refreshCards(); }catch(e){}
+    try{ if(window.daAdminVideoManagerRender) window.daAdminVideoManagerRender(); }catch(e){}
+  });
 })();
 </script>
 
@@ -6898,6 +6934,9 @@ function notifSubscribeForumReplies(topicId){
   }
 
   async function readAll(){
+    if(!window.firebaseDb && window.daFirebaseReady){
+      try{ await window.daFirebaseReady; }catch(e){}
+    }
     if(!window.firebaseDb) return {};
     try{const s=await firebaseDb.ref(PATH).once("value");return s.val()||{}}
     catch(e){return {}}
@@ -6939,8 +6978,11 @@ function notifSubscribeForumReplies(topicId){
           alert("Link YouTube tidak valid. Gunakan link video, bukan link channel.");
           return;
         }
+        if(!window.firebaseDb && window.daFirebaseReady){
+          try{ await window.daFirebaseReady; }catch(e){}
+        }
         if(!window.firebaseDb){
-          alert("Firebase Realtime Database belum siap.");
+          alert("Firebase Realtime Database belum siap. Silakan tunggu koneksi Firebase selesai lalu coba lagi.");
           return;
         }
         try{
